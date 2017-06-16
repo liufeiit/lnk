@@ -14,6 +14,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.mina.core.future.IoFutureListener;
+import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +108,7 @@ public abstract class MinaAbstractRemotingService {
             final RemotingCommand response = RemotingCommand.replyCommand(cmd, CommandCode.COMMAND_CODE_NOT_SUPPORTED);
             response.setBody(protocolFactory.encode(message));
             session.write(response);
-            log.error(RemotingUtils.parseChannelRemoteAddr(session) + message);
+            log.error(RemotingUtils.parseSessionRemoteAddr(session) + message);
             return;
         }
         final CommandProcessor commandProcessor = pair.getKey();
@@ -147,8 +149,8 @@ public abstract class MinaAbstractRemotingService {
         try {
             pair.getValue().submit(task);
         } catch (RejectedExecutionException e) {
-            log.warn(RemotingUtils.parseChannelRemoteAddr(session) + ", too many command and system thread pool busy, RejectedExecutionException " + pair.getValue().toString()
-                    + " command code: " + cmd.getCode());
+            log.warn(RemotingUtils.parseSessionRemoteAddr(session) + ", too many command and system thread pool busy, RejectedExecutionException " + pair.getValue().toString() + " command code: "
+                    + cmd.getCode());
             if (!cmd.isOneway()) {
                 final RemotingCommand response = RemotingCommand.replyCommand(cmd, CommandCode.SYSTEM_BUSY);
                 response.setBody(protocolFactory.encode("system busy, start flow control for a while"));
@@ -156,14 +158,14 @@ public abstract class MinaAbstractRemotingService {
             }
         }
     }
-    
+
     protected abstract ExecutorService getCallbackExecutor();
 
     protected void replyCommand(final IoSession session, RemotingCommand cmd) {
         final long opaque = cmd.getOpaque();
         final ReplyFuture replyFuture = replies.get(opaque);
         if (replyFuture == null) {
-            log.warn("receive command, but not matched any command, " + RemotingUtils.parseChannelRemoteAddr(session));
+            log.warn("receive command, but not matched any command, " + RemotingUtils.parseSessionRemoteAddr(session));
             return;
         }
         replyFuture.setResponse(cmd);
@@ -174,7 +176,7 @@ public abstract class MinaAbstractRemotingService {
             replyFuture.setReply(cmd);
         }
     }
-    
+
     private void invokeCallback(final ReplyFuture replyFuture) {
         boolean runInThisThread = false;
         ExecutorService executor = this.getCallbackExecutor();
@@ -206,14 +208,27 @@ public abstract class MinaAbstractRemotingService {
         }
     }
 
-    protected RemotingCommand __invokeSync(final IoSession session, final RemotingCommand request, final long timeoutMillis) throws InterruptedException, RemotingSendRequestException, RemotingTimeoutException {
+    protected RemotingCommand __invokeSync(final IoSession session, final RemotingCommand request, final long timeoutMillis)
+            throws InterruptedException, RemotingSendRequestException, RemotingTimeoutException {
         final long opaque = request.getOpaque();
         try {
             final ReplyFuture replyFuture = new ReplyFuture(opaque, timeoutMillis);
             this.replies.put(opaque, replyFuture);
             final SocketAddress addr = session.getRemoteAddress();
-            session.write(request);
-            replyFuture.setSent(true);
+            WriteFuture writeFuture = session.write(request);
+            writeFuture.addListener(new IoFutureListener<WriteFuture>() {
+                public void operationComplete(WriteFuture future) {
+                    if (future.isWritten()) {
+                        replyFuture.setSent(true);
+                        return;
+                    }
+                    replyFuture.setSent(false);
+                    replies.remove(opaque);
+                    replyFuture.setCause(future.getException());
+                    replyFuture.setReply(null);
+                    log.warn("send command to channel <" + addr + "> Error.");
+                }
+            });
             RemotingCommand responseCommand = replyFuture.waitFor(timeoutMillis);
             if (null == responseCommand) {
                 if (replyFuture.isSent()) {
@@ -228,16 +243,30 @@ public abstract class MinaAbstractRemotingService {
         }
     }
 
-    protected void __invokeAsync(final IoSession session, final RemotingCommand request, final long timeoutMillis, final RemotingCallback callback) throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException {
+    protected void __invokeAsync(final IoSession session, final RemotingCommand request, final long timeoutMillis, final RemotingCallback callback)
+            throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException {
         try {
             final long opaque = request.getOpaque();
             final ReplyFuture replyFuture = new ReplyFuture(opaque, timeoutMillis);
             replyFuture.setCallback(callback);
             this.replies.put(opaque, replyFuture);
-            session.write(request);
-            replyFuture.setSent(true);
+            WriteFuture writeFuture = session.write(request);
+            writeFuture.addListener(new IoFutureListener<WriteFuture>() {
+                public void operationComplete(WriteFuture future) {
+                    if (future.isWritten()) {
+                        replyFuture.setSent(true);
+                        return;
+                    }
+                    replyFuture.setSent(false);
+                    replyFuture.setReply(null);
+                    replies.remove(opaque);
+                    replyFuture.setCause(future.getException());
+                    callback.onComplete(replyFuture);
+                    log.warn("send command to channel <{}> Error.", RemotingUtils.parseSessionRemoteAddr(session));
+                }
+            });
         } catch (Throwable e) {
-            String remoteAddress = RemotingUtils.parseChannelRemoteAddr(session);
+            String remoteAddress = RemotingUtils.parseSessionRemoteAddr(session);
             log.warn("send command to channel <" + remoteAddress + "> Error.", e);
             throw new RemotingSendRequestException(remoteAddress, e);
         }
@@ -246,9 +275,16 @@ public abstract class MinaAbstractRemotingService {
     protected void __invokeOneway(final IoSession session, final RemotingCommand request) throws InterruptedException, RemotingSendRequestException {
         try {
             request.setOneway();
-            session.write(request);
+            WriteFuture writeFuture = session.write(request);
+            writeFuture.addListener(new IoFutureListener<WriteFuture>() {
+                public void operationComplete(WriteFuture future) {
+                    if (!future.isWritten()) {
+                        log.warn("send command to channel <" + session.getRemoteAddress() + "> Error.");
+                    }
+                }
+            });
         } catch (Throwable e) {
-            String remoteAddress = RemotingUtils.parseChannelRemoteAddr(session);
+            String remoteAddress = RemotingUtils.parseSessionRemoteAddr(session);
             log.warn("send command to channel <" + remoteAddress + "> Error.");
             throw new RemotingSendRequestException(remoteAddress, e);
         }

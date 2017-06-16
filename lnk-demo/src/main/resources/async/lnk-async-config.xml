@@ -17,7 +17,7 @@
 	<bean id="defaultAuthCallbackService" class="io.lnk.demo.async_multicast_callback.DefaultAuthCallbackService"/>
 	<lnk:application app="biz-pay-bgw-payment-srv" type="jar"/>
 	
-	<lnk:server id="paymentServer2" provider="netty" client="paymentClient" listen-port="42000" worker-threads="20" selector-threads="15" 
+	<lnk:server id="paymentServer2" provider="mina" client="paymentClient" listen-port="42000" worker-threads="20" selector-threads="15" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
 		use-epoll-native-selector="false">
@@ -30,7 +30,7 @@
 		</lnk:bind>
 	</lnk:server>
 	
-<lnk:server id="paymentServer1" provider="netty" client="paymentClient" listen-port="41000" worker-threads="20" selector-threads="15" 
+<lnk:server id="paymentServer1" provider="mina" client="paymentClient" listen-port="41000" worker-threads="20" selector-threads="15" 
 	channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 	pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
 	use-epoll-native-selector="false">
@@ -43,7 +43,7 @@
 	</lnk:bind>
 </lnk:server>
 
-<lnk:client id="paymentClient" provider="netty" worker-threads="4" connect-timeout-millis="3000" channel-maxidletime-seconds="120"
+<lnk:client id="paymentClient" provider="mina" worker-threads="4" connect-timeout-millis="3000" channel-maxidletime-seconds="120"
 	socket-sndbuf-size="65535" socket-rcvbuf-size="65535" default-executor-threads="4">
 	<lnk:lookup address="zk://lnk_zk.ly.com:2181"/>
 	<lnk:flow-control permits="256"/>

@@ -140,7 +140,7 @@ public class MinaRemotingServer extends MinaAbstractRemotingService implements R
         }
 
         public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-            final String remoteAddress = RemotingUtils.parseChannelRemoteAddr(session);
+            final String remoteAddress = RemotingUtils.parseSessionRemoteAddr(session);
             log.warn("MinaRemotingServer pipeline: exceptionCaught {}", remoteAddress);
             log.warn("MinaRemotingServer pipeline: exceptionCaught Error.", cause);
             session.close(false);

@@ -197,7 +197,7 @@ public class RemotingUtils {
         });
     }
 
-    public static String parseChannelRemoteAddr(final IoSession session) {
+    public static String parseSessionRemoteAddr(final IoSession session) {
         if (null == session) {
             return "";
         }

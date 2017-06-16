@@ -22,19 +22,14 @@
 		<lnk:parameter name="key1" value="value1"/>
 	</lnk:application>
 	
-	<lnk:server id="paymentServer1" provider="netty" client="paymentClient" listen-port="41000" worker-threads="20" selector-threads="15" 
+	<lnk:server id="paymentServer1" provider="mina" client="paymentClient" listen-port="41000" worker-threads="20" selector-threads="15" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
 		use-epoll-native-selector="false">
-		<!-- 
-		<lnk:registry address="consul://lnk_cs.ly.com:8500">
-			<lnk:parameter name="key1" value="value1"/>
-		</lnk:registry>
-		 -->
 		<lnk:registry address="zk://lnk_zk.ly.com:2181">
 			<lnk:parameter name="key1" value="value1"/>
 		</lnk:registry>
-		<lnk:flow-control permits="256">
+		<lnk:flow-control permits="10000">
 			<lnk:parameter name="key1" value="value1"/>
 		</lnk:flow-control>
 		<lnk:tracker type="logger">
@@ -46,17 +41,12 @@
 		</lnk:bind>
 	</lnk:server>
 	
-	<lnk:client id="paymentClient" provider="netty" worker-threads="4" connect-timeout-millis="3000" channel-maxidletime-seconds="120"
+	<lnk:client id="paymentClient" provider="mina" worker-threads="4" connect-timeout-millis="3000" channel-maxidletime-seconds="120"
 		socket-sndbuf-size="65535" socket-rcvbuf-size="65535" default-executor-threads="4">
-		<!-- 
-		<lnk:lookup address="consul://lnk_cs.ly.com:8500">
-			<lnk:parameter name="key1" value="value1"/>
-		</lnk:lookup>
-		 -->
 		<lnk:lookup address="zk://lnk_zk.ly.com:2181">
 			<lnk:parameter name="key1" value="value1"/>
 		</lnk:lookup>
-		<lnk:flow-control permits="256">
+		<lnk:flow-control permits="10000">
 			<lnk:parameter name="key1" value="value1"/>
 		</lnk:flow-control>
 		<lnk:load-balance type="hash">

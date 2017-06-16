@@ -28,8 +28,6 @@ public class ServerMain {
     static HelloService helloService;
     static RemoteObjectFactory factory;
     static WelcomeCallback callback;
-
-    private static int concurrence = 500;
     static {
         System.setProperty("host.name", "lf");
         System.setProperty("app.name", "lnk.test");
@@ -46,7 +44,7 @@ public class ServerMain {
         System.out.println("LNK Server started.");
     }
 
-    public static void main(String[] args) {
+    public static void main1(String[] args) {
         ComplexRequest request = new ComplexRequest();
         request.setName("哈哈");
         request.setAge(60);
@@ -73,11 +71,11 @@ public class ServerMain {
         // }
     }
 
-    public static void main1(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         ExecutorService exec = Executors.newCachedThreadPool();
         final Set<Integer> fail = new HashSet<Integer>();
         final Set<Integer> succ = new HashSet<Integer>();
-        int concurrentNum = 500;
+        int concurrentNum = 50;
         int clientNum = 1000;
         final CountDownLatch countDownLatch = new CountDownLatch(clientNum);
         final Semaphore semp = new Semaphore(concurrentNum);
@@ -86,30 +84,29 @@ public class ServerMain {
             Runnable run = new Runnable() {
                 @Override
                 public void run() {
-                    for (int i = 0; i < 50; i++)
-                        try {
-                            semp.acquire();
-                            ComplexRequest request = new ComplexRequest();
-                            request.setName("哈哈");
-                            request.setAge(60);
-                            request.setExt("信不信".getBytes());
-                            final ComplexResponse response = helloService.welcome("刘飞", request);
-                            System.err.println(response.getName() + " ext : " + new String(response.getExt()));
-                            succ.add(num);
-                            semp.release();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace(System.err);
-                            fail.add(num);
-                            semp.release();
-                        }
+                    try {
+                        semp.acquire();
+                        ComplexRequest request = new ComplexRequest();
+                        request.setName("哈哈");
+                        request.setAge(60);
+                        request.setExt("信不信".getBytes());
+                        final ComplexResponse response = helloService.welcome("刘飞", request);
+                        System.err.println(response.getName() + " ext : " + new String(response.getExt()));
+                        succ.add(num);
+                        semp.release();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace(System.err);
+                        fail.add(num);
+                        semp.release();
+                    }
                     countDownLatch.countDown();
                 }
             };
             exec.execute(run);
         }
+        countDownLatch.await();
         exec.shutdown();
         exec = null;
-        countDownLatch.await();
         System.err.println("成功请求 " + succ.size());
         System.err.println("失败请求 " + fail.size() + " fail : " + fail);
     }

@@ -166,7 +166,7 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
             this.sessions.remove(addr);
             return;
         }
-        final String addrRemote = (addr == null) ? RemotingUtils.parseChannelRemoteAddr(session) : addr;
+        final String addrRemote = (addr == null) ? RemotingUtils.parseSessionRemoteAddr(session) : addr;
         try {
             if (this.lock.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
                 try {
@@ -330,7 +330,7 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
         }
 
         public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-            final String remoteAddress = RemotingUtils.parseChannelRemoteAddr(session);
+            final String remoteAddress = RemotingUtils.parseSessionRemoteAddr(session);
             log.warn("MinaRemotingClient pipeline: exceptionCaught {}", remoteAddress);
             log.warn("MinaRemotingClient pipeline: exceptionCaught Error.", cause);
             MinaRemotingClient.this.close(session);
@@ -343,7 +343,7 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
         }
 
         public void sessionClosed(IoSession session) throws Exception {
-            final String remoteAddress = RemotingUtils.parseChannelRemoteAddr(session);
+            final String remoteAddress = RemotingUtils.parseSessionRemoteAddr(session);
             log.info("MinaRemotingClient pipeline: close {}", remoteAddress);
             MinaRemotingClient.this.close(session);
             super.sessionClosed(session);
