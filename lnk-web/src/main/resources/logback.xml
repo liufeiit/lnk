@@ -1,0 +1,33 @@
+<configuration>
+	<if condition='isNull("LOG_DIR")'>
+		<then>
+			<if condition='isDefined("APP_HOME")'>
+				<then>
+					<property name="LOG_DIR" value="${APP_HOME}/log" />
+				</then>
+				<else>
+					<property name="LOG_DIR" value="/log/java/lnk-web/log" />
+				</else>
+			</if>
+		</then>
+	</if>
+	<appender name="LNK-WEB-LOG-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIR}/lnk-web.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_DIR}/lnk-web.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{trackingCode}] [%thread] [%logger{0}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{trackingCode}] [%thread] [%logger{0}] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<root level="INFO">
+		<appender-ref ref="LNK-WEB-LOG-FILE" />
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

@@ -1,0 +1,8 @@
+/target/
+/build/
+/log/
+/sla-log/
+/.classpath
+/.project
+/.settings/
+/bin/

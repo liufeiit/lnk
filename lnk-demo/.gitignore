@@ -1,0 +1,7 @@
+/target/
+/.settings/
+/bin/
+/.classpath
+/.project
+/lookup.props
+/build/

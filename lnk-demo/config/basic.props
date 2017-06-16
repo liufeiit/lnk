@@ -1,0 +1,10 @@
+nsHome=${user.home}/.ns_config
+
+lookup.zk.servers=zk.jr.17usoft.com:2181
+
+
+
+
+
+
+

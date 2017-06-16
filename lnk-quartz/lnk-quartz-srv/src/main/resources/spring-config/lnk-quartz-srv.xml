@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:lnk="http://www.lnk.com/schema/io/lnk"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.lnk.com/schema/io/lnk http://www.lnk.com/schema/io/lnk/lnk-1.0.0.xsd">
+
+	<context:annotation-config />
+
+	<lnk:application app="lnk-quartz-srv" type="jar"/>
+	
+	<lnk:server id="lnk.quartz.srv" client="lnk.quartz.cli" listen-port="41000" server-worker-threads="20" server-selector-threads="15" 
+		server-channel-maxidletime-seconds="120" server-socket-sndbuf-size="65535" server-socket-rcvbuf-size="65535" 
+		server-pooled-bytebuf-allocator-enable="true" default-server-worker-processor-threads="10" default-server-executor-threads="8" 
+		use-epoll-native-selector="false">
+		<lnk:registry address="zk://lnk_zk.ly.com:2181"/>
+		<lnk:flow-control permits="256"/>
+		<lnk:tracker type="logger"/>
+		<lnk:bind>
+			<lnk:service-group service-group="lnk-quartz.srv" worker-threads="30"/>
+		</lnk:bind>
+	</lnk:server>
+	
+	<lnk:client id="lnk.quartz.cli" client-worker-threads="4" connect-timeout-millis="3000" client-channel-maxidletime-seconds="120"
+		client-socket-sndbuf-size="65535" client-socket-rcvbuf-size="65535" default-client-executor-threads="4">
+		<lnk:lookup address="zk://lnk_zk.ly.com:2181"/>
+		<lnk:flow-control permits="256"/>
+		<lnk:load-balance type="hash"/>
+	</lnk:client>
+
+	<bean id="lnk-quartz-srv.QuartzTemplate" class="io.lnk.quartz.srv.DefaultQuartzTemplate">
+		<property name="dbNsPath" value="${ti-quartz-srv.db-path}" />
+		<property name="concurrent" value="${ti-quartz-srv.concurrent}" />
+		<property name="validationQuery" value="select 1" />
+	</bean>
+
+	<bean id="lnk-quartz-srv.QuartzService" class="io.lnk.quartz.srv.DefaultQuartzService"/>
+
+	<bean id="lnk-quartz-srv.RemoteJobCaller" class="io.lnk.quartz.srv.DefaultRemoteJobCaller"/>
+
+</beans>
