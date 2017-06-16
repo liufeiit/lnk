@@ -162,6 +162,10 @@ public class RemotingCommand implements Serializable {
 
     @Override
     public String toString() {
-        return "RemotingCommand [code=" + code + ", version=" + version + ", command=" + command + ", protocol=" + protocol + ", opaque=" + opaque + "]";
+        int bodyLength = 0;
+        if (body != null) {
+            bodyLength = body.length;
+        }
+        return "RemotingCommand[code=" + code + ", version=" + version + ", command=" + command + ", protocol=" + protocol + ", opaque=" + opaque + ", body=" + bodyLength + "]";
     }
 }

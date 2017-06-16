@@ -75,7 +75,7 @@ public class ServerMain {
         ExecutorService exec = Executors.newCachedThreadPool();
         final Set<Integer> fail = new HashSet<Integer>();
         final Set<Integer> succ = new HashSet<Integer>();
-        int concurrentNum = 50;
+        int concurrentNum = 900;
         int clientNum = 1000;
         final CountDownLatch countDownLatch = new CountDownLatch(clientNum);
         final Semaphore semp = new Semaphore(concurrentNum);
@@ -91,7 +91,7 @@ public class ServerMain {
                         request.setAge(60);
                         request.setExt("信不信".getBytes());
                         final ComplexResponse response = helloService.welcome("刘飞", request);
-                        System.err.println(response.getName() + " ext : " + new String(response.getExt()));
+                        System.err.println(num + " => " + response.getName() + " ext : " + new String(response.getExt()));
                         succ.add(num);
                         semp.release();
                     } catch (InterruptedException e) {

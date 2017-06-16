@@ -20,39 +20,36 @@ public class CommandProtocolDecoder extends CumulativeProtocolDecoder {
     /**
      * 不够一个整包的返回false, 多于一个整包的true
      */
-    @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
         if (in.remaining() < RemotingCommand.COMMAND_HEADER_LENGTH) {
             return false;
         }
+        in.mark();
+        byte[] head = new byte[RemotingCommand.COMMAND_HEADER_LENGTH];
+        in.get(head);
+        ByteBuffer headBuffer = ByteBuffer.wrap(head);
+        int code = headBuffer.getInt();
+        int version = headBuffer.getInt();
+        int command = headBuffer.getInt();
+        int protocol = headBuffer.getInt();
+        long opaque = headBuffer.getLong();
+        int bodyLength = headBuffer.getInt();
+        if (bodyLength > in.remaining()) {
+            in.reset();
+            return false;
+        }
+        byte[] body = new byte[bodyLength];
+        in.get(body);
+        RemotingCommand remotingCommand = new RemotingCommand();
+        remotingCommand.setCode(code);
+        remotingCommand.setVersion(version);
+        remotingCommand.setCommand(command);
+        remotingCommand.setProtocol(protocol);
+        remotingCommand.setOpaque(opaque);
+        remotingCommand.setBody(body);
+        out.write(remotingCommand);
         if (in.remaining() > 0) {
-            byte[] head = new byte[RemotingCommand.COMMAND_HEADER_LENGTH];
-            in.mark();
-            in.get(head);
-            ByteBuffer headBuffer = ByteBuffer.wrap(head);
-            int code = headBuffer.getInt();
-            int version = headBuffer.getInt();
-            int command = headBuffer.getInt();
-            int protocol = headBuffer.getInt();
-            long opaque = headBuffer.getLong();
-            int bodyLength = headBuffer.getInt();
-            if (bodyLength > in.remaining()) {
-                in.reset();
-                return false;
-            }
-            byte[] body = new byte[bodyLength];
-            in.get(body);
-            RemotingCommand remotingCommand = new RemotingCommand();
-            remotingCommand.setCode(code);
-            remotingCommand.setVersion(version);
-            remotingCommand.setCommand(command);
-            remotingCommand.setProtocol(protocol);
-            remotingCommand.setOpaque(opaque);
-            remotingCommand.setBody(body);
-            out.write(remotingCommand);
-            if (in.remaining() > 0) {
-                return true;
-            }
+            return true;
         }
         return false;
     }
