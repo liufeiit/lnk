@@ -28,7 +28,8 @@ import io.lnk.core.caller.LnkRemoteObjectFactory;
 import io.lnk.flow.SemaphoreFlowController;
 import io.lnk.lookup.LnkRegistry;
 import io.lnk.protocol.LnkProtocolFactorySelector;
-import io.lnk.remoting.netty.NettyClientConfiguration;
+import io.lnk.remoting.ClientConfiguration;
+import io.lnk.remoting.RemotingProvider;
 import io.lnk.spring.core.SpringLnkInvoker;
 import io.lnk.spring.utils.BeanRegister;
 import io.lnk.spring.utils.ParametersParser;
@@ -69,7 +70,8 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         });
         builder.addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
 
-        NettyClientConfiguration configuration = new NettyClientConfiguration();
+        ClientConfiguration configuration = new ClientConfiguration();
+        configuration.setProvider(RemotingProvider.valueOfProvider(element.getAttribute("provider")));
         configuration.setWorkerThreads(NumberUtils.toInt(element.getAttribute("worker-threads"), 4));
         configuration.setConnectTimeoutMillis(NumberUtils.toInt(element.getAttribute("connect-timeout-millis"), 3000));
         configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(element.getAttribute("channel-maxidletime-seconds"), 120));

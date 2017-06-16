@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.core.buffer.SimpleBufferAllocator;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -17,6 +19,7 @@ import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingServer;
+import io.lnk.remoting.ServerConfiguration;
 import io.lnk.remoting.exception.RemotingSendRequestException;
 import io.lnk.remoting.exception.RemotingTimeoutException;
 import io.lnk.remoting.mina.codec.CommandProtocolCodecFilter;
@@ -32,21 +35,22 @@ import io.lnk.remoting.utils.RemotingUtils;
  */
 public class MinaRemotingServer extends MinaAbstractRemotingService implements RemotingServer {
     private final NioSocketAcceptor acceptor;
-    private final MinaServerConfiguration configuration;
+    private final ServerConfiguration configuration;
     private final ExecutorService defaultThreadPoolExecutor;
     private InetSocketAddress serverAddress;
 
-    public MinaRemotingServer(final ProtocolFactorySelector protocolFactorySelector, final MinaServerConfiguration configuration) {
+    public MinaRemotingServer(final ProtocolFactorySelector protocolFactorySelector, final ServerConfiguration configuration) {
         super(protocolFactorySelector);
         this.configuration = configuration;
+        IoBuffer.setUseDirectBuffer(false);
         this.defaultThreadPoolExecutor =
                 Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("MinaRemotingServerDefaultThreadPoolExecutor-%d", false));
         this.acceptor = new NioSocketAcceptor(configuration.getWorkerThreads());
         this.acceptor.getFilterChain().addLast("exceutor", new ExecutorFilter(
                 Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("MinaRemotingServerDefaultThreadPoolExecutor-%d", false))));
         this.acceptor.getFilterChain().addLast("mdc", new MdcInjectionFilter());
-        this.acceptor.getFilterChain().addLast("codec", new CommandProtocolCodecFilter());
         this.acceptor.getFilterChain().addLast("logger", new LoggingFilter());
+        this.acceptor.getFilterChain().addLast("codec", new CommandProtocolCodecFilter());
         this.acceptor.setReuseAddress(true);
         this.acceptor.setBacklog(1024);
         this.acceptor.getSessionConfig().setReuseAddress(true);
@@ -61,6 +65,9 @@ public class MinaRemotingServer extends MinaAbstractRemotingService implements R
     @Override
     public void start() {
         try {
+            if (this.configuration.isPooledByteBufAllocatorEnable()) {
+                IoBuffer.setAllocator(new SimpleBufferAllocator());
+            }
             this.acceptor.setHandler(new IoServerHandler());
             InetSocketAddress serverAddress = new InetSocketAddress(this.configuration.getListenPort());
             this.acceptor.bind(serverAddress);

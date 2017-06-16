@@ -25,6 +25,14 @@
 				</xsd:element>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:string" use="optional"/>
+			<xsd:attribute name="provider" default="netty" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="netty"/>
+						<xsd:enumeration value="mina"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
 			<xsd:attribute name="client" type="xsd:string" use="required"/>
 			<xsd:attribute name="listen-port" type="xsd:int" use="optional"/>
 			<xsd:attribute name="worker-threads" type="xsd:int" use="optional" default="10"/>
@@ -47,6 +55,14 @@
 				<xsd:element name="load-balance" maxOccurs="1" minOccurs="1" type="load-balance-type"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:string" use="required"/>
+			<xsd:attribute name="provider" default="netty" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="netty"/>
+						<xsd:enumeration value="mina"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
 			<xsd:attribute name="worker-threads" type="xsd:int" use="optional" default="4"/>
 			<xsd:attribute name="connect-timeout-millis" type="xsd:int" use="optional" default="3000"/>
 			<xsd:attribute name="channel-maxidletime-seconds" type="xsd:int" use="optional" default="120"/>

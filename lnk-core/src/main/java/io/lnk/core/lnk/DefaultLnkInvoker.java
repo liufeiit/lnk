@@ -22,12 +22,14 @@ import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.registry.Registry;
 import io.lnk.core.LnkInvoker;
+import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.RemotingCallback;
+import io.lnk.remoting.RemotingClient;
 import io.lnk.remoting.ReplyFuture;
 import io.lnk.remoting.exception.RemotingConnectException;
 import io.lnk.remoting.exception.RemotingSendRequestException;
 import io.lnk.remoting.exception.RemotingTimeoutException;
-import io.lnk.remoting.netty.NettyClientConfiguration;
+import io.lnk.remoting.mina.MinaRemotingClient;
 import io.lnk.remoting.netty.NettyRemotingClient;
 import io.lnk.remoting.protocol.RemotingCommand;
 import io.lnk.remoting.utils.RemotingUtils;
@@ -45,8 +47,8 @@ public class DefaultLnkInvoker implements LnkInvoker {
     protected static final Logger log = LoggerFactory.getLogger(LnkInvoker.class.getSimpleName());
     protected RemoteObjectFactory remoteObjectFactory;
     private String ip;
-    private NettyClientConfiguration configuration;
-    private NettyRemotingClient remotingClient;
+    private ClientConfiguration configuration;
+    private RemotingClient remotingClient;
     private Registry registry;
     private LoadBalance loadBalance;
     private ProtocolFactorySelector protocolFactorySelector;
@@ -67,7 +69,16 @@ public class DefaultLnkInvoker implements LnkInvoker {
             return;
         }
         this.ip = RemotingUtils.getLocalAddress();
-        remotingClient = new NettyRemotingClient(protocolFactorySelector, configuration);
+        switch (configuration.getProvider()) {
+            case Netty:
+                remotingClient = new NettyRemotingClient(protocolFactorySelector, configuration);
+                break;
+            case Mina:
+                remotingClient = new MinaRemotingClient(protocolFactorySelector, configuration);
+                break;
+            default:
+                throw new RuntimeException("unsupport RemotingClient provider : " + configuration.getProvider());
+        }
         remotingClient.start();
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
@@ -99,7 +110,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
         } catch (Throwable e) {
             log.warn("Signal handle TERM Error.");
         }
-        log.info("LnkInvoker 'RemotingClient' start success.");
+        log.info("LnkInvoker '{}' start success.", remotingClient);
     }
 
     @Override
@@ -309,7 +320,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
         this.application = application;
     }
 
-    public void setConfiguration(NettyClientConfiguration configuration) {
+    public void setConfiguration(ClientConfiguration configuration) {
         this.configuration = configuration;
     }
 

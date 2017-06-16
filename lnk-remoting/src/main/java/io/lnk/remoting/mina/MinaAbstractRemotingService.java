@@ -217,9 +217,9 @@ public abstract class MinaAbstractRemotingService {
             RemotingCommand responseCommand = replyFuture.waitFor(timeoutMillis);
             if (null == responseCommand) {
                 if (replyFuture.isSent()) {
-                    throw new RemotingTimeoutException(RemotingUtils.parseSocketAddressAddr(addr), timeoutMillis, replyFuture.getCause());
+                    throw new RemotingTimeoutException(addr.toString(), timeoutMillis, replyFuture.getCause());
                 }
-                throw new RemotingSendRequestException(RemotingUtils.parseSocketAddressAddr(addr), replyFuture.getCause());
+                throw new RemotingSendRequestException(addr.toString(), replyFuture.getCause());
             }
 
             return responseCommand;

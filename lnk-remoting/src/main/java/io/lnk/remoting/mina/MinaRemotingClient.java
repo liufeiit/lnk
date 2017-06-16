@@ -12,9 +12,13 @@ import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.executor.ExecutorFilter;
+import org.apache.mina.filter.logging.LoggingFilter;
+import org.apache.mina.filter.logging.MdcInjectionFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import io.lnk.api.protocol.ProtocolFactorySelector;
+import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
@@ -22,6 +26,7 @@ import io.lnk.remoting.RemotingClient;
 import io.lnk.remoting.exception.RemotingConnectException;
 import io.lnk.remoting.exception.RemotingSendRequestException;
 import io.lnk.remoting.exception.RemotingTimeoutException;
+import io.lnk.remoting.mina.codec.CommandProtocolCodecFilter;
 import io.lnk.remoting.protocol.RemotingCommand;
 import io.lnk.remoting.utils.RemotingThreadFactory;
 import io.lnk.remoting.utils.RemotingUtils;
@@ -34,22 +39,35 @@ import io.lnk.remoting.utils.RemotingUtils;
  */
 public class MinaRemotingClient extends MinaAbstractRemotingService implements RemotingClient {
     private static final long LOCK_TIMEOUT_MILLIS = 3000;
-    private final MinaClientConfiguration configuration;
-    private final NioSocketConnector connector = new NioSocketConnector();
+    private final ClientConfiguration configuration;
+    private final NioSocketConnector connector;
     private final Lock lock = new ReentrantLock();
     private final ConcurrentHashMap<String, RemotingSessionFuture> sessions = new ConcurrentHashMap<String, RemotingSessionFuture>();
     private final ExecutorService defaultThreadPoolExecutor;
 
-    public MinaRemotingClient(final ProtocolFactorySelector protocolFactorySelector, final MinaClientConfiguration configuration) {
+    public MinaRemotingClient(final ProtocolFactorySelector protocolFactorySelector, final ClientConfiguration configuration) {
         super(protocolFactorySelector);
         this.configuration = configuration;
+        this.connector = new NioSocketConnector(configuration.getWorkerThreads());
         this.defaultThreadPoolExecutor =
                 Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("MinaRemotingClientDefaultThreadPoolExecutor-%d", false));
     }
 
     @Override
     public void start() {
+        this.connector.getFilterChain().addLast("exceutor", new ExecutorFilter(
+                Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("MinaRemotingClientDefaultThreadPoolExecutor-%d", false))));
+        this.connector.getFilterChain().addLast("mdc", new MdcInjectionFilter());
+        this.connector.getFilterChain().addLast("logger", new LoggingFilter());
+        this.connector.getFilterChain().addLast("codec", new CommandProtocolCodecFilter());
         this.connector.setConnectTimeoutMillis(configuration.getConnectTimeoutMillis());
+        this.connector.getSessionConfig().setReuseAddress(true);
+        this.connector.getSessionConfig().setReadBufferSize(configuration.getSocketRcvBufSize());
+        this.connector.getSessionConfig().setReceiveBufferSize(configuration.getSocketRcvBufSize());
+        this.connector.getSessionConfig().setSendBufferSize(configuration.getSocketSndBufSize());
+        this.connector.getSessionConfig().setTcpNoDelay(true);
+        this.connector.getSessionConfig().setSoLinger(-1);
+        this.connector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, configuration.getChannelMaxIdleTimeSeconds());
         this.connector.setHandler(new ClientIoHandler());
     }
 

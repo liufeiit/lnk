@@ -24,7 +24,8 @@ import io.lnk.flow.SemaphoreFlowController;
 import io.lnk.lookup.LnkRegistry;
 import io.lnk.port.DefaultServerPortAllocator;
 import io.lnk.protocol.LnkProtocolFactorySelector;
-import io.lnk.remoting.netty.NettyServerConfiguration;
+import io.lnk.remoting.RemotingProvider;
+import io.lnk.remoting.ServerConfiguration;
 import io.lnk.spring.core.DefaultServiceObjectFinder;
 import io.lnk.spring.core.SpringLnkServer;
 import io.lnk.spring.utils.BeanRegister;
@@ -54,11 +55,12 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
         LnkProtocolFactorySelector protocolFactorySelector = new LnkProtocolFactorySelector();
         builder.addPropertyValue("protocolFactorySelector", protocolFactorySelector);
         
-        NettyServerConfiguration configuration = new NettyServerConfiguration();
+        ServerConfiguration configuration = new ServerConfiguration();
         int port = NumberUtils.toInt(element.getAttribute("listen-port"), -1);
         if (port > 0) {
             configuration.setListenPort(port);
         }
+        configuration.setProvider(RemotingProvider.valueOfProvider(element.getAttribute("provider")));
         configuration.setWorkerThreads(NumberUtils.toInt(element.getAttribute("worker-threads"), 10));
         configuration.setSelectorThreads(NumberUtils.toInt(element.getAttribute("selector-threads"), 5));
         configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(element.getAttribute("channel-maxidletime-seconds"), 120));

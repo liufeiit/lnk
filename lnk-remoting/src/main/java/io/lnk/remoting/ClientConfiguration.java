@@ -1,6 +1,4 @@
-package io.lnk.remoting.mina;
-
-import io.lnk.remoting.SystemConfiguration;
+package io.lnk.remoting;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -8,13 +6,22 @@ import io.lnk.remoting.SystemConfiguration;
  * @version 1.0.0
  * @since 2017年5月19日 下午10:39:38
  */
-public class MinaClientConfiguration implements Cloneable, SystemConfiguration {
+public class ClientConfiguration implements Cloneable, SystemConfiguration {
+    private RemotingProvider provider = RemotingProvider.Netty;
     private int workerThreads = 4;
     private int connectTimeoutMillis = 3000;
     private int channelMaxIdleTimeSeconds = 120;
     private int socketSndBufSize = Integer.getInteger(IO_REMOTING_SOCKET_SNDBUF_SIZE, 65535);
     private int socketRcvBufSize = Integer.getInteger(IO_REMOTING_SOCKET_RCVBUF_SIZE, 65535);
     private int defaultExecutorThreads = 4;
+
+    public RemotingProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(RemotingProvider provider) {
+        this.provider = provider;
+    }
 
     public int getWorkerThreads() {
         return workerThreads;
@@ -65,7 +72,7 @@ public class MinaClientConfiguration implements Cloneable, SystemConfiguration {
     }
 
     @Override
-    protected MinaClientConfiguration clone() throws CloneNotSupportedException {
-        return (MinaClientConfiguration) super.clone();
+    protected ClientConfiguration clone() throws CloneNotSupportedException {
+        return (ClientConfiguration) super.clone();
     }
 }

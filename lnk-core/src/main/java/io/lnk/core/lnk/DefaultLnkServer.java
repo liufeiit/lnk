@@ -24,8 +24,10 @@ import io.lnk.core.ServiceObjectFinder;
 import io.lnk.core.processor.LnkCommandProcessor;
 import io.lnk.core.protocol.LnkCommandArgProtocolFactory;
 import io.lnk.remoting.CommandProcessor;
+import io.lnk.remoting.RemotingServer;
+import io.lnk.remoting.ServerConfiguration;
+import io.lnk.remoting.mina.MinaRemotingServer;
 import io.lnk.remoting.netty.NettyRemotingServer;
-import io.lnk.remoting.netty.NettyServerConfiguration;
 import io.lnk.remoting.utils.RemotingThreadFactory;
 import io.lnk.remoting.utils.RemotingUtils;
 import sun.misc.Signal;
@@ -40,8 +42,8 @@ import sun.misc.SignalHandler;
 @SuppressWarnings("restriction")
 public class DefaultLnkServer implements LnkServer {
     protected static final Logger log = LoggerFactory.getLogger(LnkServer.class.getSimpleName());
-    private NettyServerConfiguration configuration;
-    private NettyRemotingServer remotingServer;
+    private ServerConfiguration configuration;
+    private RemotingServer remotingServer;
     private Registry registry;
     private ServerPortAllocator serverPortAllocator;
     private Address serverAddress;
@@ -68,8 +70,17 @@ public class DefaultLnkServer implements LnkServer {
         }
         this.commandArgProtocolFactory = new LnkCommandArgProtocolFactory(invoker.getRemoteObjectFactory());
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
-        remotingServer = new NettyRemotingServer(protocolFactorySelector, configuration);
-        remotingServer.registerDefaultProcessor(this.createNettyCommandProcessor(),
+        switch (configuration.getProvider()) {
+            case Netty:
+                remotingServer = new NettyRemotingServer(protocolFactorySelector, configuration);
+                break;
+            case Mina:
+                remotingServer = new MinaRemotingServer(protocolFactorySelector, configuration);
+                break;
+            default:
+                throw new RuntimeException("unsupport RemotingServer provider : " + configuration.getProvider());
+        }
+        remotingServer.registerDefaultProcessor(this.createLnkCommandProcessor(),
                 Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), RemotingThreadFactory.newThreadFactory("LnkServerWorkerProcessor-%d", false)));
         remotingServer.start();
         serverAddress = new Address(RemotingUtils.getLocalAddress(), remotingServer.getServerAddress().getPort());
@@ -106,7 +117,7 @@ public class DefaultLnkServer implements LnkServer {
         } catch (Throwable e) {
             log.warn("Signal handle TERM Error.");
         }
-        log.info("LnkServer 'RemotingServer' start success bind {}", serverAddress);
+        log.info("LnkServer '{}' start success bind {}", remotingServer, serverAddress);
     }
 
     @Override
@@ -117,7 +128,7 @@ public class DefaultLnkServer implements LnkServer {
         }
         for (ServiceGroup serviceGroup : serviceGroups) {
             int commandCode = serviceGroup.getServiceGroup().hashCode();
-            this.remotingServer.registerProcessor(commandCode, this.createNettyCommandProcessor(), Executors.newFixedThreadPool(serviceGroup.getServiceGroupWorkerProcessorThreads(),
+            this.remotingServer.registerProcessor(commandCode, this.createLnkCommandProcessor(), Executors.newFixedThreadPool(serviceGroup.getServiceGroupWorkerProcessorThreads(),
                     RemotingThreadFactory.newThreadFactory("LnkServerWorkerProcessor[" + serviceGroup.getServiceGroup() + "]-%d", false)));
             log.info("bind serviceGroup {} success.", serviceGroup.getServiceGroup());
         }
@@ -140,7 +151,7 @@ public class DefaultLnkServer implements LnkServer {
         }
     }
 
-    protected final CommandProcessor createNettyCommandProcessor() {
+    protected final CommandProcessor createLnkCommandProcessor() {
         LnkCommandProcessor processor = new LnkCommandProcessor();
         processor.setProtocolFactorySelector(protocolFactorySelector);
         processor.setServiceObjectFinder(serviceObjectFinder);
@@ -179,7 +190,7 @@ public class DefaultLnkServer implements LnkServer {
         this.registry = registry;
     }
 
-    public void setConfiguration(NettyServerConfiguration configuration) {
+    public void setConfiguration(ServerConfiguration configuration) {
         this.configuration = configuration;
     }
 

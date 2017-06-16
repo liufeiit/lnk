@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.remoting.CommandProcessor;
+import io.lnk.remoting.ServerConfiguration;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingServer;
@@ -48,10 +49,10 @@ public class NettyRemotingServer extends NettyAbstractRemotingService implements
     private DefaultEventExecutorGroup defaultEventExecutorGroup;
     private Channel serverChannel;
     private InetSocketAddress serverAddress;
-    private final NettyServerConfiguration configuration;
+    private final ServerConfiguration configuration;
     private final ExecutorService defaultThreadPoolExecutor;
 
-    public NettyRemotingServer(final ProtocolFactorySelector protocolFactorySelector, final NettyServerConfiguration configuration) {
+    public NettyRemotingServer(final ProtocolFactorySelector protocolFactorySelector, final ServerConfiguration configuration) {
         super(protocolFactorySelector);
         this.serverBootstrap = new ServerBootstrap();
         this.configuration = configuration;

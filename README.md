@@ -1,6 +1,6 @@
 # lnk
 
-Lnk RPC是一款基于Netty实现RPC通讯协议，支持同步，异步和异步回调三种RPC调用方式，支持参数和返回值多态。支持多种负载均衡方式，支持调用流量控制，支持zookeeper和consul等服务注册发现方式，服务端口支持开发人员，运维人员配置以及动态分配，支持服务依赖关系梳理以及调用链路跟踪。支持spring配置。在服务端通过分组策略将来自不同组别的请求处理资源隔离，该思路借鉴与RocketMQ的实现思想。
+Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步和异步回调三种RPC调用方式，支持参数和返回值多态。支持多种负载均衡方式，支持调用流量控制，支持zookeeper和consul等服务注册发现方式，服务端口支持开发人员，运维人员配置以及动态分配，支持服务依赖关系梳理以及调用链路跟踪。支持spring配置。在服务端通过分组策略将来自不同组别的请求处理资源隔离，该思路借鉴与RocketMQ的实现思想。
 
 + 使用MQ实现的RPC特性：
 
@@ -12,7 +12,7 @@ Lnk RPC是一款基于Netty实现RPC通讯协议，支持同步，异步和异�
   - 6.对于有同步返回需求，用MQ则变得麻烦。
   - 7.因为AMQP协议面向的场景主要是高可用性的场景，所以其服务端的实现略复杂，并且协议数据比直接tcp的裸数据大不少，另外无论是服务端还是客户端都存在着成对的拆包和封包的过程。
 
-+ 基于Netty等通讯框架实现的RPC的特性：
++ 基于Netty和Mina等通讯框架实现的RPC的特性：
 
   - 1.请求压力会直接传递到服务端，需要熔断，限流，降级，超时等服务治理策略。
   - 2.需要有注册中心和负载均衡策略。
@@ -93,11 +93,11 @@ Lnk RPC是一款基于Netty实现RPC通讯协议，支持同步，异步和异�
 
 	listen-port：配置服务监听端口，可选配置，该配置项优先使用开发人员配置，如果没有配置或者端口被占用，框架会通过系统参数获取当前应用的分配端口，如果系统参数没有配置或者系统参数配置分配的端口被占用的话，框架会自动分配一个当前机器未使用的端口。
 	
-	worker-threads：Netty服务端事件处理线程池大小，默认为10.
+	worker-threads：Netty和Mina服务端事件处理线程池大小，默认为10.
 	
-	selector-threads：Netty服务NIO selector事件处理线程池大小，默认为5
+	selector-threads：Netty和Mina服务NIO selector事件处理线程池大小，默认为5
 	
-	channel-maxidletime-seconds：Netty服务端连接通道最大空闲时间，单位为秒，默认为120秒
+	channel-maxidletime-seconds：Netty和Mina服务端连接通道最大空闲时间，单位为秒，默认为120秒
 	
 	socket-sndbuf-size：服务端socket发送数据大小，默认为65535
 	
@@ -161,7 +161,7 @@ Lnk RPC是一款基于Netty实现RPC通讯协议，支持同步，异步和异�
 	
   - 配置项说明
   
-	worker-threads：Netty客户端事件处理线程池大小。默认为4.
+	worker-threads：Netty和Mina客户端事件处理线程池大小。默认为4.
 	
 	connect-timeout-millis：客户端连接超时事件，单位毫秒。默认3000毫米即3秒。
 	

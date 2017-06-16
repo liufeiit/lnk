@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.remoting.CommandProcessor;
+import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingClient;
@@ -47,7 +48,7 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
  */
 public class NettyRemotingClient extends NettyAbstractRemotingService implements RemotingClient {
     private static final long LOCK_TIMEOUT_MILLIS = 3000;
-    private final NettyClientConfiguration configuration;
+    private final ClientConfiguration configuration;
     private final Bootstrap bootstrap = new Bootstrap();
     private final EventLoopGroup eventLoopGroupWorker;
     private final Lock lock = new ReentrantLock();
@@ -55,7 +56,7 @@ public class NettyRemotingClient extends NettyAbstractRemotingService implements
     private final ExecutorService defaultThreadPoolExecutor;
     private DefaultEventExecutorGroup defaultEventExecutorGroup;
 
-    public NettyRemotingClient(final ProtocolFactorySelector protocolFactorySelector, final NettyClientConfiguration configuration) {
+    public NettyRemotingClient(final ProtocolFactorySelector protocolFactorySelector, final ClientConfiguration configuration) {
         super(protocolFactorySelector);
         this.configuration = configuration;
         this.defaultThreadPoolExecutor = Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("NettyRemotingClientDefaultThreadPoolExecutor-%d", false));

@@ -13,21 +13,16 @@ import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.protocol.LnkProtocolFactorySelector;
 import io.lnk.protocol.jackson.JacksonProtocolFactory;
 import io.lnk.protocol.jackson.JacksonSerializer;
-import io.lnk.remoting.CommandProcessor;
-import io.lnk.remoting.RemotingCallback;
-import io.lnk.remoting.RemotingClient;
-import io.lnk.remoting.RemotingServer;
-import io.lnk.remoting.ReplyFuture;
 import io.lnk.remoting.RemotingCommandTest.SimpleBean;
 import io.lnk.remoting.exception.RemotingConnectException;
 import io.lnk.remoting.exception.RemotingSendRequestException;
 import io.lnk.remoting.exception.RemotingTimeoutException;
-import io.lnk.remoting.netty.NettyRemotingClient;
-import io.lnk.remoting.netty.NettyRemotingServer;
+import io.lnk.remoting.mina.MinaRemotingClient;
+import io.lnk.remoting.mina.MinaRemotingServer;
 import io.lnk.remoting.protocol.CommandCode;
 import io.lnk.remoting.protocol.RemotingCommand;
 
-public class RemotingServerTest {
+public class MinaRemotingServerTest {
     private static RemotingServer remotingServer;
     private static RemotingClient remotingClient;
 
@@ -35,7 +30,7 @@ public class RemotingServerTest {
         ServerConfiguration config = new ServerConfiguration();
         final ProtocolFactory protocolFactory = new JacksonProtocolFactory();
         ProtocolFactorySelector protocolFactorySelector = new LnkProtocolFactorySelector();;
-        RemotingServer remotingServer = new NettyRemotingServer(protocolFactorySelector, config);
+        RemotingServer remotingServer = new MinaRemotingServer(protocolFactorySelector, config);
         remotingServer.registerDefaultProcessor(new CommandProcessor() {
             public RemotingCommand processCommand(RemotingCommand request) {
                 JacksonSerializer serializer = new JacksonSerializer();
@@ -65,7 +60,7 @@ public class RemotingServerTest {
     public static RemotingClient createRemotingClient() {
         ClientConfiguration config = new ClientConfiguration();
         ProtocolFactorySelector protocolFactorySelector = new LnkProtocolFactorySelector();
-        RemotingClient client = new NettyRemotingClient(protocolFactorySelector, config);
+        RemotingClient client = new MinaRemotingClient(protocolFactorySelector, config);
         client.start();
         return client;
     }
