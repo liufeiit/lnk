@@ -1,1 +1,1 @@
-http\://www.lnk.com/schema/io/lnk=io.spring.LnkNamespaceHandler
+http\://www.lnk.com/schema/io/lnk=io.lnk.spring.LnkNamespaceHandler
