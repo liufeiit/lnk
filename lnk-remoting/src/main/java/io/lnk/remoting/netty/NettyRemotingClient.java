@@ -166,7 +166,7 @@ public class NettyRemotingClient extends NettyAbstractRemotingService implements
             try {
                 this.defaultThreadPoolExecutor.shutdown();
             } catch (Throwable e) {
-                log.error("NettyRemotingServer shutdown Error.", e);
+                log.error("NettyRemotingClient shutdown Error.", e);
             }
         }
     }
