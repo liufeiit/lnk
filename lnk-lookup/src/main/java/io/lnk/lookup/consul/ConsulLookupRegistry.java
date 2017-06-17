@@ -77,7 +77,6 @@ public class ConsulLookupRegistry extends ConsulRegistry implements Registry {
             }
         } catch (Throwable e) {
             log.info("registry path : " + path + " Address : " + addr + " Error.");
-            throw e;
         }
     }
 

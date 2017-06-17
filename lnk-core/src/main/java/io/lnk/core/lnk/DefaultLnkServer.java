@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import io.lnk.api.Address;
 import io.lnk.api.ServiceGroup;
@@ -84,7 +84,7 @@ public class DefaultLnkServer implements LnkServer {
                 Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), RemotingThreadFactory.newThreadFactory("LnkServerWorkerProcessor-%d", false)));
         remotingServer.start();
         serverAddress = new Address(RemotingUtils.getLocalAddress(), remotingServer.getServerAddress().getPort());
-        if (CollectionUtils.isNotEmpty(serviceGroups)) {
+        if (CollectionUtils.isEmpty(serviceGroups) == false) {
             this.bind(serviceGroups.toArray(new ServiceGroup[serviceGroups.size()]));
         }
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

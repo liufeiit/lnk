@@ -1,5 +1,7 @@
 package io.lnk.lookup;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.lnk.api.Address;
 import io.lnk.api.URI;
 import io.lnk.api.registry.Registry;
@@ -19,15 +21,12 @@ public class LnkRegistry implements Registry {
 
     public LnkRegistry(final URI uri) {
         super();
-        switch (uri.getProtocol()) {
-            case ZK_PROTOCOL:
-                this.registry = new ZokLookupRegistry(uri);
-                break;
-            case CONSUL_PROTOCOL:
-                this.registry = new ConsulLookupRegistry(uri);
-                break;
-            default:
-                throw new RuntimeException("can't support Registry URI : " + uri);
+        if (StringUtils.equals(uri.getProtocol(), ZK_PROTOCOL)) {
+            this.registry = new ZokLookupRegistry(uri);
+        } else if (StringUtils.equals(uri.getProtocol(), CONSUL_PROTOCOL)) {
+            this.registry = new ConsulLookupRegistry(uri);
+        } else {
+            throw new RuntimeException("can't support Registry URI : " + uri);
         }
     }
 

@@ -57,7 +57,6 @@ public class RemotingServerTest {
         remotingServer.start();
         System.err.println(remotingServer.getServerAddress().getAddress());
         System.err.println(remotingServer.getServerAddress().getHostName());
-        System.err.println(remotingServer.getServerAddress().getHostString());
         System.err.println(remotingServer.getServerAddress().getPort());
         return remotingServer;
     }

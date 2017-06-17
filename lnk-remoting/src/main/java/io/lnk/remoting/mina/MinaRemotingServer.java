@@ -128,7 +128,7 @@ public class MinaRemotingServer extends MinaAbstractRemotingService implements R
             System.out.println(String.format("total read msgs: %d, read msg throughtput: %f (msg/s)", new Object[] { Long.valueOf(statistics.getReadMessages()), Double.valueOf(statistics.getReadMessagesThroughput()) }));  
             for (IoSession session : this.acceptor.getManagedSessions().values()) {  
               if ((session.isConnected()) && (!session.isClosing())) {  
-                session.close(false);  
+                session.closeOnFlush();  
               }  
             }  
             this.acceptor.unbind();
@@ -154,12 +154,12 @@ public class MinaRemotingServer extends MinaAbstractRemotingService implements R
             final String remoteAddress = RemotingUtils.parseSessionRemoteAddr(session);
             log.warn("MinaRemotingServer pipeline: exceptionCaught {}", remoteAddress);
             log.warn("MinaRemotingServer pipeline: exceptionCaught Error.", cause);
-            session.close(false);
+            session.closeOnFlush();
         }
 
         public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
             if (status == IdleStatus.BOTH_IDLE) {
-                session.close(false);
+                session.closeOnFlush();
             }
         }
     }

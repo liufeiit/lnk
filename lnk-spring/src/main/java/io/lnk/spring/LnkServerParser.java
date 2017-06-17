@@ -99,14 +99,10 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
             Tracker tracker = null;
             Element trackerElement = trackElements.get(0);
             String trackType = StringUtils.defaultString(trackerElement.getAttribute("type"));
-            switch (trackType) {
-                case "logger":
-                    tracker = new LogTracker();
-                    break;
-                case "lnk":
-                    break;
-                case "cat":
-                    break;
+            if (StringUtils.equals(trackType, "logger")) {
+                tracker = new LogTracker();
+            } else {
+                tracker = new LogTracker();
             }
             ParametersParser.wiredParameters(trackerElement, tracker);
             builder.addPropertyValue("tracker", tracker);

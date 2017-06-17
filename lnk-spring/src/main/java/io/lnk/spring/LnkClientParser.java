@@ -83,22 +83,16 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         Element loadBalanceElement = loadBalanceElements.get(0);
         String loadBalanceType = StringUtils.defaultString(loadBalanceElement.getAttribute("type"));
         LoadBalance loadBalance = null;
-        switch (loadBalanceType) {
-            case "hash":
-                loadBalance = new ConsistencyHashLoadBalance();
-                break;
-            case "random":
-                loadBalance = new RandomLoadBalance();
-                break;
-            case "roundrobin":
-                loadBalance = new RoundRobinLoadBalance();
-                break;
-            case "local":
-                loadBalance = new PriorityLocalLoadBalance();
-                break;
-            default:
-                loadBalance = new ConsistencyHashLoadBalance();
-                break;
+        if (StringUtils.equals(loadBalanceType, "hash")) {
+            loadBalance = new ConsistencyHashLoadBalance();
+        } else if (StringUtils.equals(loadBalanceType, "random")) {
+            loadBalance = new RandomLoadBalance();
+        } else if (StringUtils.equals(loadBalanceType, "roundrobin")) {
+            loadBalance = new RoundRobinLoadBalance();
+        } else if (StringUtils.equals(loadBalanceType, "local")) {
+            loadBalance = new PriorityLocalLoadBalance();
+        } else {
+            loadBalance = new ConsistencyHashLoadBalance();
         }
         ParametersParser.wiredParameters(loadBalanceElement, loadBalance);
         builder.addPropertyValue("loadBalance", loadBalance);
