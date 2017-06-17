@@ -18,6 +18,6 @@ public interface AuthService {
     @LnkMethod(type = InvokeType.SYNC, timeoutMillis = 3000L)
     AuthResponse auth(AuthRequest request) throws AppBizException;
     
-    @LnkMethod(type = InvokeType.SYNC, timeoutMillis = 3000L)
+    @LnkMethod(type = InvokeType.SYNC, timeoutMillis = 600000L)
     AuthResponse auth_poly(AuthRequest request) throws AppBizException;
 }

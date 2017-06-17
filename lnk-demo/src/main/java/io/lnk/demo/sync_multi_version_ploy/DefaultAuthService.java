@@ -35,7 +35,7 @@ public class DefaultAuthService implements AuthService {
         response.setGateRespCode("TXN.000");
         response.setGateRespMsg("Default V1 : " + polyAuthRequest);
         response.setTxnId(polyAuthRequest.getTxnId());
-        
+        response.setData(polyAuthRequest.getData());
         response.setPrincipalId("101");
         response.setTxnType("00001");
         response.setProductType("QP");

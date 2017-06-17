@@ -1,10 +1,15 @@
 package io.lnk.demo.sync_multi_version_ploy;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.StreamUtils;
 
 import com.alibaba.fastjson.JSON;
 
@@ -37,11 +42,20 @@ public class MainServerRunner extends BasicMainServerRunner {
      * 多态演示
      */
     @Test
-    public void testDefaultAuthServicePoly() throws AppBizException {
-        System.err.println("defaultAuthService serializeStub : " + ((RemoteObject) defaultAuthService).serializeStub());
-        PolyAuthRequest request = buildPolyAuthRequest();
-        PolyAuthResponse response = (PolyAuthResponse) defaultAuthService.auth_poly(request);
-        System.err.println("response : " + JSON.toJSONString(response, true));
+    public void testDefaultAuthServicePoly() throws Exception {
+        try {
+            System.err.println("defaultAuthService serializeStub : " + ((RemoteObject) defaultAuthService).serializeStub());
+            PolyAuthRequest request = buildPolyAuthRequest();
+            FileInputStream in = new FileInputStream("/Users/liufei/软件/Office2010/Office_2010激活工具.exe");
+            request.setData(StreamUtils.copyToByteArray(in));
+            PolyAuthResponse response = (PolyAuthResponse) defaultAuthService.auth_poly(request);
+            FileOutputStream out = new FileOutputStream("/Users/liufei/软件/Office2010/Office_2010激活工具.copy2.exe", false);
+            StreamUtils.copy(new ByteArrayInputStream(response.getData()), out);
+            out.close();
+            System.err.println("response : " + JSON.toJSONString(response, true));
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     /**

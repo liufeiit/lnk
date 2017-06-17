@@ -14,6 +14,15 @@ public class PolyAuthRequest extends AuthRequest {
     private String txnType;
     private String productType;
     private String idType;
+    private byte[] data;
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
 
     public String getPrincipalId() {
         return principalId;

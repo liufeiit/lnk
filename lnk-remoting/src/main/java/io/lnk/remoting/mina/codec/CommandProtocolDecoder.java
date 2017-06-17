@@ -1,7 +1,5 @@
 package io.lnk.remoting.mina.codec;
 
-import java.nio.ByteBuffer;
-
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
@@ -18,37 +16,36 @@ import io.lnk.remoting.protocol.RemotingCommand;
 public class CommandProtocolDecoder extends CumulativeProtocolDecoder {
 
     /**
-     * 不够一个整包的返回false, 多于一个整包的true
+     * true if and only if there's more to decode in the buffer and you want to have doDecode method invoked again.
+     * Return false if remaining data is not enough to decode, then this method will be invoked again when more data is
+     * cumulated.
      */
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
         if (in.remaining() < RemotingCommand.COMMAND_HEADER_LENGTH) {
             return false;
         }
-        in.mark();
-        byte[] head = new byte[RemotingCommand.COMMAND_HEADER_LENGTH];
-        in.get(head);
-        ByteBuffer headBuffer = ByteBuffer.wrap(head);
-        int code = headBuffer.getInt();
-        int version = headBuffer.getInt();
-        int command = headBuffer.getInt();
-        int protocol = headBuffer.getInt();
-        long opaque = headBuffer.getLong();
-        int bodyLength = headBuffer.getInt();
-        if (bodyLength > in.remaining()) {
-            in.reset();
-            return false;
-        }
-        byte[] body = new byte[bodyLength];
-        in.get(body);
-        RemotingCommand remotingCommand = new RemotingCommand();
-        remotingCommand.setCode(code);
-        remotingCommand.setVersion(version);
-        remotingCommand.setCommand(command);
-        remotingCommand.setProtocol(protocol);
-        remotingCommand.setOpaque(opaque);
-        remotingCommand.setBody(body);
-        out.write(remotingCommand);
-        if (in.remaining() > 0) {
+        if (in.remaining() > RemotingCommand.COMMAND_HEADER_LENGTH) {
+            in.mark();
+            int code = in.getInt();
+            int version = in.getInt();
+            int command = in.getInt();
+            int protocol = in.getInt();
+            long opaque = in.getLong();
+            int bodyLength = in.getInt();
+            if (bodyLength > in.remaining()) {
+                in.reset();
+                return false;
+            }
+            byte[] body = new byte[bodyLength];
+            in.get(body);
+            RemotingCommand remotingCommand = new RemotingCommand();
+            remotingCommand.setCode(code);
+            remotingCommand.setVersion(version);
+            remotingCommand.setCommand(command);
+            remotingCommand.setProtocol(protocol);
+            remotingCommand.setOpaque(opaque);
+            remotingCommand.setBody(body);
+            out.write(remotingCommand);
             return true;
         }
         return false;
