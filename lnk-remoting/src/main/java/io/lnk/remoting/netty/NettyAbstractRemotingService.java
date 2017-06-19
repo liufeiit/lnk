@@ -243,7 +243,7 @@ public abstract class NettyAbstractRemotingService {
         }
     }
 
-    protected void __invokeAsync(final Channel channel, final RemotingCommand request, final long timeoutMillis, final RemotingCallback callback) throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException {
+    protected void __invokeAsync(final Channel channel, final RemotingCommand request, final long timeoutMillis, final RemotingCallback callback) throws RemotingSendRequestException {
         try {
             final long opaque = request.getOpaque();
             final ReplyFuture replyFuture = new ReplyFuture(opaque, timeoutMillis);
@@ -271,7 +271,7 @@ public abstract class NettyAbstractRemotingService {
         }
     }
 
-    protected void __invokeOneway(final Channel channel, final RemotingCommand request) throws InterruptedException, RemotingSendRequestException {
+    protected void __invokeOneway(final Channel channel, final RemotingCommand request) throws RemotingSendRequestException {
         try {
             request.setOneway();
             channel.writeAndFlush(request).addListener(new ChannelFutureListener() {

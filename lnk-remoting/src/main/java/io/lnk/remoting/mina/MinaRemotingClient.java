@@ -72,8 +72,7 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
     }
 
     @Override
-    public RemotingCommand invokeSync(String addr, RemotingCommand request, long timeoutMillis)
-            throws InterruptedException, RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException {
+    public RemotingCommand invokeSync(String addr, RemotingCommand request, long timeoutMillis) throws InterruptedException, RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException {
         final IoSession session = this.getAndCreateSession(addr);
         if (session != null && session.isConnected()) {
             try {
@@ -95,8 +94,7 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
     }
 
     @Override
-    public void invokeAsync(String addr, RemotingCommand request, long timeoutMillis, RemotingCallback callback)
-            throws InterruptedException, RemotingConnectException, RemotingTimeoutException, RemotingSendRequestException {
+    public void invokeAsync(String addr, RemotingCommand request, long timeoutMillis, RemotingCallback callback) throws InterruptedException, RemotingConnectException, RemotingSendRequestException {
         final IoSession session = this.getAndCreateSession(addr);
         if (session != null && session.isConnected()) {
             try {

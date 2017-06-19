@@ -133,11 +133,11 @@ public class NettyRemotingServer extends NettyAbstractRemotingService implements
         return this.__invokeSync(channel, request, timeoutMillis);
     }
 
-    public void invokeAsync(Channel channel, RemotingCommand request, long timeoutMillis, RemotingCallback callback) throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException {
+    public void invokeAsync(Channel channel, RemotingCommand request, long timeoutMillis, RemotingCallback callback) throws RemotingSendRequestException {
         this.__invokeAsync(channel, request, timeoutMillis, callback);
     }
 
-    public void invokeOneway(Channel channel, RemotingCommand request) throws InterruptedException, RemotingSendRequestException {
+    public void invokeOneway(Channel channel, RemotingCommand request) throws RemotingSendRequestException {
         this.__invokeOneway(channel, request);
     }
 

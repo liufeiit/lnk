@@ -110,12 +110,11 @@ public class MinaRemotingServer extends MinaAbstractRemotingService implements R
         return this.__invokeSync(session, request, timeoutMillis);
     }
 
-    public void invokeAsync(IoSession session, RemotingCommand request, long timeoutMillis, RemotingCallback callback)
-            throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException {
+    public void invokeAsync(IoSession session, RemotingCommand request, long timeoutMillis, RemotingCallback callback) throws RemotingSendRequestException {
         this.__invokeAsync(session, request, timeoutMillis, callback);
     }
 
-    public void invokeOneway(IoSession session, RemotingCommand request) throws InterruptedException, RemotingSendRequestException {
+    public void invokeOneway(IoSession session, RemotingCommand request) throws RemotingSendRequestException {
         this.__invokeOneway(session, request);
     }
 

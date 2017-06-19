@@ -17,7 +17,7 @@ public interface RemotingClient extends RemotingService {
 
     RemotingCommand invokeSync(final String addr, final RemotingCommand request, final long timeoutMillis) throws InterruptedException, RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException;
 
-    void invokeAsync(final String addr, final RemotingCommand request, final long timeoutMillis, final RemotingCallback callback) throws InterruptedException, RemotingConnectException, RemotingTimeoutException, RemotingSendRequestException;
+    void invokeAsync(final String addr, final RemotingCommand request, final long timeoutMillis, final RemotingCallback callback) throws InterruptedException, RemotingConnectException, RemotingSendRequestException;
 
     void invokeOneway(final String addr, final RemotingCommand request) throws InterruptedException, RemotingConnectException, RemotingSendRequestException;
 

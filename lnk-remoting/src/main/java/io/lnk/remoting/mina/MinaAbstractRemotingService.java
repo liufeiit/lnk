@@ -208,8 +208,7 @@ public abstract class MinaAbstractRemotingService {
         }
     }
 
-    protected RemotingCommand __invokeSync(final IoSession session, final RemotingCommand request, final long timeoutMillis)
-            throws InterruptedException, RemotingSendRequestException, RemotingTimeoutException {
+    protected RemotingCommand __invokeSync(final IoSession session, final RemotingCommand request, final long timeoutMillis) throws InterruptedException, RemotingSendRequestException, RemotingTimeoutException {
         final long opaque = request.getOpaque();
         try {
             final ReplyFuture replyFuture = new ReplyFuture(opaque, timeoutMillis);
@@ -243,8 +242,7 @@ public abstract class MinaAbstractRemotingService {
         }
     }
 
-    protected void __invokeAsync(final IoSession session, final RemotingCommand request, final long timeoutMillis, final RemotingCallback callback)
-            throws InterruptedException, RemotingTimeoutException, RemotingSendRequestException {
+    protected void __invokeAsync(final IoSession session, final RemotingCommand request, final long timeoutMillis, final RemotingCallback callback) throws RemotingSendRequestException {
         try {
             final long opaque = request.getOpaque();
             final ReplyFuture replyFuture = new ReplyFuture(opaque, timeoutMillis);
@@ -272,7 +270,7 @@ public abstract class MinaAbstractRemotingService {
         }
     }
 
-    protected void __invokeOneway(final IoSession session, final RemotingCommand request) throws InterruptedException, RemotingSendRequestException {
+    protected void __invokeOneway(final IoSession session, final RemotingCommand request) throws RemotingSendRequestException {
         try {
             request.setOneway();
             WriteFuture writeFuture = session.write(request);

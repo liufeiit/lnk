@@ -104,7 +104,7 @@ public class NettyRemotingClient extends NettyAbstractRemotingService implements
     }
 
     @Override
-    public void invokeAsync(String addr, RemotingCommand request, long timeoutMillis, RemotingCallback callback) throws InterruptedException, RemotingConnectException, RemotingTimeoutException, RemotingSendRequestException {
+    public void invokeAsync(String addr, RemotingCommand request, long timeoutMillis, RemotingCallback callback) throws InterruptedException, RemotingConnectException, RemotingSendRequestException {
         final Channel channel = this.getAndCreateChannel(addr);
         if (channel != null && channel.isActive()) {
             try {

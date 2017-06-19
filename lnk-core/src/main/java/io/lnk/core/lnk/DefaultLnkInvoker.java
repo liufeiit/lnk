@@ -142,6 +142,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
             throw new LnkException("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + ">, code<" + response.getCode() + "> Error.");
         } catch (RemotingConnectException e) {
             log.error("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
+            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
             throw new LnkException("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
         } catch (RemotingSendRequestException e) {
             log.error("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
@@ -196,13 +197,11 @@ public class DefaultLnkInvoker implements LnkInvoker {
             });
         } catch (RemotingConnectException e) {
             log.error("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
+            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
             throw new LnkException("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
         } catch (RemotingSendRequestException e) {
             log.error("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
             throw new LnkException("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
-        } catch (RemotingTimeoutException e) {
-            log.error("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> timeout " + e.getLocalizedMessage(), e);
-            throw new LnkTimeoutException("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> timeout " + e.getLocalizedMessage(), e);
         } catch (InterruptedException e) {
             log.error("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
             throw new LnkException("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
@@ -233,6 +232,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
             log.info("invoker async correlationId<{}>, serviceId<{}>, used {}(ms) success.", new Object[] {command.getId(), command.commandSignature(), (endMillis - startMillis)});
         } catch (RemotingConnectException e) {
             log.error("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
+            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
             throw new LnkException("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
         } catch (RemotingSendRequestException e) {
             log.error("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
@@ -266,6 +266,9 @@ public class DefaultLnkInvoker implements LnkInvoker {
                     try {
                         remotingClient.invokeOneway(address.toString(), request);
                     } catch (Throwable e) {
+                        if (e instanceof RemotingConnectException) {
+                            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
+                        }
                         log.error("invoker async multicast correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
                     }
                 }
