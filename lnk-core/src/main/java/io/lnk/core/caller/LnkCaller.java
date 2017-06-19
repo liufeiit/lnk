@@ -117,9 +117,9 @@ public class LnkCaller implements InvocationHandler {
         }
         CommandReturnObject retObject = response.getRetObject();
         if (retObject != null) {
-            byte[] retObject2 = retObject.getRetObject();
-            if (ArrayUtils.isNotEmpty(retObject2)) {
-                return protocolFactory.decode(retObject.getType(), retObject2);
+            byte[] retObjectBytes = retObject.getRetObject();
+            if (ArrayUtils.isNotEmpty(retObjectBytes)) {
+                return protocolFactory.decode(retObject.getType(), retObjectBytes);
             }
         }
         return null;
