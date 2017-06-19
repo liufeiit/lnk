@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:inf-cache="http://www.ly.fn.com/schema/inf/inf-cache"
+	xmlns:inf-rpc="http://www.ly.fn.com/schema/inf/inf-rpc"
+    xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+        http://www.ly.fn.com/schema/inf/inf-rpc http://www.ly.fn.com/schema/inf/inf-rpc/inf-rpc-1.0.0.xsd
+		http://www.ly.fn.com/schema/inf/inf-cache http://www.ly.fn.com/schema/inf/inf-cache/inf-cache-1.0.0.xsd">
+
+    <beans:bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <beans:property name="messageConverters">
+            <beans:list>
+                <beans:bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <beans:property name="supportedMediaTypes">
+                        <beans:list>
+                            <beans:value>text/html;charset=UTF-8</beans:value>
+                        </beans:list>
+                    </beans:property>
+                </beans:bean>
+                <beans:bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                    <beans:property name="supportedMediaTypes">
+                        <beans:list>
+                            <beans:value>application/json;charset=UTF-8</beans:value>
+                        </beans:list>
+                    </beans:property>
+                    <beans:property name="objectMapper">
+                        <beans:bean class="com.fasterxml.jackson.databind.ObjectMapper" scope="singleton" />
+                    </beans:property>
+                </beans:bean>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <beans:property name="prefix" value="/WEB-INF/templates/" />
+        <beans:property name="suffix" value=".jsp" />
+    </beans:bean>
+
+    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <beans:property name="maxUploadSize" value="10000000" />
+    </beans:bean>
+
+    <mvc:annotation-driven />
+	<context:annotation-config />
+	<aop:aspectj-autoproxy />
+
+	<context:component-scan base-package="io.lnk.web"/>
+	
+</beans:beans>
