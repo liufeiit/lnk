@@ -19,7 +19,7 @@ public class CommandProtocolDecoder extends CumulativeProtocolDecoder {
 
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
-        if (in.prefixedDataAvailable(RemotingCommand.BODY_LENGTH)) {
+        if (in.prefixedDataAvailable(RemotingCommand.BODY_LENGTH, Integer.MAX_VALUE - (RemotingCommand.COMMAND_LENGTH_LENGTH - RemotingCommand.BODY_LENGTH))) {
             int bodyLength = in.getInt();
             byte[] commandBytes = new byte[bodyLength];
             in.get(commandBytes);

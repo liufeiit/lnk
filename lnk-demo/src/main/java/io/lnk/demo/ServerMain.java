@@ -44,7 +44,7 @@ public class ServerMain {
         System.out.println("LNK Server started.");
     }
 
-    public static void main1(String[] args) {
+    public static void main2(String[] args) {
         ComplexRequest request = new ComplexRequest();
         request.setName("哈哈");
         request.setAge(60);

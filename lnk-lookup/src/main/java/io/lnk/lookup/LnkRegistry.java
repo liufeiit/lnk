@@ -6,7 +6,7 @@ import io.lnk.api.Address;
 import io.lnk.api.URI;
 import io.lnk.api.registry.Registry;
 import io.lnk.lookup.consul.ConsulLookupRegistry;
-import io.lnk.lookup.zk.ZokLookupRegistry;
+import io.lnk.lookup.zookeeper.ZooKeeperRegistry;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -22,7 +22,7 @@ public class LnkRegistry implements Registry {
     public LnkRegistry(final URI uri) {
         super();
         if (StringUtils.equals(uri.getProtocol(), ZK_PROTOCOL)) {
-            this.registry = new ZokLookupRegistry(uri);
+            this.registry = new ZooKeeperRegistry(uri);
         } else if (StringUtils.equals(uri.getProtocol(), CONSUL_PROTOCOL)) {
             this.registry = new ConsulLookupRegistry(uri);
         } else {
