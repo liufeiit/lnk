@@ -12,8 +12,8 @@ import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingServer;
 import io.lnk.remoting.exception.RemotingSendRequestException;
 import io.lnk.remoting.exception.RemotingTimeoutException;
-import io.lnk.remoting.netty.codec.ProtocolDecoder;
-import io.lnk.remoting.netty.codec.ProtocolEncoder;
+import io.lnk.remoting.netty.codec.CommandProtocolDecoder;
+import io.lnk.remoting.netty.codec.CommandProtocolEncoder;
 import io.lnk.remoting.protocol.RemotingCommand;
 import io.lnk.remoting.utils.RemotingThreadFactory;
 import io.lnk.remoting.utils.RemotingUtils;
@@ -80,7 +80,7 @@ public class NettyRemotingServer extends NettyAbstractRemotingService implements
                 .localAddress(new InetSocketAddress(this.configuration.getListenPort()))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(defaultEventExecutorGroup, new ProtocolEncoder(), new ProtocolDecoder(),
+                        ch.pipeline().addLast(defaultEventExecutorGroup, new CommandProtocolEncoder(), new CommandProtocolDecoder(),
                                 new IdleStateHandler(0, 0, configuration.getChannelMaxIdleTimeSeconds()), 
                                 new NettyConnectManageHandler(), new NettyServerHandler());
                     }

@@ -13,7 +13,7 @@
 		<org.springframework.version>4.1.2.RELEASE</org.springframework.version>
 		<hibernate.version>4.1.0.Final</hibernate.version>
 		<netty.version>4.1.11.Final</netty.version>
-		<mina-core.version>2.0.16</mina-core.version>
+		<mina-core.version>2.0.9</mina-core.version>
 		<jackson.version>2.6.0</jackson.version>
 		<zookeeper.version>3.4.9</zookeeper.version>
 		<curator-framework.version>2.6.0</curator-framework.version>

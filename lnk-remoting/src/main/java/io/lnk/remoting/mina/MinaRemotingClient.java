@@ -180,7 +180,7 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
                     if (close) {
                         this.sessions.remove(addrRemote);
                     }
-                    session.closeOnFlush();
+                    session.close(false);
                 } catch (Throwable e) {
                     log.error("close the channel[" + addrRemote + "] Error.", e);
                 } finally {
@@ -220,7 +220,7 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
                     }
                     if (close) {
                         this.sessions.remove(addrRemote);
-                        session.closeOnFlush();
+                        session.close(false);
                     }
                 } catch (Throwable e) {
                     log.error("close the channel Error.", e);
@@ -264,7 +264,7 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
                         if (remotingSessionFuture != null) {
                             try {
                                 IoSession session = remotingSessionFuture.getSession();
-                                session.closeOnFlush();
+                                session.close(false);
                                 session = null;
                                 remotingSessionFuture = null;
                             } catch (Throwable ignore) {

@@ -111,6 +111,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
             log.warn("Signal handle TERM Error.");
         }
         log.info("LnkInvoker '{}' start success.", remotingClient);
+        System.out.println(String.format("LnkInvoker '%s' start success.", remotingClient));
     }
 
     @Override

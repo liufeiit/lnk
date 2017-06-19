@@ -1,7 +1,6 @@
 package io.lnk.remoting.protocol;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,27 +15,21 @@ import io.lnk.api.ProtocolVersion;
  */
 public class RemotingCommand implements Serializable {
     private static final long serialVersionUID = 4491438068883310566L;
-    public static final int HEADER_CODE_LENGTH = 4;
-    public static final int HEADER_VERSION_LENGTH = 4;
-    public static final int HEADER_COMMAND_LENGTH = 4;
-    public static final int HEADER_SERIALIZE_LENGTH = 4;
-    public static final int HEADER_OPAQUE_LENGTH = 8;
-
-    public static final int HEADER_BODY_LENGTH = 4;
-
-    public static final int COMMAND_HEADER_LENGTH = HEADER_CODE_LENGTH + HEADER_VERSION_LENGTH + HEADER_COMMAND_LENGTH + HEADER_SERIALIZE_LENGTH + HEADER_OPAQUE_LENGTH + HEADER_BODY_LENGTH;
-
+    public static final int CODE_LENGTH = 4;
+    public static final int VERSION_LENGTH = 4;
+    public static final int COMMAND_LENGTH = 4;
+    public static final int PROTOCOL_LENGTH = 4;
+    public static final int OPAQUE_LENGTH = 8;
+    public static final int BODY_LENGTH = 4;
+    public static final int COMMAND_LENGTH_LENGTH = CODE_LENGTH + VERSION_LENGTH + COMMAND_LENGTH + PROTOCOL_LENGTH + OPAQUE_LENGTH + BODY_LENGTH;
     private static final int RPC = 0;
     private static final int ONEWAY = 1;
-
     private static final AtomicLong REQ_ID = new AtomicLong(1);
-
     private int code = 0;
     private int version = 0;
     private int command = 0;
     private int protocol = ProtocolVersion.DEFAULT_PROTOCOL;
     private long opaque = REQ_ID.getAndIncrement();
-
     private transient byte[] body;
 
     public static RemotingCommand replyCommand(RemotingCommand request, int code) {
@@ -50,42 +43,6 @@ public class RemotingCommand implements Serializable {
         command.setProtocol(request.getProtocol());
         command.setOpaque(request.getOpaque());
         return command;
-    }
-
-    public static RemotingCommand decode(ByteBuffer byteBuffer) {
-        int code = byteBuffer.getInt();
-        int version = byteBuffer.getInt();
-        int command = byteBuffer.getInt();
-        int protocol = byteBuffer.getInt();
-        long opaque = byteBuffer.getLong();
-        int bodyLength = byteBuffer.getInt();
-        RemotingCommand remotingCommand = new RemotingCommand();
-        remotingCommand.setCode(code);
-        remotingCommand.setVersion(version);
-        remotingCommand.setCommand(command);
-        remotingCommand.setProtocol(protocol);
-        remotingCommand.setOpaque(opaque);
-        byte[] body = new byte[bodyLength];
-        byteBuffer.get(body);
-        remotingCommand.setBody(body);
-        return remotingCommand;
-    }
-
-    public static RemotingCommand decode(byte[] bytes) {
-        return decode(ByteBuffer.wrap(bytes));
-    }
-
-    @JsonIgnore
-    public ByteBuffer encodeHeader() {
-        ByteBuffer headerBytes = ByteBuffer.allocate(COMMAND_HEADER_LENGTH);
-        headerBytes.putInt(code);
-        headerBytes.putInt(version);
-        headerBytes.putInt(command);
-        headerBytes.putInt(protocol);
-        headerBytes.putLong(opaque);
-        headerBytes.putInt(body.length);
-        headerBytes.flip();
-        return headerBytes;
     }
 
     public int getCode() {

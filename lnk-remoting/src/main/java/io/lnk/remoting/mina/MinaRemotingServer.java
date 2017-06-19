@@ -122,15 +122,17 @@ public class MinaRemotingServer extends MinaAbstractRemotingService implements R
     @Override
     public void shutdown() {
         try {
-            IoServiceStatistics statistics = this.acceptor.getStatistics();  
-            statistics.updateThroughput(System.currentTimeMillis());  
-            System.out.println(String.format("total read bytes: %d, read throughtput: %f (b/s)", new Object[] { Long.valueOf(statistics.getReadBytes()), Double.valueOf(statistics.getReadBytesThroughput()) }));  
-            System.out.println(String.format("total read msgs: %d, read msg throughtput: %f (msg/s)", new Object[] { Long.valueOf(statistics.getReadMessages()), Double.valueOf(statistics.getReadMessagesThroughput()) }));  
-            for (IoSession session : this.acceptor.getManagedSessions().values()) {  
-              if ((session.isConnected()) && (!session.isClosing())) {  
-                session.closeOnFlush();  
-              }  
-            }  
+            IoServiceStatistics statistics = this.acceptor.getStatistics();
+            statistics.updateThroughput(System.currentTimeMillis());
+            System.out.println(
+                    String.format("total read bytes: %d, read throughtput: %f (b/s)", new Object[] {Long.valueOf(statistics.getReadBytes()), Double.valueOf(statistics.getReadBytesThroughput())}));
+            System.out.println(String.format("total read msgs: %d, read msg throughtput: %f (msg/s)",
+                    new Object[] {Long.valueOf(statistics.getReadMessages()), Double.valueOf(statistics.getReadMessagesThroughput())}));
+            for (IoSession session : this.acceptor.getManagedSessions().values()) {
+                if ((session.isConnected()) && (!session.isClosing())) {
+                    session.close(false);
+                }
+            }
             this.acceptor.unbind();
             this.acceptor.dispose();
         } catch (Throwable e) {
@@ -154,12 +156,12 @@ public class MinaRemotingServer extends MinaAbstractRemotingService implements R
             final String remoteAddress = RemotingUtils.parseSessionRemoteAddr(session);
             log.warn("MinaRemotingServer pipeline: exceptionCaught {}", remoteAddress);
             log.warn("MinaRemotingServer pipeline: exceptionCaught Error.", cause);
-            session.closeOnFlush();
+            session.close(false);
         }
 
         public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
             if (status == IdleStatus.BOTH_IDLE) {
-                session.closeOnFlush();
+                session.close(false);
             }
         }
     }

@@ -118,6 +118,7 @@ public class DefaultLnkServer implements LnkServer {
             log.warn("Signal handle TERM Error.");
         }
         log.info("LnkServer '{}' start success bind {}", remotingServer, serverAddress);
+        System.out.println(String.format("LnkServer '%s' start success bind %s", remotingServer, serverAddress));
     }
 
     @Override

@@ -49,10 +49,10 @@ public class MainServerRunner extends BasicMainServerRunner {
             FileInputStream in = new FileInputStream("/Users/liufei/软件/Office2010/Office_2010激活工具.exe");
             request.setData(StreamUtils.copyToByteArray(in));
             PolyAuthResponse response = (PolyAuthResponse) defaultAuthService.auth_poly(request);
-            FileOutputStream out = new FileOutputStream("/Users/liufei/软件/Office2010/Office_2010激活工具.copy2.exe", false);
+            FileOutputStream out = new FileOutputStream("/Users/liufei/软件/Office2010/Office_2010激活工具.copy3.exe", false);
             StreamUtils.copy(new ByteArrayInputStream(response.getData()), out);
             out.close();
-            System.err.println("response : " + JSON.toJSONString(response, true));
+//            System.err.println("response : " + JSON.toJSONString(response, true));
         } catch (Throwable e) {
             e.printStackTrace(System.err);
         }
