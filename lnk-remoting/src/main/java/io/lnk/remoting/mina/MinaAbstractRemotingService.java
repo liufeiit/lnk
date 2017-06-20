@@ -37,7 +37,7 @@ import io.lnk.remoting.utils.RemotingUtils;
  * @author 刘飞 E-mail:liufei_it@126.com
  *
  * @version 1.0.0
- * @since 2017年5月19日 下午8:45:47
+ * @since 2017年6月19日 下午9:57:26
  */
 public abstract class MinaAbstractRemotingService {
     protected final Logger log = LoggerFactory.getLogger(getClass().getSimpleName());

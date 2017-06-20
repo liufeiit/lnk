@@ -19,6 +19,7 @@
 		<curator-framework.version>2.6.0</curator-framework.version>
 		<tomcat.jdbc.version>8.0.28</tomcat.jdbc.version>
 		<mysql-connector-java.version>5.1.37</mysql-connector-java.version>
+		<jetty-version>9.4.6.v20170531</jetty-version>
 	</properties>
 	<modules>
 		<module>lnk-api</module>
@@ -102,6 +103,46 @@
 				<groupId>io.netty</groupId>
 				<artifactId>netty-all</artifactId>
 				<version>${netty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.websocket</groupId>
+				<artifactId>javax.websocket-api</artifactId>
+				<version>1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.websocket</groupId>
+				<artifactId>javax.websocket-client-api</artifactId>
+				<version>1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-server-impl</artifactId>
+				<version>${jetty-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-client-impl</artifactId>
+				<version>${jetty-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-client</artifactId>
+				<version>${jetty-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-server</artifactId>
+				<version>${jetty-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-server</artifactId>
+				<version>${jetty-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-servlet</artifactId>
+				<version>${jetty-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
@@ -340,7 +381,7 @@
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
-				<version>1.4</version>
+				<version>1.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>

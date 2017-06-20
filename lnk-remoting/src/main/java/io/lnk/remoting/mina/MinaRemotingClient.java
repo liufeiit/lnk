@@ -35,7 +35,7 @@ import io.lnk.remoting.utils.RemotingUtils;
  * @author 刘飞 E-mail:liufei_it@126.com
  *
  * @version 1.0.0
- * @since 2017年5月19日 下午6:54:59
+ * @since 2017年6月19日 下午9:57:37
  */
 public class MinaRemotingClient extends MinaAbstractRemotingService implements RemotingClient {
     private static final long LOCK_TIMEOUT_MILLIS = 3000;
