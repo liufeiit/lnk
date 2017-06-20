@@ -11,5 +11,5 @@ import io.lnk.api.Address;
 public interface Registry {
     Address[] lookup(String serviceGroup, String serviceId, String version, int protocol);
     void registry(String serviceGroup, String serviceId, String version, int protocol, Address addr);
-    void unregistry(String serviceGroup, String serviceId, String version, int protocol);
+    void unregistry(String serviceGroup, String serviceId, String version, int protocol, Address addr);
 }

@@ -27,21 +27,15 @@ public class ConsulLookupRegistry extends ConsulRegistry implements Registry {
     }
 
     @Override
-    public void unregistry(String serviceGroup, String serviceId, String version, int protocol) {
+    public void unregistry(String serviceGroup, String serviceId, String version, int protocol, Address addr) {
+        super.doUnregister(new URL(serviceGroup, serviceId, version, protocol, addr.getHost(), addr.getPort()));
+        String unregistryAddr = addr.toString();
         for (String key : registryServices.keySet()) {
             Set<String> addrSet = registryServices.get(key);
             if (addrSet != null) {
-                for (String url : addrSet) {
-                    try {
-                        int i = url.indexOf(":");
-                        String host = url.substring(0, i);
-                        int port = Integer.parseInt(url.substring(i + 1));
-                        super.doUnregister(new URL(serviceGroup, serviceId, version, protocol, host, port));
-                    } catch (Exception e) {
-
-                    }
-                }
+                addrSet.remove(unregistryAddr);
             }
+            registryServices.put(key, addrSet);
         }
     }
 

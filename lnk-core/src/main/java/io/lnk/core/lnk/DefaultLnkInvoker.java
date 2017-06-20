@@ -119,6 +119,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
         if (this.tryAcquireFailure(timeoutMillis)) {
             throw new LnkRejectException(command.commandSignature());
         }
+        Address selectedAddr = null;
         try {
             long startMillis = System.currentTimeMillis();
             command.setIp(ip);
@@ -130,8 +131,8 @@ public class DefaultLnkInvoker implements LnkInvoker {
             request.setProtocol(command.getProtocol());
             request.setBody(protocolFactory.encode(command));
             Address[] candidates = registry.lookup(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
-            Address addr = loadBalance.select(command, candidates);
-            RemotingCommand response = remotingClient.invokeSync(addr.toString(), request, timeoutMillis);
+            selectedAddr = loadBalance.select(command, candidates);
+            RemotingCommand response = remotingClient.invokeSync(selectedAddr.toString(), request, timeoutMillis);
             if (commandCode == response.getCode()) {
                 InvokerCommand invokerCommand = protocolFactory.decode(InvokerCommand.class, response.getBody());
                 long endMillis = System.currentTimeMillis();
@@ -142,7 +143,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
             throw new LnkException("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + ">, code<" + response.getCode() + "> Error.");
         } catch (RemotingConnectException e) {
             log.error("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
-            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
+            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol(), selectedAddr);
             throw new LnkException("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
         } catch (RemotingSendRequestException e) {
             log.error("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
@@ -163,6 +164,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
         if (this.tryAcquireFailure(timeoutMillis)) {
             throw new LnkRejectException(command.commandSignature());
         }
+        Address selectedAddr = null;
         try {
             final long startMillis = System.currentTimeMillis();
             command.setIp(ip);
@@ -174,8 +176,8 @@ public class DefaultLnkInvoker implements LnkInvoker {
             request.setProtocol(command.getProtocol());
             request.setBody(protocolFactory.encode(command));
             Address[] candidates = registry.lookup(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
-            Address addr = loadBalance.select(command, candidates);
-            remotingClient.invokeAsync(addr.toString(), request, timeoutMillis, new RemotingCallback() {
+            selectedAddr = loadBalance.select(command, candidates);
+            remotingClient.invokeAsync(selectedAddr.toString(), request, timeoutMillis, new RemotingCallback() {
                 @Override
                 public void onComplete(ReplyFuture replyFuture) {
                     if (replyFuture.getResponse() == null) {
@@ -197,7 +199,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
             });
         } catch (RemotingConnectException e) {
             log.error("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
-            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
+            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol(), selectedAddr);
             throw new LnkException("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
         } catch (RemotingSendRequestException e) {
             log.error("invoker async_callback correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
@@ -215,6 +217,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
         if (this.tryAcquireFailure(3000L)) {
             throw new LnkRejectException(command.commandSignature());
         }
+        Address selectedAddr = null;
         try {
             long startMillis = System.currentTimeMillis();
             command.setIp(ip);
@@ -226,13 +229,13 @@ public class DefaultLnkInvoker implements LnkInvoker {
             request.setProtocol(command.getProtocol());
             request.setBody(protocolFactory.encode(command));
             Address[] candidates = registry.lookup(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
-            Address addr = loadBalance.select(command, candidates);
-            remotingClient.invokeOneway(addr.toString(), request);
+            selectedAddr = loadBalance.select(command, candidates);
+            remotingClient.invokeOneway(selectedAddr.toString(), request);
             long endMillis = System.currentTimeMillis();
             log.info("invoker async correlationId<{}>, serviceId<{}>, used {}(ms) success.", new Object[] {command.getId(), command.commandSignature(), (endMillis - startMillis)});
         } catch (RemotingConnectException e) {
             log.error("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
-            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
+            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol(), selectedAddr);
             throw new LnkException("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
         } catch (RemotingSendRequestException e) {
             log.error("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
@@ -267,7 +270,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
                         remotingClient.invokeOneway(address.toString(), request);
                     } catch (Throwable e) {
                         if (e instanceof RemotingConnectException) {
-                            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
+                            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol(), address);
                         }
                         log.error("invoker async multicast correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
                     }

@@ -41,7 +41,7 @@ public class LnkRegistry implements Registry {
     }
 
     @Override
-    public void unregistry(String serviceGroup, String serviceId, String version, int protocol) {
-        this.registry.unregistry(serviceGroup, serviceId, version, protocol);
+    public void unregistry(String serviceGroup, String serviceId, String version, int protocol, Address addr) {
+        this.registry.unregistry(serviceGroup, serviceId, version, protocol, addr);
     }
 }

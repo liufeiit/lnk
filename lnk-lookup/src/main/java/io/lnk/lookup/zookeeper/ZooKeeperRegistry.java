@@ -81,12 +81,14 @@ public class ZooKeeperRegistry implements Registry {
     }
 
     @Override
-    public void unregistry(String serviceGroup, String serviceId, String version, int protocol) {
+    public void unregistry(String serviceGroup, String serviceId, String version, int protocol, Address addr) {
         String path = null;
         try {
             path = this.createPath(serviceGroup, serviceId, version, protocol);
-            this.provider.delete(path);
             this.provider.unregister(path, NotifyHandler.NULL);
+            String server = addr.toString();
+            path += ("/" + server);
+            this.provider.delete(path);
             log.warn("unregistry path : {} success.", path);
         } catch (Throwable e) {
             log.error("unregistry path : " + path + " Error.", e);

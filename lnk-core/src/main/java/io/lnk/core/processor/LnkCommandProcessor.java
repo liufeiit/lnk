@@ -59,6 +59,7 @@ public class LnkCommandProcessor implements CommandProcessor {
             log.error("invoke correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> Error.", e);
         }
         this.trackInvokeAfter(command);
+        command.setArgs(null);// 减少数据的传输量
         RemotingCommand response = RemotingCommand.replyCommand(request, request.getCode());
         response.setBody(protocolFactory.encode(command));
         long endMillis = System.currentTimeMillis();

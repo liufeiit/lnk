@@ -146,7 +146,7 @@ public class DefaultLnkServer implements LnkServer {
     public final void unregistry(String serviceGroup, String serviceId, String version, int protocol) throws LnkException {
         log.info("unregistry service serviceGroup : {}, serviceId : {}, version : {}, protocol : {}", new Object[] {serviceGroup, serviceId, version, protocol});
         try {
-            this.registry.unregistry(serviceGroup, serviceId, version, protocol);
+            this.registry.unregistry(serviceGroup, serviceId, version, protocol, serverAddress);
         } catch (Throwable e) {
             log.warn("unregistry service serviceGroup : {}, serviceId : {}, version : {}, protocol : {} Error.", new Object[] {serviceGroup, serviceId, version, protocol});
         }
