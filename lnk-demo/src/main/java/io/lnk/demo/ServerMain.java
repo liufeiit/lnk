@@ -3,6 +3,7 @@ package io.lnk.demo;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -75,17 +76,23 @@ public class ServerMain {
         ExecutorService exec = Executors.newCachedThreadPool();
         final Set<Integer> fail = new HashSet<Integer>();
         final Set<Integer> succ = new HashSet<Integer>();
-        int concurrentNum = 900;
+        int concurrentNum = 1000;
         int clientNum = 1000;
         final CountDownLatch countDownLatch = new CountDownLatch(clientNum);
-        final Semaphore semp = new Semaphore(concurrentNum);
+//        final Semaphore semp = new Semaphore(concurrentNum);
+        final CyclicBarrier barrier = new CyclicBarrier(concurrentNum, new Runnable() {
+            public void run() {
+                System.err.println("开始执行啦");
+            }
+        });
         for (int i = 0; i < clientNum; i++) {
             final int num = i;
             Runnable run = new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        semp.acquire();
+//                        semp.acquire();
+                        barrier.await();
                         ComplexRequest request = new ComplexRequest();
                         request.setName("哈哈");
                         request.setAge(60);
@@ -93,11 +100,11 @@ public class ServerMain {
                         final ComplexResponse response = helloService.welcome("刘飞", request);
                         System.err.println(num + " => " + response.getName() + " ext : " + new String(response.getExt()));
                         succ.add(num);
-                        semp.release();
-                    } catch (InterruptedException e) {
+//                        semp.release();
+                    } catch (Throwable e) {
                         e.printStackTrace(System.err);
                         fail.add(num);
-                        semp.release();
+//                        semp.release();
                     }
                     countDownLatch.countDown();
                 }
