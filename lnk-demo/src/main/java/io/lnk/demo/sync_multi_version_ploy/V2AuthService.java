@@ -1,6 +1,6 @@
 package io.lnk.demo.sync_multi_version_ploy;
 
-import io.lnk.api.annotation.LnkServiceVersion;
+import io.lnk.api.annotation.LnkVersion;
 import io.lnk.demo.AppBizException;
 import io.lnk.demo.AuthRequest;
 import io.lnk.demo.AuthResponse;
@@ -11,7 +11,7 @@ import io.lnk.demo.AuthResponse;
  * @version 1.0.0
  * @since 2017年6月3日 下午10:10:43
  */
-@LnkServiceVersion(version = "2.0.0")
+@LnkVersion("2.0.0")
 public class V2AuthService implements AuthService {
 
     @Override

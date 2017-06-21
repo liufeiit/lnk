@@ -82,6 +82,7 @@
 				<xsd:restriction base="xsd:NMTOKEN">
 					<xsd:enumeration value="jar"/>
 					<xsd:enumeration value="war"/>
+					<xsd:enumeration value="agent"/>
 				</xsd:restriction>
 			</xsd:simpleType>
 		</xsd:attribute>

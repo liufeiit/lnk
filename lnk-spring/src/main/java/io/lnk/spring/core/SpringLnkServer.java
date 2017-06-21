@@ -20,7 +20,7 @@ import org.springframework.core.PriorityOrdered;
 
 import io.lnk.api.ServiceVersion;
 import io.lnk.api.annotation.LnkService;
-import io.lnk.api.annotation.LnkServiceVersion;
+import io.lnk.api.annotation.LnkVersion;
 import io.lnk.core.lnk.DefaultLnkServer;
 
 /**
@@ -49,9 +49,9 @@ public class SpringLnkServer extends DefaultLnkServer implements BeanFactoryAwar
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> beanType = bean.getClass();
         String version = ServiceVersion.DEFAULT_VERSION;
-        if (beanType.isAnnotationPresent(LnkServiceVersion.class)) {
-            LnkServiceVersion lnkServiceVersion = beanType.getAnnotation(LnkServiceVersion.class);
-            version = lnkServiceVersion.version();
+        if (beanType.isAnnotationPresent(LnkVersion.class)) {
+            LnkVersion lnkVersion = beanType.getAnnotation(LnkVersion.class);
+            version = lnkVersion.value();
         }
         this.serviceRegistry(beanType, bean, version);
         return bean;
@@ -133,9 +133,9 @@ public class SpringLnkServer extends DefaultLnkServer implements BeanFactoryAwar
         for (Object exportService : this.exportServices) {
             Class<?> beanType = exportService.getClass();
             String version = ServiceVersion.DEFAULT_VERSION;
-            if (beanType.isAnnotationPresent(LnkServiceVersion.class)) {
-                LnkServiceVersion lnkServiceVersion = beanType.getAnnotation(LnkServiceVersion.class);
-                version = lnkServiceVersion.version();
+            if (beanType.isAnnotationPresent(LnkVersion.class)) {
+                LnkVersion lnkVersion = beanType.getAnnotation(LnkVersion.class);
+                version = lnkVersion.value();
             }
             this.serviceUnregistry(beanType, exportService, version);
         }

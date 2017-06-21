@@ -4,7 +4,6 @@ import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.InitializingBean;
 
 import io.lnk.api.RemoteObject;
 import io.lnk.api.RemoteObjectFactory;
@@ -12,7 +11,6 @@ import io.lnk.api.annotation.LnkService;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.core.CommandArgProtocolFactory;
 import io.lnk.core.LnkInvoker;
-import io.lnk.core.protocol.LnkCommandArgProtocolFactory;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -21,17 +19,12 @@ import io.lnk.core.protocol.LnkCommandArgProtocolFactory;
  * @since 2017年5月23日 下午1:33:46
  */
 @SuppressWarnings("unchecked")
-public class LnkRemoteObjectFactory implements RemoteObjectFactory, InitializingBean, BeanClassLoaderAware {
+public class LnkRemoteObjectFactory implements RemoteObjectFactory, BeanClassLoaderAware {
     private LnkInvoker invoker;
     private ConcurrentHashMap<String, Object> remoteObjects = new ConcurrentHashMap<String, Object>();
     private ProtocolFactorySelector protocolFactorySelector;
     private CommandArgProtocolFactory commandArgProtocolFactory;
     private ClassLoader classLoader;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.commandArgProtocolFactory = new LnkCommandArgProtocolFactory(this);
-    }
 
     @Override
     public <T> T getRemoteStub(Class<T> serviceInterface, String serializeStub) {
@@ -102,5 +95,9 @@ public class LnkRemoteObjectFactory implements RemoteObjectFactory, Initializing
 
     public void setProtocolFactorySelector(ProtocolFactorySelector protocolFactorySelector) {
         this.protocolFactorySelector = protocolFactorySelector;
+    }
+    
+    public void setCommandArgProtocolFactory(CommandArgProtocolFactory commandArgProtocolFactory) {
+        this.commandArgProtocolFactory = commandArgProtocolFactory;
     }
 }

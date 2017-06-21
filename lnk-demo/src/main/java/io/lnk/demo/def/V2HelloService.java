@@ -1,6 +1,6 @@
 package io.lnk.demo.def;
 
-import io.lnk.api.annotation.LnkServiceVersion;
+import io.lnk.api.annotation.LnkVersion;
 import io.lnk.demo.BasicService;
 import io.lnk.demo.HelloService;
 import io.lnk.demo.WelcomeCallback;
@@ -11,7 +11,7 @@ import io.lnk.demo.WelcomeCallback;
  * @version 1.0.0
  * @since 2017年5月24日 下午2:58:27
  */
-@LnkServiceVersion(version = "2.0.0")
+@LnkVersion("2.0.0")
 public class V2HelloService extends BasicService implements HelloService {
 
     @Override

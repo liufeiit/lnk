@@ -15,6 +15,7 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.util.ReflectionUtils;
 
 import io.lnk.api.RemoteObjectFactoryAware;
+import io.lnk.api.agent.AgentCallerAware;
 import io.lnk.core.lnk.DefaultLnkInvoker;
 
 /**
@@ -37,6 +38,9 @@ public class SpringLnkInvoker extends DefaultLnkInvoker implements BeanFactoryAw
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof RemoteObjectFactoryAware) {
             ((RemoteObjectFactoryAware) bean).setRemoteObjectFactory(super.remoteObjectFactory);
+        }
+        if (bean instanceof AgentCallerAware) {
+            ((AgentCallerAware) bean).setAgentCaller(super.agentCaller);
         }
         return bean;
     }

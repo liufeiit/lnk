@@ -15,6 +15,6 @@ import io.lnk.api.ServiceVersion;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface LnkServiceVersion {
-    public String version() default ServiceVersion.DEFAULT_VERSION;
+public @interface LnkVersion {
+    public String value() default ServiceVersion.DEFAULT_VERSION;
 }

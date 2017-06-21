@@ -68,7 +68,9 @@ public class DefaultLnkServer implements LnkServer {
             log.info("LnkServer is started.");
             return;
         }
-        this.commandArgProtocolFactory = new LnkCommandArgProtocolFactory(invoker.getRemoteObjectFactory());
+        LnkCommandArgProtocolFactory lnkCommandArgProtocolFactory = new LnkCommandArgProtocolFactory();
+        lnkCommandArgProtocolFactory.setRemoteObjectFactory(invoker.getRemoteObjectFactory());
+        this.commandArgProtocolFactory = lnkCommandArgProtocolFactory;
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
         switch (configuration.getProvider()) {
             case Netty:

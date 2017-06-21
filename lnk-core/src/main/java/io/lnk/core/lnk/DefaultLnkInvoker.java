@@ -12,6 +12,7 @@ import io.lnk.api.Address;
 import io.lnk.api.InvokerCallback;
 import io.lnk.api.InvokerCommand;
 import io.lnk.api.RemoteObjectFactory;
+import io.lnk.api.agent.AgentCaller;
 import io.lnk.api.app.Application;
 import io.lnk.api.cluster.LoadBalance;
 import io.lnk.api.exception.LnkException;
@@ -46,6 +47,7 @@ import sun.misc.SignalHandler;
 public class DefaultLnkInvoker implements LnkInvoker {
     protected static final Logger log = LoggerFactory.getLogger(LnkInvoker.class.getSimpleName());
     protected RemoteObjectFactory remoteObjectFactory;
+    protected AgentCaller agentCaller;
     private String ip;
     private ClientConfiguration configuration;
     private RemotingClient remotingClient;
@@ -349,6 +351,10 @@ public class DefaultLnkInvoker implements LnkInvoker {
     
     public void setRemoteObjectFactory(RemoteObjectFactory remoteObjectFactory) {
         this.remoteObjectFactory = remoteObjectFactory;
+    }
+    
+    public void setAgentCaller(AgentCaller agentCaller) {
+        this.agentCaller = agentCaller;
     }
 
     public RemoteObjectFactory getRemoteObjectFactory() {

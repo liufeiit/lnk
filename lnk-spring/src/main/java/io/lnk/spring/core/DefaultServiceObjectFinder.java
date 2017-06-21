@@ -13,7 +13,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.util.ConcurrentReferenceHashMap;
 
 import io.lnk.api.InvokerCommand;
-import io.lnk.api.annotation.LnkServiceVersion;
+import io.lnk.api.annotation.LnkVersion;
 import io.lnk.api.exception.NotFoundServiceException;
 import io.lnk.core.ServiceObjectFinder;
 
@@ -56,9 +56,9 @@ public class DefaultServiceObjectFinder implements ServiceObjectFinder, BeanFact
             for (Map.Entry<String, ?> e : beans.entrySet()) {
                 Object bean = e.getValue();
                 Class<?> beanType = bean.getClass();
-                if (beanType.isAnnotationPresent(LnkServiceVersion.class)) {
-                    LnkServiceVersion lnkServiceVersion = beanType.getAnnotation(LnkServiceVersion.class);
-                    if (StringUtils.equals(lnkServiceVersion.version(), version)) {
+                if (beanType.isAnnotationPresent(LnkVersion.class)) {
+                    LnkVersion lnkVersion = beanType.getAnnotation(LnkVersion.class);
+                    if (StringUtils.equals(lnkVersion.value(), version)) {
                         serviceBean = bean;
                         break;
                     }

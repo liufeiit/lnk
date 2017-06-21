@@ -19,12 +19,7 @@ import io.lnk.core.CommandArgProtocolFactory;
 public class LnkCommandArgProtocolFactory implements CommandArgProtocolFactory {
     private static final int COMMON_OBJECT_ARG = 1;
     private static final int REMOTE_OBJECT_ARG = 2;
-    private final RemoteObjectFactory remoteObjectFactory;
-
-    public LnkCommandArgProtocolFactory(RemoteObjectFactory remoteObjectFactory) {
-        super();
-        this.remoteObjectFactory = remoteObjectFactory;
-    }
+    private RemoteObjectFactory remoteObjectFactory;
 
     @Override
     public CommandArg[] encode(final Object[] args, final ProtocolFactory protocolFactory) throws Throwable {
@@ -93,5 +88,9 @@ public class LnkCommandArgProtocolFactory implements CommandArgProtocolFactory {
             }
         }
         return invokeArgs;
+    }
+    
+    public void setRemoteObjectFactory(RemoteObjectFactory remoteObjectFactory) {
+        this.remoteObjectFactory = remoteObjectFactory;
     }
 }

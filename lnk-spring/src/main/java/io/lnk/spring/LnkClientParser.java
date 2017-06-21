@@ -24,7 +24,10 @@ import io.lnk.cluster.ConsistencyHashLoadBalance;
 import io.lnk.cluster.PriorityLocalLoadBalance;
 import io.lnk.cluster.RandomLoadBalance;
 import io.lnk.cluster.RoundRobinLoadBalance;
+import io.lnk.core.caller.LnkAgentCaller;
 import io.lnk.core.caller.LnkRemoteObjectFactory;
+import io.lnk.core.protocol.LnkAgentCommandProtocolFactory;
+import io.lnk.core.protocol.LnkCommandArgProtocolFactory;
 import io.lnk.flow.SemaphoreFlowController;
 import io.lnk.lookup.LnkRegistry;
 import io.lnk.protocol.LnkProtocolFactorySelector;
@@ -58,23 +61,46 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
 
     @Override
     protected void doParse(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder builder) {
-        String invokerId = this.resolveId(element);
+        final String invokerId = this.resolveId(element);
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
-        final String protocolFactorySelectorId = "invokerProtocolFactorySelector";
+        
+        final String protocolFactorySelectorId = invokerId + ".ProtocolFactorySelector";
+        final String agentCallerId = invokerId + ".LnkAgentCaller";
+        final String remoteObjectFactoryId = invokerId + ".RemoteObjectFactory";
+        final String commandArgProtocolFactoryId = invokerId + ".CommandArgProtocolFactory";
+        final String agentCommandProtocolFactoryId = invokerId + ".AgentCommandProtocolFactory";
+        
+        BeanRegister.register(commandArgProtocolFactoryId, LnkCommandArgProtocolFactory.class, element, parserContext, new BeanDefinitionCallback() {
+            public void doInRegister(RootBeanDefinition beanDefinition) {
+                beanDefinition.getPropertyValues().addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
+            }
+        });
+        
         BeanRegister.register(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
         builder.addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
-
+        
+        BeanRegister.register(agentCommandProtocolFactoryId, LnkAgentCommandProtocolFactory.class, element, parserContext);
+        BeanRegister.register(agentCallerId, LnkAgentCaller.class, element, parserContext, new BeanDefinitionCallback() {
+            public void doInRegister(RootBeanDefinition beanDefinition) {
+                beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(invokerId));
+                beanDefinition.getPropertyValues().addPropertyValue("agentCommandProtocolFactory", new RuntimeBeanReference(agentCommandProtocolFactoryId));
+                beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
+                beanDefinition.getPropertyValues().addPropertyValue("commandArgProtocolFactory", new RuntimeBeanReference(commandArgProtocolFactoryId));
+            }
+        });
+        builder.addPropertyValue("agentCaller", new RuntimeBeanReference(agentCallerId));
+        
         List<Element> lookupElements = DomUtils.getChildElementsByTagName(element, "lookup");
         Element lookupElement = lookupElements.get(0);
         URI uri = URI.valueOf(lookupElement.getAttribute("address"));
         uri = uri.addParameters(ParametersParser.parse(lookupElement));
         builder.addPropertyValue("registry", new LnkRegistry(uri));
 
-        String remoteObjectFactoryId = "defaultInvokerRemoteObjectFactory";
         BeanRegister.register(remoteObjectFactoryId, LnkRemoteObjectFactory.class, element, parserContext, new BeanDefinitionCallback() {
             public void doInRegister(RootBeanDefinition beanDefinition) {
-                beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(LnkClientParser.this.resolveId(element)));
+                beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(invokerId));
                 beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
+                beanDefinition.getPropertyValues().addPropertyValue("commandArgProtocolFactory", new RuntimeBeanReference(commandArgProtocolFactoryId));
             }
         });
         builder.addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
