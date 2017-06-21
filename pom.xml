@@ -32,6 +32,7 @@
 		<module>lnk-remoting</module>
 		<module>lnk-core</module>
 		<module>lnk-spring</module>
+		<module>lnk-broker</module>
 		<module>lnk-web</module>
 		<module>lnk-quartz</module>
 		<module>lnk-demo</module>
