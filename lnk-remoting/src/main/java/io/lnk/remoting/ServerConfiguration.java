@@ -1,5 +1,8 @@
 package io.lnk.remoting;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
  *
@@ -118,5 +121,10 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return (ServerConfiguration) super.clone();
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
 }

@@ -24,7 +24,7 @@
 					</xsd:complexType>
 				</xsd:element>
 			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:string" use="optional"/>
+			<xsd:attribute name="id" type="xsd:string" use="required"/>
 			<xsd:attribute name="provider" default="netty" use="optional">
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:NMTOKEN">
@@ -33,7 +33,7 @@
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
-			<xsd:attribute name="client" type="xsd:string" use="required"/>
+			<xsd:attribute name="client" type="xsd:string" use="optional"/>
 			<xsd:attribute name="listen-port" type="xsd:int" use="optional"/>
 			<xsd:attribute name="worker-threads" type="xsd:int" use="optional" default="10"/>
 			<xsd:attribute name="selector-threads" type="xsd:int" use="optional" default="5"/>

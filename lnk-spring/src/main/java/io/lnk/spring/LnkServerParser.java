@@ -10,7 +10,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.config.AopNamespaceUtils;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -40,6 +42,17 @@ import io.lnk.track.LogTracker;
  */
 public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
     private static final Logger log = LoggerFactory.getLogger(LnkServerParser.class.getSimpleName());
+    private static final String USE_EPOLL_NATIVE_SELECTOR_ATTR = "use-epoll-native-selector";
+    private static final String DEFAULT_EXECUTOR_THREADS_ATTR = "default-executor-threads";
+    private static final String DEFAULT_WORKER_PROCESSOR_THREADS_ATTR = "default-worker-processor-threads";
+    private static final String POOLED_BYTEBUF_ALLOCATOR_ENABLE_ATTR = "pooled-bytebuf-allocator-enable";
+    private static final String SOCKET_RCVBUF_SIZE_ATTR = "socket-rcvbuf-size";
+    private static final String SOCKET_SNDBUF_SIZE_ATTR = "socket-sndbuf-size";
+    private static final String CHANNEL_MAXIDLETIME_SECONDS_ATTR = "channel-maxidletime-seconds";
+    private static final String SELECTOR_THREADS_ATTR = "selector-threads";
+    private static final String WORKER_THREADS_ATTR = "worker-threads";
+    private static final String PROVIDER_ATTR = "provider";
+    private static final String LISTEN_PORT_ATTR = "listen-port";
 
     @Override
     protected Class<?> getBeanClass(Element element) {
@@ -49,39 +62,53 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
     @Override
     protected void doParse(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder builder) {
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
+        String serverId = this.resolveId(element);
+        String serverPortAllocatorId = "defaultServerPortAllocator";
+        String protocolFactorySelectorId = "serverProtocolFactorySelector";
+        String serviceObjectFinderId = "defaultServiceObjectFinder";
         builder.addPropertyValue("invoker", new RuntimeBeanReference(element.getAttribute("client")));
-        builder.addPropertyValue("serverPortAllocator", new DefaultServerPortAllocator());
-        
-        LnkProtocolFactorySelector protocolFactorySelector = new LnkProtocolFactorySelector();
-        builder.addPropertyValue("protocolFactorySelector", protocolFactorySelector);
-        
+        BeanRegister.register(serverPortAllocatorId, DefaultServerPortAllocator.class, element, parserContext);
+        builder.addPropertyValue("serverPortAllocator", new RuntimeBeanReference(serverPortAllocatorId));
+        BeanRegister.register(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
+        builder.addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
+        BeanRegister.register(serviceObjectFinderId, DefaultServiceObjectFinder.class, element, parserContext);
+        builder.addPropertyValue("serviceObjectFinder", new RuntimeBeanReference(serviceObjectFinderId));
+
+        String listenPort = element.getAttribute(LISTEN_PORT_ATTR);
+        String provider = element.getAttribute(PROVIDER_ATTR);
+        String workerThreads = element.getAttribute(WORKER_THREADS_ATTR);
+        String selectorThreads = element.getAttribute(SELECTOR_THREADS_ATTR);
+        String channelMaxidletimeSeconds = element.getAttribute(CHANNEL_MAXIDLETIME_SECONDS_ATTR);
+        String socketSndbufSize = element.getAttribute(SOCKET_SNDBUF_SIZE_ATTR);
+        String socketRcvbufSize = element.getAttribute(SOCKET_RCVBUF_SIZE_ATTR);
+        String pooledBytebufAllocatorEnable = element.getAttribute(POOLED_BYTEBUF_ALLOCATOR_ENABLE_ATTR);
+        String defaultWorkerProcessorThreads = element.getAttribute(DEFAULT_WORKER_PROCESSOR_THREADS_ATTR);
+        String defaultExecutorThreads = element.getAttribute(DEFAULT_EXECUTOR_THREADS_ATTR);
+        String useEpollNativeSelector = element.getAttribute(USE_EPOLL_NATIVE_SELECTOR_ATTR);
         ServerConfiguration configuration = new ServerConfiguration();
-        int port = NumberUtils.toInt(element.getAttribute("listen-port"), -1);
+        int port = NumberUtils.toInt(listenPort, -1);
         if (port > 0) {
             configuration.setListenPort(port);
         }
-        configuration.setProvider(RemotingProvider.valueOfProvider(element.getAttribute("provider")));
-        configuration.setWorkerThreads(NumberUtils.toInt(element.getAttribute("worker-threads"), 10));
-        configuration.setSelectorThreads(NumberUtils.toInt(element.getAttribute("selector-threads"), 5));
-        configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(element.getAttribute("channel-maxidletime-seconds"), 120));
-        configuration.setSocketSndBufSize(NumberUtils.toInt(element.getAttribute("socket-sndbuf-size"), 65535));
-        configuration.setSocketRcvBufSize(NumberUtils.toInt(element.getAttribute("socket-rcvbuf-size"), 65535));
-        configuration.setPooledByteBufAllocatorEnable(BooleanUtils.toBoolean(StringUtils.defaultString(element.getAttribute("pooled-bytebuf-allocator-enable"), "true")));
-        configuration.setDefaultWorkerProcessorThreads(NumberUtils.toInt(element.getAttribute("default-worker-processor-threads"), 10));
-        configuration.setDefaultExecutorThreads(NumberUtils.toInt(element.getAttribute("default-executor-threads"), 8));
-        configuration.setUseEpollNativeSelector(BooleanUtils.toBoolean(StringUtils.defaultString(element.getAttribute("use-epoll-native-selector"), "false")));
+        configuration.setProvider(RemotingProvider.valueOfProvider(provider));
+        configuration.setWorkerThreads(NumberUtils.toInt(workerThreads, 10));
+        configuration.setSelectorThreads(NumberUtils.toInt(selectorThreads, 5));
+        configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(channelMaxidletimeSeconds, 120));
+        configuration.setSocketSndBufSize(NumberUtils.toInt(socketSndbufSize, 65535));
+        configuration.setSocketRcvBufSize(NumberUtils.toInt(socketRcvbufSize, 65535));
+        configuration.setPooledByteBufAllocatorEnable(BooleanUtils.toBoolean(StringUtils.defaultString(pooledBytebufAllocatorEnable, "true")));
+        configuration.setDefaultWorkerProcessorThreads(NumberUtils.toInt(defaultWorkerProcessorThreads, 10));
+        configuration.setDefaultExecutorThreads(NumberUtils.toInt(defaultExecutorThreads, 8));
+        configuration.setUseEpollNativeSelector(BooleanUtils.toBoolean(StringUtils.defaultString(useEpollNativeSelector, "false")));
+        log.info("LnkServer[{}] configuration : {}", serverId, configuration);
         builder.addPropertyValue("configuration", configuration);
-        
+
         List<Element> registryElements = DomUtils.getChildElementsByTagName(element, "registry");
         Element registryElement = registryElements.get(0);
         URI uri = URI.valueOf(registryElement.getAttribute("address"));
         uri = uri.addParameters(ParametersParser.parse(registryElement));
         builder.addPropertyValue("registry", new LnkRegistry(uri));
-        
-        String serviceObjectFinderId = "defaultServiceObjectFinder";
-        BeanRegister.register(serviceObjectFinderId, DefaultServiceObjectFinder.class, element, parserContext);
-        builder.addPropertyValue("serviceObjectFinder", new RuntimeBeanReference(serviceObjectFinderId));
-        
+
         List<Element> flowControlElements = DomUtils.getChildElementsByTagName(element, "flow-control");
         if (CollectionUtils.isNotEmpty(flowControlElements)) {
             Element flowControlElement = flowControlElements.get(0);
@@ -93,7 +120,7 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
                 builder.addPropertyValue("flowController", flowController);
             }
         }
-        
+
         List<Element> trackElements = DomUtils.getChildElementsByTagName(element, "tracker");
         if (CollectionUtils.isNotEmpty(trackElements)) {
             Tracker tracker = null;
@@ -107,7 +134,7 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
             ParametersParser.wiredParameters(trackerElement, tracker);
             builder.addPropertyValue("tracker", tracker);
         }
-        
+
         List<Element> bindElements = DomUtils.getChildElementsByTagName(element, "bind");
         Element bindElement = bindElements.get(0);
         List<Element> serviceGroupElements = DomUtils.getChildElementsByTagName(bindElement, "service-group");
@@ -115,10 +142,19 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
         for (Element serviceGroupElement : serviceGroupElements) {
             ServiceGroup serviceGroup = new ServiceGroup();
             serviceGroup.setServiceGroup(StringUtils.trimToEmpty(serviceGroupElement.getAttribute("service-group")));
-            serviceGroup.setServiceGroupWorkerProcessorThreads(NumberUtils.toInt(serviceGroupElement.getAttribute("worker-threads"), 10));
+            serviceGroup.setServiceGroupWorkerProcessorThreads(NumberUtils.toInt(serviceGroupElement.getAttribute(WORKER_THREADS_ATTR), 10));
             serviceGroups.add(serviceGroup);
         }
         builder.addPropertyValue("serviceGroups", serviceGroups);
         log.info("parse LnkServer bean success.");
+    }
+
+    @Override
+    protected String resolveId(Element element, AbstractBeanDefinition definition, ParserContext parserContext) throws BeanDefinitionStoreException {
+        return this.resolveId(element);
+    }
+
+    private String resolveId(Element element) {
+        return element.getAttribute(ID_ATTRIBUTE);
     }
 }

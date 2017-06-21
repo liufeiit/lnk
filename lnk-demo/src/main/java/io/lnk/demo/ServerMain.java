@@ -76,8 +76,8 @@ public class ServerMain {
         ExecutorService exec = Executors.newCachedThreadPool();
         final Set<Integer> fail = new HashSet<Integer>();
         final Set<Integer> succ = new HashSet<Integer>();
-        int concurrentNum = 1000;
-        int clientNum = 1000;
+        int concurrentNum = 100;
+        int clientNum = 100;
         final CountDownLatch countDownLatch = new CountDownLatch(clientNum);
 //        final Semaphore semp = new Semaphore(concurrentNum);
         final CyclicBarrier barrier = new CyclicBarrier(concurrentNum, new Runnable() {

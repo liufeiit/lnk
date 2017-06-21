@@ -32,8 +32,8 @@ import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.RemotingProvider;
 import io.lnk.spring.core.SpringLnkInvoker;
 import io.lnk.spring.utils.BeanRegister;
-import io.lnk.spring.utils.ParametersParser;
 import io.lnk.spring.utils.BeanRegister.BeanDefinitionCallback;
+import io.lnk.spring.utils.ParametersParser;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -43,6 +43,13 @@ import io.lnk.spring.utils.BeanRegister.BeanDefinitionCallback;
  */
 public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
     private static final Logger log = LoggerFactory.getLogger(LnkClientParser.class.getSimpleName());
+    private static final String DEFAULT_EXECUTOR_THREADS_ATTR = "default-executor-threads";
+    private static final String SOCKET_RCVBUF_SIZE_ATTR = "socket-rcvbuf-size";
+    private static final String SOCKET_SNDBUF_SIZE_ATTR = "socket-sndbuf-size";
+    private static final String CHANNEL_MAXIDLETIME_SECONDS_ATTR = "channel-maxidletime-seconds";
+    private static final String CONNECT_TIMEOUT_MILLIS_ATTR = "connect-timeout-millis";
+    private static final String WORKER_THREADS_ATTR = "worker-threads";
+    private static final String PROVIDER_ATTR = "provider";
 
     @Override
     protected Class<?> getBeanClass(Element element) {
@@ -51,9 +58,11 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
 
     @Override
     protected void doParse(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder builder) {
+        String invokerId = this.resolveId(element);
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
-        final LnkProtocolFactorySelector protocolFactorySelector = new LnkProtocolFactorySelector();
-        builder.addPropertyValue("protocolFactorySelector", protocolFactorySelector);
+        final String protocolFactorySelectorId = "invokerProtocolFactorySelector";
+        BeanRegister.register(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
+        builder.addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
 
         List<Element> lookupElements = DomUtils.getChildElementsByTagName(element, "lookup");
         Element lookupElement = lookupElements.get(0);
@@ -65,20 +74,29 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         BeanRegister.register(remoteObjectFactoryId, LnkRemoteObjectFactory.class, element, parserContext, new BeanDefinitionCallback() {
             public void doInRegister(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(LnkClientParser.this.resolveId(element)));
-                beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", protocolFactorySelector);
+                beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
             }
         });
         builder.addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
 
+        String provider = element.getAttribute(PROVIDER_ATTR);
+        String workerThreads = element.getAttribute(WORKER_THREADS_ATTR);
+        String connectTimeoutMillis = element.getAttribute(CONNECT_TIMEOUT_MILLIS_ATTR);
+        String channelMaxidletimeSeconds = element.getAttribute(CHANNEL_MAXIDLETIME_SECONDS_ATTR);
+        String socketSndbufSize = element.getAttribute(SOCKET_SNDBUF_SIZE_ATTR);
+        String socketRcvbufSize = element.getAttribute(SOCKET_RCVBUF_SIZE_ATTR);
+        String defaultExecutorThreads = element.getAttribute(DEFAULT_EXECUTOR_THREADS_ATTR);
         ClientConfiguration configuration = new ClientConfiguration();
-        configuration.setProvider(RemotingProvider.valueOfProvider(element.getAttribute("provider")));
-        configuration.setWorkerThreads(NumberUtils.toInt(element.getAttribute("worker-threads"), 4));
-        configuration.setConnectTimeoutMillis(NumberUtils.toInt(element.getAttribute("connect-timeout-millis"), 3000));
-        configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(element.getAttribute("channel-maxidletime-seconds"), 120));
-        configuration.setSocketSndBufSize(NumberUtils.toInt(element.getAttribute("socket-sndbuf-size"), 65535));
-        configuration.setSocketRcvBufSize(NumberUtils.toInt(element.getAttribute("socket-rcvbuf-size"), 65535));
-        configuration.setDefaultExecutorThreads(NumberUtils.toInt(element.getAttribute("default-executor-threads"), 4));
+        configuration.setProvider(RemotingProvider.valueOfProvider(provider));
+        configuration.setWorkerThreads(NumberUtils.toInt(workerThreads, 4));
+        configuration.setConnectTimeoutMillis(NumberUtils.toInt(connectTimeoutMillis, 3000));
+        configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(channelMaxidletimeSeconds, 120));
+        configuration.setSocketSndBufSize(NumberUtils.toInt(socketSndbufSize, 65535));
+        configuration.setSocketRcvBufSize(NumberUtils.toInt(socketRcvbufSize, 65535));
+        configuration.setDefaultExecutorThreads(NumberUtils.toInt(defaultExecutorThreads, 4));
+        log.info("LnkInvoker[{}] configuration : {}", invokerId, configuration);
         builder.addPropertyValue("configuration", configuration);
+
         List<Element> loadBalanceElements = DomUtils.getChildElementsByTagName(element, "load-balance");
         Element loadBalanceElement = loadBalanceElements.get(0);
         String loadBalanceType = StringUtils.defaultString(loadBalanceElement.getAttribute("type"));
