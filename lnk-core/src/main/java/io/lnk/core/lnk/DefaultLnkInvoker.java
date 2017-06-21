@@ -22,6 +22,7 @@ import io.lnk.api.flow.FlowController;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.registry.Registry;
+import io.lnk.api.utils.NetUtils;
 import io.lnk.core.LnkInvoker;
 import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.RemotingCallback;
@@ -33,7 +34,6 @@ import io.lnk.remoting.exception.RemotingTimeoutException;
 import io.lnk.remoting.mina.MinaRemotingClient;
 import io.lnk.remoting.netty.NettyRemotingClient;
 import io.lnk.remoting.protocol.RemotingCommand;
-import io.lnk.remoting.utils.RemotingUtils;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -70,7 +70,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
             log.info("LnkInvoker is started.");
             return;
         }
-        this.ip = RemotingUtils.getLocalAddress();
+        this.ip = NetUtils.getLocalAddress().getHostAddress();
         switch (configuration.getProvider()) {
             case Netty:
                 remotingClient = new NettyRemotingClient(protocolFactorySelector, configuration);

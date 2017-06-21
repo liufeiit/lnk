@@ -1,44 +1,47 @@
-package io.lnk.core.protocol;
+package io.lnk.protocol.broker;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.InitializingBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import io.lnk.api.CommandReturnObject;
 import io.lnk.api.InvokerCommand;
+import io.lnk.api.ProtocolObject;
 import io.lnk.api.RemoteObject;
+import io.lnk.api.RemoteStub;
 import io.lnk.api.broker.BrokerArg;
 import io.lnk.api.broker.BrokerCommand;
 import io.lnk.api.exception.transport.CommandTransportException;
 import io.lnk.api.protocol.ProtocolFactory;
+import io.lnk.api.protocol.broker.BrokerProtocolFactory;
+import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.api.utils.CorrelationIds;
-import io.lnk.core.BrokerCommandProtocolFactory;
-import io.lnk.core.CommandArgProtocolFactory;
-import io.lnk.core.caller.RemoteStub;
+import io.lnk.api.utils.NetUtils;
 import io.lnk.protocol.Serializer;
-import io.lnk.protocol.jackson.JacksonSerializer;
-import io.lnk.remoting.utils.RemotingUtils;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
  *
  * @version 1.0.0
- * @since 2017年6月21日 上午11:50:18
+ * @since 2017年6月21日 下午6:10:32
  */
-public class LnkBrokerCommandProtocolFactory implements BrokerCommandProtocolFactory, InitializingBean, BeanClassLoaderAware {
-    private String ip;
-    private ClassLoader classLoader;
-    private Serializer serializer;
+public abstract class BasicBrokerProtocolFactory implements BrokerProtocolFactory {
+    protected final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    protected String ip;
+    protected ClassLoader classLoader;
+    protected final Serializer serializer;
+    protected final String protocol;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.ip = RemotingUtils.getLocalAddress();
-        this.serializer = new JacksonSerializer();
+    protected BasicBrokerProtocolFactory(String protocol, Serializer serializer) {
+        super();
+        this.protocol = protocol;
+        this.serializer = serializer;
+        this.ip = NetUtils.getLocalAddress().getHostAddress();
+        this.classLoader = this.getClass().getClassLoader();
     }
 
     @Override
-    public InvokerCommand encode(BrokerCommand command, CommandArgProtocolFactory commandArgProtocolFactory, ProtocolFactory protocolFactory) throws Throwable {
+    public InvokerCommand encode(BrokerCommand command, ObjectProtocolFactory objectProtocolFactory, ProtocolFactory protocolFactory) throws Throwable {
         InvokerCommand invokerCommand = new InvokerCommand();
         invokerCommand.setId(StringUtils.defaultIfBlank(command.getId(), CorrelationIds.buildGuid()));
         invokerCommand.setIp(StringUtils.defaultIfBlank(command.getIp(), this.ip));
@@ -72,7 +75,7 @@ public class LnkBrokerCommandProtocolFactory implements BrokerCommandProtocolFac
                 }
                 commandArgs[i] = obj;
             }
-            invokerCommand.setArgs(commandArgProtocolFactory.encode(commandArgs, protocolFactory));
+            invokerCommand.setArgs(objectProtocolFactory.encode(commandArgs, protocolFactory));
         }
         return invokerCommand;
     }
@@ -88,9 +91,9 @@ public class LnkBrokerCommandProtocolFactory implements BrokerCommandProtocolFac
         brokerCommand.setServiceGroup(command.getServiceGroup());
         brokerCommand.setServiceId(command.getServiceId());
         brokerCommand.setMethod(command.getMethod());
-        CommandReturnObject retObject = command.getRetObject();
+        ProtocolObject retObject = command.getRetObject();
         if (retObject != null) {
-            brokerCommand.setRetObject(this.serializer.serializeAsString(protocolFactory.decode(retObject.getType(), retObject.getRetObject())));
+            brokerCommand.setRetObject(this.serializer.serializeAsString(protocolFactory.decode(retObject.getType(), retObject.getData())));
         }
         CommandTransportException exception = command.getException();
         if (exception != null) {
@@ -100,7 +103,7 @@ public class LnkBrokerCommandProtocolFactory implements BrokerCommandProtocolFac
     }
 
     @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+    public String getProtocol() {
+        return this.protocol;
     }
 }

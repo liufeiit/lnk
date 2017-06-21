@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.Protocols;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -17,6 +17,6 @@ import io.lnk.api.ProtocolVersion;
 @Target({ ElementType.TYPE })
 public @interface LnkService {
     public String group();
-    public int protocol() default ProtocolVersion.DEFAULT_PROTOCOL;
+    public int protocol() default Protocols.DEFAULT_PROTOCOL;
     Class<?> serviceInterface() default void.class;
 }

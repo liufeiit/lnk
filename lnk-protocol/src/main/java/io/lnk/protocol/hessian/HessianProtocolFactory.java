@@ -1,6 +1,6 @@
 package io.lnk.protocol.hessian;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.Protocols;
 import io.lnk.protocol.BasicProtocolFactory;
 import io.lnk.protocol.Serializer;
 
@@ -14,7 +14,7 @@ public class HessianProtocolFactory extends BasicProtocolFactory {
     private final Serializer serializer;
 
     public HessianProtocolFactory() {
-        super(ProtocolVersion.HESSIAN_PROTOCOL);
+        super(Protocols.HESSIAN_PROTOCOL);
         this.serializer = new HessianSerializer();
     }
 

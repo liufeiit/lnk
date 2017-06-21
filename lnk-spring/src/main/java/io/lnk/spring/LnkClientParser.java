@@ -26,11 +26,11 @@ import io.lnk.cluster.RandomLoadBalance;
 import io.lnk.cluster.RoundRobinLoadBalance;
 import io.lnk.core.caller.LnkBrokerCaller;
 import io.lnk.core.caller.LnkRemoteObjectFactory;
-import io.lnk.core.protocol.LnkBrokerCommandProtocolFactory;
-import io.lnk.core.protocol.LnkCommandArgProtocolFactory;
 import io.lnk.flow.SemaphoreFlowController;
 import io.lnk.lookup.LnkRegistry;
 import io.lnk.protocol.LnkProtocolFactorySelector;
+import io.lnk.protocol.broker.LnkBrokerProtocolFactorySelector;
+import io.lnk.protocol.object.LnkObjectProtocolFactory;
 import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.RemotingProvider;
 import io.lnk.spring.core.SpringLnkInvoker;
@@ -67,10 +67,10 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         final String protocolFactorySelectorId = invokerId + ".ProtocolFactorySelector";
         final String brokerCallerId = invokerId + ".BrokerCaller";
         final String remoteObjectFactoryId = invokerId + ".RemoteObjectFactory";
-        final String commandArgProtocolFactoryId = invokerId + ".CommandArgProtocolFactory";
-        final String brokerCommandProtocolFactoryId = invokerId + ".BrokerCommandProtocolFactory";
+        final String objectProtocolFactoryId = invokerId + ".ObjectProtocolFactory";
+        final String brokerProtocolFactorySelectorId = invokerId + ".BrokerProtocolFactorySelector";
         
-        BeanRegister.register(commandArgProtocolFactoryId, LnkCommandArgProtocolFactory.class, element, parserContext, new BeanDefinitionCallback() {
+        BeanRegister.register(objectProtocolFactoryId, LnkObjectProtocolFactory.class, element, parserContext, new BeanDefinitionCallback() {
             public void doInRegister(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
             }
@@ -79,13 +79,14 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         BeanRegister.register(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
         builder.addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
         
-        BeanRegister.register(brokerCommandProtocolFactoryId, LnkBrokerCommandProtocolFactory.class, element, parserContext);
+        BeanRegister.register(brokerProtocolFactorySelectorId, LnkBrokerProtocolFactorySelector.class, element, parserContext);
+        
         BeanRegister.register(brokerCallerId, LnkBrokerCaller.class, element, parserContext, new BeanDefinitionCallback() {
             public void doInRegister(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(invokerId));
-                beanDefinition.getPropertyValues().addPropertyValue("brokerCommandProtocolFactory", new RuntimeBeanReference(brokerCommandProtocolFactoryId));
+                beanDefinition.getPropertyValues().addPropertyValue("brokerProtocolFactorySelector", new RuntimeBeanReference(brokerProtocolFactorySelectorId));
                 beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
-                beanDefinition.getPropertyValues().addPropertyValue("commandArgProtocolFactory", new RuntimeBeanReference(commandArgProtocolFactoryId));
+                beanDefinition.getPropertyValues().addPropertyValue("objectProtocolFactory", new RuntimeBeanReference(objectProtocolFactoryId));
             }
         });
         builder.addPropertyValue("brokerCaller", new RuntimeBeanReference(brokerCallerId));
@@ -100,7 +101,7 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
             public void doInRegister(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(invokerId));
                 beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
-                beanDefinition.getPropertyValues().addPropertyValue("commandArgProtocolFactory", new RuntimeBeanReference(commandArgProtocolFactoryId));
+                beanDefinition.getPropertyValues().addPropertyValue("objectProtocolFactory", new RuntimeBeanReference(objectProtocolFactoryId));
             }
         });
         builder.addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));

@@ -128,7 +128,7 @@ public class NetUtils {
         InetAddress address = getLocalAddress();
         return address == null ? LOCALHOST : address.getHostAddress();
     }
-
+    
     private static volatile InetAddress LOCAL_ADDRESS = null;
 
     /**
@@ -189,7 +189,7 @@ public class NetUtils {
         log.error("Could not get local host ip address, will use 127.0.0.1 instead.");
         return localAddress;
     }
-
+    
     private static final Map<String, String> hostNameCache = new HashMap<String, String>(1000);
 
     public static String getHostName(String address) {
@@ -214,10 +214,6 @@ public class NetUtils {
         return address;
     }
 
-    /**
-     * @param hostName
-     * @return ip address or hostName if UnknownHostException
-     */
     public static String getIpByHost(String hostName) {
         try {
             return InetAddress.getByName(hostName).getHostAddress();

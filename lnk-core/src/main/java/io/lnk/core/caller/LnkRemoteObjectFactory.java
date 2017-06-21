@@ -7,9 +7,10 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 
 import io.lnk.api.RemoteObject;
 import io.lnk.api.RemoteObjectFactory;
+import io.lnk.api.RemoteStub;
 import io.lnk.api.annotation.LnkService;
 import io.lnk.api.protocol.ProtocolFactorySelector;
-import io.lnk.core.CommandArgProtocolFactory;
+import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.core.LnkInvoker;
 
 /**
@@ -23,7 +24,7 @@ public class LnkRemoteObjectFactory implements RemoteObjectFactory, BeanClassLoa
     private LnkInvoker invoker;
     private ConcurrentHashMap<String, Object> remoteObjects = new ConcurrentHashMap<String, Object>();
     private ProtocolFactorySelector protocolFactorySelector;
-    private CommandArgProtocolFactory commandArgProtocolFactory;
+    private ObjectProtocolFactory objectProtocolFactory;
     private ClassLoader classLoader;
 
     @Override
@@ -34,7 +35,7 @@ public class LnkRemoteObjectFactory implements RemoteObjectFactory, BeanClassLoa
         }
         LnkCaller caller = new LnkCaller(invoker, serializeStub, protocolFactorySelector);
         caller.setRemoteObjectFactory(this);
-        caller.setCommandArgProtocolFactory(this.commandArgProtocolFactory);
+        caller.setObjectProtocolFactory(this.objectProtocolFactory);
         remoteObject = Proxy.newProxyInstance(serviceInterface.getClassLoader(), new Class[] {serviceInterface, RemoteObject.class, RemoteObjectFactory.class}, caller);
         remoteObjects.put(serializeStub, remoteObject);
         return serviceInterface.cast(remoteObject);
@@ -58,7 +59,7 @@ public class LnkRemoteObjectFactory implements RemoteObjectFactory, BeanClassLoa
         }
         LnkCaller caller = new LnkCaller(invoker, remoteStub, protocolFactorySelector);
         caller.setRemoteObjectFactory(this);
-        caller.setCommandArgProtocolFactory(commandArgProtocolFactory);
+        caller.setObjectProtocolFactory(objectProtocolFactory);
         remoteObject = Proxy.newProxyInstance(this.classLoader, new Class[] {serviceInterface, RemoteObject.class, RemoteObjectFactory.class}, caller);
         remoteObjects.put(serializeStub, remoteObject);
         return serviceInterface.cast(remoteObject);
@@ -75,7 +76,7 @@ public class LnkRemoteObjectFactory implements RemoteObjectFactory, BeanClassLoa
             Class<T> serviceInterface = (Class<T>) this.classLoader.loadClass(remoteStub.getServiceId());
             LnkCaller caller = new LnkCaller(invoker, remoteStub, protocolFactorySelector);
             caller.setRemoteObjectFactory(this);
-            caller.setCommandArgProtocolFactory(commandArgProtocolFactory);
+            caller.setObjectProtocolFactory(objectProtocolFactory);
             remoteObject = Proxy.newProxyInstance(this.classLoader, new Class[] {serviceInterface, RemoteObject.class, RemoteObjectFactory.class}, caller);
             remoteObjects.put(serializeStub, remoteObject);
             return serviceInterface.cast(remoteObject);
@@ -97,7 +98,7 @@ public class LnkRemoteObjectFactory implements RemoteObjectFactory, BeanClassLoa
         this.protocolFactorySelector = protocolFactorySelector;
     }
     
-    public void setCommandArgProtocolFactory(CommandArgProtocolFactory commandArgProtocolFactory) {
-        this.commandArgProtocolFactory = commandArgProtocolFactory;
+    public void setObjectProtocolFactory(ObjectProtocolFactory objectProtocolFactory) {
+        this.objectProtocolFactory = objectProtocolFactory;
     }
 }

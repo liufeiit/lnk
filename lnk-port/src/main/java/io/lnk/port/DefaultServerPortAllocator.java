@@ -9,7 +9,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import io.lnk.api.app.Application;
 import io.lnk.api.port.ServerPortAllocator;
 import io.lnk.api.utils.NetUtils;
-import io.lnk.remoting.utils.RemotingUtils;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -58,7 +57,7 @@ public class DefaultServerPortAllocator implements ServerPortAllocator {
 
     public DefaultServerPortAllocator() {
         super();
-        ip = RemotingUtils.getLocalAddress();
+        ip = NetUtils.getLocalAddress().getHostAddress();
         env = new Properties(System.getProperties());
         Map<String, String> senv = System.getenv();
         for (Map.Entry<String, String> e : senv.entrySet()) {

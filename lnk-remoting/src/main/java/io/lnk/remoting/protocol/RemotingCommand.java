@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.Protocols;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -28,7 +28,7 @@ public class RemotingCommand implements Serializable {
     private int code = 0;
     private int version = 0;
     private int command = 0;
-    private int protocol = ProtocolVersion.DEFAULT_PROTOCOL;
+    private int protocol = Protocols.DEFAULT_PROTOCOL;
     private long opaque = REQ_ID.getAndIncrement();
     private transient byte[] body;
 

@@ -1,6 +1,6 @@
 package io.lnk.protocol.java;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.Protocols;
 import io.lnk.protocol.BasicProtocolFactory;
 import io.lnk.protocol.Serializer;
 
@@ -14,7 +14,7 @@ public class JavaNativeProtocolFactory extends BasicProtocolFactory {
     private final Serializer serializer;
 
     public JavaNativeProtocolFactory() {
-        super(ProtocolVersion.JAVA_NATIVE_PROTOCOL);
+        super(Protocols.JAVA_NATIVE_PROTOCOL);
         this.serializer = new JavaNativeSerializer();
     }
 

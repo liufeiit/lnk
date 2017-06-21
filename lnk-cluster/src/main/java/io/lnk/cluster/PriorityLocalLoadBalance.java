@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.lnk.api.Address;
 import io.lnk.api.InvokerCommand;
 import io.lnk.api.cluster.LoadBalance;
-import io.lnk.remoting.utils.RemotingUtils;
+import io.lnk.api.utils.NetUtils;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -18,7 +18,7 @@ public class PriorityLocalLoadBalance implements LoadBalance {
     private final LoadBalance loadBalance;
     
     public PriorityLocalLoadBalance() {
-        this.ip = RemotingUtils.getLocalAddress();
+        this.ip = NetUtils.getLocalAddress().getHostAddress();
         this.loadBalance = new RandomLoadBalance();
     }
 

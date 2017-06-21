@@ -14,7 +14,8 @@ import org.springframework.util.StreamUtils;
 
 import com.alibaba.fastjson.JSON;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.BrokerProtocols;
+import io.lnk.api.Protocols;
 import io.lnk.api.RemoteObject;
 import io.lnk.api.annotation.Lnkwired;
 import io.lnk.api.app.Application;
@@ -60,7 +61,8 @@ public class MainServerRunner extends BasicMainServerRunner {
             application.setType("broker");
             brokerCommand.setApplication(application);
             brokerCommand.setVersion("2.0.0");
-            brokerCommand.setProtocol(ProtocolVersion.DEFAULT_PROTOCOL);
+            brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
+            brokerCommand.setBrokerProtocol(BrokerProtocols.JACKSON);
             brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
             brokerCommand.setServiceId(AuthService.class.getName());
             brokerCommand.setMethod("auth");

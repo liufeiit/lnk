@@ -7,15 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
-import io.lnk.api.CommandReturnObject;
 import io.lnk.api.InvokerCommand;
+import io.lnk.api.ProtocolObject;
 import io.lnk.api.app.Application;
 import io.lnk.api.exception.transport.CommandTransportException;
 import io.lnk.api.flow.FlowController;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
+import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.api.track.Tracker;
-import io.lnk.core.CommandArgProtocolFactory;
 import io.lnk.core.ServiceObjectFinder;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.protocol.RemotingCommand;
@@ -33,7 +33,7 @@ public class LnkCommandProcessor implements CommandProcessor {
     private FlowController flowController;
     private Application application;
     private Tracker tracker;
-    private CommandArgProtocolFactory commandArgProtocolFactory;
+    private ObjectProtocolFactory objectProtocolFactory;
 
     @Override
     public RemotingCommand processCommand(RemotingCommand request) throws Throwable {
@@ -44,12 +44,12 @@ public class LnkCommandProcessor implements CommandProcessor {
         Object serviceObject = serviceObjectFinder.getServiceObject(command);
         try {
             Method serviceMethod = ReflectionUtils.findMethod(serviceObject.getClass(), command.getMethod(), command.getSignature());
-            Object retObject = serviceMethod.invoke(serviceObject, this.commandArgProtocolFactory.decode(command.getArgs(), protocolFactory));
+            Object retObject = serviceMethod.invoke(serviceObject, this.objectProtocolFactory.decode(command.getArgs(), protocolFactory));
             if (retObject != null) {
-                CommandReturnObject commandReturnObject = new CommandReturnObject();
-                commandReturnObject.setType(retObject.getClass());
-                commandReturnObject.setRetObject(protocolFactory.encode(retObject));
-                command.setRetObject(commandReturnObject);
+                ProtocolObject protocolObject = new ProtocolObject();
+                protocolObject.setType(retObject.getClass());
+                protocolObject.setData(protocolFactory.encode(retObject));
+                command.setRetObject(protocolObject);
             }
         } catch (Throwable e) {
             if (e instanceof InvocationTargetException) {
@@ -125,7 +125,7 @@ public class LnkCommandProcessor implements CommandProcessor {
         this.tracker = tracker;
     }
     
-    public void setCommandArgProtocolFactory(CommandArgProtocolFactory commandArgProtocolFactory) {
-        this.commandArgProtocolFactory = commandArgProtocolFactory;
+    public void setObjectProtocolFactory(ObjectProtocolFactory objectProtocolFactory) {
+        this.objectProtocolFactory = objectProtocolFactory;
     }
 }

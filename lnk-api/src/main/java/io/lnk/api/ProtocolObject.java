@@ -8,10 +8,10 @@ import java.io.Serializable;
  * @version 1.0.0
  * @since 2017年6月1日 下午1:30:11
  */
-public class CommandArg implements Serializable {
+public class ProtocolObject implements Serializable {
     private static final long serialVersionUID = 7960470799984378957L;
     private Class<?> type;
-    private byte[] arg;
+    private byte[] data;
 
     public Class<?> getType() {
         return type;
@@ -21,16 +21,16 @@ public class CommandArg implements Serializable {
         this.type = type;
     }
 
-    public byte[] getArg() {
-        return arg;
+    public byte[] getData() {
+        return data;
     }
 
-    public void setArg(byte[] arg) {
-        this.arg = arg;
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     @Override
     public String toString() {
-        return "CommandArg[" + type + "]";
+        return "ProtocolObject [type=" + type + "]";
     }
 }

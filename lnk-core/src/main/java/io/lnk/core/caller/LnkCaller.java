@@ -7,17 +7,18 @@ import java.lang.reflect.Method;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.ReflectionUtils;
 
-import io.lnk.api.CommandReturnObject;
 import io.lnk.api.InvokeType;
 import io.lnk.api.InvokerCommand;
+import io.lnk.api.ProtocolObject;
 import io.lnk.api.RemoteObject;
 import io.lnk.api.RemoteObjectFactory;
+import io.lnk.api.RemoteStub;
 import io.lnk.api.annotation.LnkMethod;
 import io.lnk.api.exception.transport.CommandTransportException;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
+import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.api.utils.CorrelationIds;
-import io.lnk.core.CommandArgProtocolFactory;
 import io.lnk.core.LnkInvoker;
 
 /**
@@ -32,7 +33,7 @@ public class LnkCaller implements InvocationHandler {
     private final ProtocolFactorySelector protocolFactorySelector;
     private RemoteObjectFactory remoteObjectFactory;
     private ProtocolFactory protocolFactory;
-    private CommandArgProtocolFactory commandArgProtocolFactory;
+    private ObjectProtocolFactory objectProtocolFactory;
 
     public LnkCaller(LnkInvoker invoker, String serializeStub, ProtocolFactorySelector protocolFactorySelector) {
         this(invoker, new RemoteStub(serializeStub), protocolFactorySelector);
@@ -82,7 +83,7 @@ public class LnkCaller implements InvocationHandler {
         command.setServiceId(this.remoteObject.getServiceId());
         command.setMethod(method.getName());
         command.setSignature(method.getParameterTypes());
-        command.setArgs(this.commandArgProtocolFactory.encode(args, protocolFactory));
+        command.setArgs(this.objectProtocolFactory.encode(args, protocolFactory));
         switch (type) {
             case SYNC: {
                 return this.sync(command, timeoutMillis);
@@ -115,9 +116,9 @@ public class LnkCaller implements InvocationHandler {
             e.setStackTrace(exception.buildStackTraceElement());
             throw e;
         }
-        CommandReturnObject retObject = response.getRetObject();
+        ProtocolObject retObject = response.getRetObject();
         if (retObject != null) {
-            byte[] retObjectBytes = retObject.getRetObject();
+            byte[] retObjectBytes = retObject.getData();
             if (ArrayUtils.isNotEmpty(retObjectBytes)) {
                 return protocolFactory.decode(retObject.getType(), retObjectBytes);
             }
@@ -133,7 +134,7 @@ public class LnkCaller implements InvocationHandler {
         this.remoteObjectFactory = remoteObjectFactory;
     }
 
-    public void setCommandArgProtocolFactory(CommandArgProtocolFactory commandArgProtocolFactory) {
-        this.commandArgProtocolFactory = commandArgProtocolFactory;
+    public void setObjectProtocolFactory(ObjectProtocolFactory objectProtocolFactory) {
+        this.objectProtocolFactory = objectProtocolFactory;
     }
 }

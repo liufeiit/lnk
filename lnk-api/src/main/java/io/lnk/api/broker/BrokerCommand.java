@@ -2,7 +2,8 @@ package io.lnk.api.broker;
 
 import java.io.Serializable;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.BrokerProtocols;
+import io.lnk.api.Protocols;
 import io.lnk.api.ServiceVersion;
 import io.lnk.api.app.Application;
 
@@ -20,7 +21,8 @@ public class BrokerCommand implements Serializable {
     private String ip;// 可选
     private Application application;
     private String version = ServiceVersion.DEFAULT_VERSION;
-    private int protocol = ProtocolVersion.DEFAULT_PROTOCOL;
+    private int protocol = Protocols.DEFAULT_PROTOCOL;
+    private String brokerProtocol = BrokerProtocols.JACKSON;
     private String serviceGroup;
     private String serviceId;
     private String method;
@@ -68,6 +70,14 @@ public class BrokerCommand implements Serializable {
 
     public void setProtocol(int protocol) {
         this.protocol = protocol;
+    }
+
+    public String getBrokerProtocol() {
+        return brokerProtocol;
+    }
+
+    public void setBrokerProtocol(String brokerProtocol) {
+        this.brokerProtocol = brokerProtocol;
     }
 
     public String getServiceGroup() {

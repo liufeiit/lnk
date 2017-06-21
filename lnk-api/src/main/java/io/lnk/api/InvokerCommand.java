@@ -17,13 +17,13 @@ public class InvokerCommand implements Serializable {
     private String ip;
     private Application application;
     private String version = ServiceVersion.DEFAULT_VERSION;
-    private int protocol = ProtocolVersion.DEFAULT_PROTOCOL;
+    private int protocol = Protocols.DEFAULT_PROTOCOL;
     private String serviceGroup;
     private String serviceId;
     private String method;
     private Class<?>[] signature;
-    private CommandArg[] args;
-    private CommandReturnObject retObject;
+    private ProtocolObject[] args;
+    private ProtocolObject retObject;
     private CommandTransportException exception;
 
     public String commandSignature() {
@@ -100,19 +100,19 @@ public class InvokerCommand implements Serializable {
         this.signature = signature;
     }
 
-    public CommandArg[] getArgs() {
+    public ProtocolObject[] getArgs() {
         return args;
     }
 
-    public void setArgs(CommandArg[] args) {
+    public void setArgs(ProtocolObject[] args) {
         this.args = args;
     }
 
-    public CommandReturnObject getRetObject() {
+    public ProtocolObject getRetObject() {
         return retObject;
     }
 
-    public void setRetObject(CommandReturnObject retObject) {
+    public void setRetObject(ProtocolObject retObject) {
         this.retObject = retObject;
     }
 

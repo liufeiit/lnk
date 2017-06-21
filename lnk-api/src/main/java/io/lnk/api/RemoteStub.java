@@ -1,4 +1,4 @@
-package io.lnk.core.caller;
+package io.lnk.api;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.Protocols;
 import io.lnk.api.RemoteObject;
 import io.lnk.api.ServiceVersion;
 
@@ -21,7 +21,7 @@ public class RemoteStub implements RemoteObject {
     private String serviceId;
     private String serviceGroup;
     private String version = ServiceVersion.DEFAULT_VERSION;
-    private int protocol = ProtocolVersion.DEFAULT_PROTOCOL;
+    private int protocol = Protocols.DEFAULT_PROTOCOL;
 
     public RemoteStub() {
         super();
@@ -49,7 +49,7 @@ public class RemoteStub implements RemoteObject {
             this.serviceId = StringUtils.defaultString(matcher.group(1));
             this.serviceGroup = StringUtils.defaultString(matcher.group(2));
             this.version = StringUtils.defaultString(matcher.group(3), ServiceVersion.DEFAULT_VERSION);
-            this.protocol = NumberUtils.toInt(matcher.group(4), ProtocolVersion.DEFAULT_PROTOCOL);
+            this.protocol = NumberUtils.toInt(matcher.group(4), Protocols.DEFAULT_PROTOCOL);
             return;
         }
         throw new RuntimeException("Illegal serialize data for RemoteObject.");

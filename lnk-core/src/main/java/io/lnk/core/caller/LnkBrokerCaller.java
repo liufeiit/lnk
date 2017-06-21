@@ -11,8 +11,9 @@ import io.lnk.api.exception.LnkException;
 import io.lnk.api.exception.LnkTimeoutException;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
-import io.lnk.core.BrokerCommandProtocolFactory;
-import io.lnk.core.CommandArgProtocolFactory;
+import io.lnk.api.protocol.broker.BrokerProtocolFactory;
+import io.lnk.api.protocol.broker.BrokerProtocolFactorySelector;
+import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.core.LnkInvoker;
 
 /**
@@ -24,9 +25,9 @@ import io.lnk.core.LnkInvoker;
 public class LnkBrokerCaller implements BrokerCaller {
     private static final Logger log = LoggerFactory.getLogger(LnkBrokerCaller.class.getSimpleName());
     private LnkInvoker invoker;
-    private BrokerCommandProtocolFactory brokerCommandProtocolFactory;
+    private BrokerProtocolFactorySelector brokerProtocolFactorySelector;
     private ProtocolFactorySelector protocolFactorySelector;
-    private CommandArgProtocolFactory commandArgProtocolFactory;
+    private ObjectProtocolFactory objectProtocolFactory;
 
     @Override
     public BrokerCommand sync(BrokerCommand command) throws LnkException, LnkTimeoutException {
@@ -36,8 +37,9 @@ public class LnkBrokerCaller implements BrokerCaller {
             if (timeoutMillis <= 0L) {
                 timeoutMillis = LnkMethod.DEFAULT_TIMEOUT_MILLIS;
             }
-            InvokerCommand invokerCommand = this.invoker.sync(this.brokerCommandProtocolFactory.encode(command, commandArgProtocolFactory, protocolFactory), timeoutMillis);
-            return this.brokerCommandProtocolFactory.decode(invokerCommand, protocolFactory);
+            BrokerProtocolFactory brokerProtocolFactory = this.brokerProtocolFactorySelector.select(command.getBrokerProtocol());
+            InvokerCommand invokerCommand = this.invoker.sync(brokerProtocolFactory.encode(command, objectProtocolFactory, protocolFactory), timeoutMillis);
+            return brokerProtocolFactory.decode(invokerCommand, protocolFactory);
         } catch (Throwable e) {
             log.error("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
             if (e instanceof LnkException) {
@@ -54,7 +56,8 @@ public class LnkBrokerCaller implements BrokerCaller {
     public void async(BrokerCommand command) throws LnkException, LnkTimeoutException {
         try {
             ProtocolFactory protocolFactory = protocolFactorySelector.select(command.getProtocol());
-            this.invoker.async(this.brokerCommandProtocolFactory.encode(command, commandArgProtocolFactory, protocolFactory));
+            BrokerProtocolFactory brokerProtocolFactory = this.brokerProtocolFactorySelector.select(command.getBrokerProtocol());
+            this.invoker.async(brokerProtocolFactory.encode(command, objectProtocolFactory, protocolFactory));
         } catch (Throwable e) {
             log.error("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
             if (e instanceof LnkException) {
@@ -71,7 +74,8 @@ public class LnkBrokerCaller implements BrokerCaller {
     public void async_multicast(BrokerCommand command) {
         try {
             ProtocolFactory protocolFactory = protocolFactorySelector.select(command.getProtocol());
-            this.invoker.async_multicast(this.brokerCommandProtocolFactory.encode(command, commandArgProtocolFactory, protocolFactory));
+            BrokerProtocolFactory brokerProtocolFactory = this.brokerProtocolFactorySelector.select(command.getBrokerProtocol());
+            this.invoker.async_multicast(brokerProtocolFactory.encode(command, objectProtocolFactory, protocolFactory));
         } catch (Throwable e) {
             log.error("invoker async_multicast correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
             throw new LnkException("invoker async_multicast correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
@@ -82,15 +86,15 @@ public class LnkBrokerCaller implements BrokerCaller {
         this.invoker = invoker;
     }
 
-    public void setBrokerCommandProtocolFactory(BrokerCommandProtocolFactory brokerCommandProtocolFactory) {
-        this.brokerCommandProtocolFactory = brokerCommandProtocolFactory;
+    public void setBrokerProtocolFactorySelector(BrokerProtocolFactorySelector brokerProtocolFactorySelector) {
+        this.brokerProtocolFactorySelector = brokerProtocolFactorySelector;
     }
     
     public void setProtocolFactorySelector(ProtocolFactorySelector protocolFactorySelector) {
         this.protocolFactorySelector = protocolFactorySelector;
     }
     
-    public void setCommandArgProtocolFactory(CommandArgProtocolFactory commandArgProtocolFactory) {
-        this.commandArgProtocolFactory = commandArgProtocolFactory;
+    public void setObjectProtocolFactory(ObjectProtocolFactory objectProtocolFactory) {
+        this.objectProtocolFactory = objectProtocolFactory;
     }
 }

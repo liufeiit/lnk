@@ -16,20 +16,20 @@ import io.lnk.api.exception.LnkException;
 import io.lnk.api.flow.FlowController;
 import io.lnk.api.port.ServerPortAllocator;
 import io.lnk.api.protocol.ProtocolFactorySelector;
+import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.api.registry.Registry;
 import io.lnk.api.track.Tracker;
-import io.lnk.core.CommandArgProtocolFactory;
+import io.lnk.api.utils.NetUtils;
 import io.lnk.core.LnkServer;
 import io.lnk.core.ServiceObjectFinder;
 import io.lnk.core.processor.LnkCommandProcessor;
-import io.lnk.core.protocol.LnkCommandArgProtocolFactory;
+import io.lnk.protocol.object.LnkObjectProtocolFactory;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.RemotingServer;
 import io.lnk.remoting.ServerConfiguration;
 import io.lnk.remoting.mina.MinaRemotingServer;
 import io.lnk.remoting.netty.NettyRemotingServer;
 import io.lnk.remoting.utils.RemotingThreadFactory;
-import io.lnk.remoting.utils.RemotingUtils;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -54,7 +54,7 @@ public class DefaultLnkServer implements LnkServer {
     private Application application;
     private Tracker tracker;
     private DefaultLnkInvoker invoker;
-    private CommandArgProtocolFactory commandArgProtocolFactory;
+    private ObjectProtocolFactory objectProtocolFactory;
     private AtomicBoolean started = new AtomicBoolean(false);
 
     @Override
@@ -68,9 +68,9 @@ public class DefaultLnkServer implements LnkServer {
             log.info("LnkServer is started.");
             return;
         }
-        LnkCommandArgProtocolFactory lnkCommandArgProtocolFactory = new LnkCommandArgProtocolFactory();
-        lnkCommandArgProtocolFactory.setRemoteObjectFactory(invoker.getRemoteObjectFactory());
-        this.commandArgProtocolFactory = lnkCommandArgProtocolFactory;
+        LnkObjectProtocolFactory objectProtocolFactory = new LnkObjectProtocolFactory();
+        objectProtocolFactory.setRemoteObjectFactory(invoker.getRemoteObjectFactory());
+        this.objectProtocolFactory = objectProtocolFactory;
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
         switch (configuration.getProvider()) {
             case Netty:
@@ -85,7 +85,7 @@ public class DefaultLnkServer implements LnkServer {
         remotingServer.registerDefaultProcessor(this.createLnkCommandProcessor(),
                 Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), RemotingThreadFactory.newThreadFactory("LnkServerWorkerProcessor-%d", false)));
         remotingServer.start();
-        serverAddress = new Address(RemotingUtils.getLocalAddress(), remotingServer.getServerAddress().getPort());
+        serverAddress = new Address(NetUtils.getLocalAddress().getHostAddress(), remotingServer.getServerAddress().getPort());
         if (CollectionUtils.isEmpty(serviceGroups) == false) {
             this.bind(serviceGroups.toArray(new ServiceGroup[serviceGroups.size()]));
         }
@@ -161,7 +161,7 @@ public class DefaultLnkServer implements LnkServer {
         processor.setFlowController(flowController);
         processor.setApplication(application);
         processor.setTracker(tracker);
-        processor.setCommandArgProtocolFactory(commandArgProtocolFactory);
+        processor.setObjectProtocolFactory(objectProtocolFactory);
         return processor;
     }
 

@@ -2,7 +2,7 @@ package io.lnk.quartz.api;
 
 import org.quartz.Trigger;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.Protocols;
 import io.lnk.api.annotation.LnkService;
 
 /**
@@ -13,7 +13,7 @@ import io.lnk.api.annotation.LnkService;
  * @version 1.0.0
  * @since 2017年6月13日 下午9:12:19
  */
-@LnkService(group = ServiceGroups.LNK_QUARTZ_SRV, protocol = ProtocolVersion.JAVA_NATIVE_PROTOCOL)
+@LnkService(group = ServiceGroups.LNK_QUARTZ_SRV, protocol = Protocols.JAVA_NATIVE_PROTOCOL)
 public interface QuartzService {
     /**
      * 计划定时任务

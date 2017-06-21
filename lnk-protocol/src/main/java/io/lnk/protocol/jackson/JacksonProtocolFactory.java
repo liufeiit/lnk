@@ -1,6 +1,6 @@
 package io.lnk.protocol.jackson;
 
-import io.lnk.api.ProtocolVersion;
+import io.lnk.api.Protocols;
 import io.lnk.protocol.BasicProtocolFactory;
 import io.lnk.protocol.Serializer;
 
@@ -14,7 +14,7 @@ public class JacksonProtocolFactory extends BasicProtocolFactory {
     private final Serializer serializer;
     
     public JacksonProtocolFactory() {
-        super(ProtocolVersion.DEFAULT_PROTOCOL);
+        super(Protocols.DEFAULT_PROTOCOL);
         this.serializer = new JacksonSerializer();
     }
 
