@@ -1,4 +1,4 @@
-package io.lnk.api.agent;
+package io.lnk.api.broker;
 
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ import io.lnk.api.app.Application;
  * @version 1.0.0
  * @since 2017年6月21日 上午11:22:07
  */
-public class AgentCommand implements Serializable {
+public class BrokerCommand implements Serializable {
     private static final long serialVersionUID = -133662870644828334L;
     private String id;// 可选
     private String ip;// 可选
@@ -25,7 +25,7 @@ public class AgentCommand implements Serializable {
     private String serviceId;
     private String method;
     private String[] signature;
-    private AgentArg[] args;
+    private BrokerArg[] args;
     private String retObject;
     private String exception;
     private long timeoutMillis;
@@ -102,11 +102,11 @@ public class AgentCommand implements Serializable {
         this.signature = signature;
     }
 
-    public AgentArg[] getArgs() {
+    public BrokerArg[] getArgs() {
         return args;
     }
 
-    public void setArgs(AgentArg[] args) {
+    public void setArgs(BrokerArg[] args) {
         this.args = args;
     }
 

@@ -16,11 +16,11 @@ import com.alibaba.fastjson.JSON;
 
 import io.lnk.api.ProtocolVersion;
 import io.lnk.api.RemoteObject;
-import io.lnk.api.agent.AgentArg;
-import io.lnk.api.agent.AgentCaller;
-import io.lnk.api.agent.AgentCommand;
 import io.lnk.api.annotation.Lnkwired;
 import io.lnk.api.app.Application;
+import io.lnk.api.broker.BrokerArg;
+import io.lnk.api.broker.BrokerCaller;
+import io.lnk.api.broker.BrokerCommand;
 import io.lnk.api.utils.CorrelationIds;
 import io.lnk.demo.AppBizException;
 import io.lnk.demo.AuthRequest;
@@ -47,31 +47,31 @@ public class MainServerRunner extends BasicMainServerRunner {
     AuthService v2AuthService;
 
     @Autowired
-    AgentCaller agentCaller;
+    BrokerCaller brokerCaller;
     
     private final Serializer serializer = new JacksonSerializer();
 
     @Test
-    public void testAgentCaller() {
+    public void testBrokerCaller() {
         try {
-            AgentCommand agentCommand = new AgentCommand();
+            BrokerCommand brokerCommand = new BrokerCommand();
             Application application = new Application();
-            application.setApp("test.agent");
-            application.setType("agent");
-            agentCommand.setApplication(application);
-            agentCommand.setVersion("2.0.0");
-            agentCommand.setProtocol(ProtocolVersion.DEFAULT_PROTOCOL);
-            agentCommand.setServiceGroup("biz-pay-bgw-payment.srv");
-            agentCommand.setServiceId(AuthService.class.getName());
-            agentCommand.setMethod("auth");
-            agentCommand.setSignature(new String[] {AuthRequest.class.getName()});
-            AgentArg arg = new AgentArg();
+            application.setApp("test.broker");
+            application.setType("broker");
+            brokerCommand.setApplication(application);
+            brokerCommand.setVersion("2.0.0");
+            brokerCommand.setProtocol(ProtocolVersion.DEFAULT_PROTOCOL);
+            brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
+            brokerCommand.setServiceId(AuthService.class.getName());
+            brokerCommand.setMethod("auth");
+            brokerCommand.setSignature(new String[] {AuthRequest.class.getName()});
+            BrokerArg arg = new BrokerArg();
             arg.setType(AuthRequest.class.getName());
             arg.setArg(serializer.serializeAsString(buildAuthRequest()));
-            agentCommand.setArgs(new AgentArg[] {arg});
-            agentCommand.setTimeoutMillis(Long.MAX_VALUE);
-            AgentCommand response = agentCaller.sync(agentCommand);
-            System.err.println("request command : " + JSON.toJSONString(agentCommand, true));
+            brokerCommand.setArgs(new BrokerArg[] {arg});
+            brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
+            BrokerCommand response = brokerCaller.sync(brokerCommand);
+            System.err.println("request command : " + JSON.toJSONString(brokerCommand, true));
             System.err.println("response command : " + JSON.toJSONString(response, true));
         } catch (Exception e) {
             e.printStackTrace();

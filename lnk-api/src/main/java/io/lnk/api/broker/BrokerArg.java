@@ -1,4 +1,4 @@
-package io.lnk.api.agent;
+package io.lnk.api.broker;
 
 import java.io.Serializable;
 
@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @version 1.0.0
  * @since 2017年6月21日 上午11:31:47
  */
-public class AgentArg implements Serializable {
+public class BrokerArg implements Serializable {
     private static final long serialVersionUID = -4486769029080888869L;
     private String type;
     private String arg;
@@ -31,6 +31,6 @@ public class AgentArg implements Serializable {
 
     @Override
     public String toString() {
-        return "AgentArg [type=" + type + ", arg=" + arg + "]";
+        return "BrokerArg [type=" + type + ", arg=" + arg + "]";
     }
 }

@@ -24,9 +24,9 @@ import io.lnk.cluster.ConsistencyHashLoadBalance;
 import io.lnk.cluster.PriorityLocalLoadBalance;
 import io.lnk.cluster.RandomLoadBalance;
 import io.lnk.cluster.RoundRobinLoadBalance;
-import io.lnk.core.caller.LnkAgentCaller;
+import io.lnk.core.caller.LnkBrokerCaller;
 import io.lnk.core.caller.LnkRemoteObjectFactory;
-import io.lnk.core.protocol.LnkAgentCommandProtocolFactory;
+import io.lnk.core.protocol.LnkBrokerCommandProtocolFactory;
 import io.lnk.core.protocol.LnkCommandArgProtocolFactory;
 import io.lnk.flow.SemaphoreFlowController;
 import io.lnk.lookup.LnkRegistry;
@@ -65,10 +65,10 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
         
         final String protocolFactorySelectorId = invokerId + ".ProtocolFactorySelector";
-        final String agentCallerId = invokerId + ".LnkAgentCaller";
+        final String brokerCallerId = invokerId + ".BrokerCaller";
         final String remoteObjectFactoryId = invokerId + ".RemoteObjectFactory";
         final String commandArgProtocolFactoryId = invokerId + ".CommandArgProtocolFactory";
-        final String agentCommandProtocolFactoryId = invokerId + ".AgentCommandProtocolFactory";
+        final String brokerCommandProtocolFactoryId = invokerId + ".BrokerCommandProtocolFactory";
         
         BeanRegister.register(commandArgProtocolFactoryId, LnkCommandArgProtocolFactory.class, element, parserContext, new BeanDefinitionCallback() {
             public void doInRegister(RootBeanDefinition beanDefinition) {
@@ -79,16 +79,16 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         BeanRegister.register(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
         builder.addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
         
-        BeanRegister.register(agentCommandProtocolFactoryId, LnkAgentCommandProtocolFactory.class, element, parserContext);
-        BeanRegister.register(agentCallerId, LnkAgentCaller.class, element, parserContext, new BeanDefinitionCallback() {
+        BeanRegister.register(brokerCommandProtocolFactoryId, LnkBrokerCommandProtocolFactory.class, element, parserContext);
+        BeanRegister.register(brokerCallerId, LnkBrokerCaller.class, element, parserContext, new BeanDefinitionCallback() {
             public void doInRegister(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(invokerId));
-                beanDefinition.getPropertyValues().addPropertyValue("agentCommandProtocolFactory", new RuntimeBeanReference(agentCommandProtocolFactoryId));
+                beanDefinition.getPropertyValues().addPropertyValue("brokerCommandProtocolFactory", new RuntimeBeanReference(brokerCommandProtocolFactoryId));
                 beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
                 beanDefinition.getPropertyValues().addPropertyValue("commandArgProtocolFactory", new RuntimeBeanReference(commandArgProtocolFactoryId));
             }
         });
-        builder.addPropertyValue("agentCaller", new RuntimeBeanReference(agentCallerId));
+        builder.addPropertyValue("brokerCaller", new RuntimeBeanReference(brokerCallerId));
         
         List<Element> lookupElements = DomUtils.getChildElementsByTagName(element, "lookup");
         Element lookupElement = lookupElements.get(0);
