@@ -7,6 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import io.lnk.api.CommandReturnObject;
 import io.lnk.api.InvokerCommand;
+import io.lnk.api.RemoteObject;
 import io.lnk.api.broker.BrokerArg;
 import io.lnk.api.broker.BrokerCommand;
 import io.lnk.api.exception.transport.CommandTransportException;
@@ -14,6 +15,7 @@ import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.utils.CorrelationIds;
 import io.lnk.core.BrokerCommandProtocolFactory;
 import io.lnk.core.CommandArgProtocolFactory;
+import io.lnk.core.caller.RemoteStub;
 import io.lnk.protocol.Serializer;
 import io.lnk.protocol.jackson.JacksonSerializer;
 import io.lnk.remoting.utils.RemotingUtils;
@@ -61,7 +63,13 @@ public class LnkBrokerCommandProtocolFactory implements BrokerCommandProtocolFac
             Object[] commandArgs = new Object[argsLength];
             for (int i = 0; i < argsLength; i++) {
                 BrokerArg arg = args[i];
-                Object obj = this.serializer.deserialize(this.classLoader.loadClass(arg.getType()), arg.getArg());
+                String type = arg.getType();
+                Object obj = null;
+                if (StringUtils.equals(type, RemoteObject.class.getName())) {
+                    obj = new RemoteStub(arg.getArg());
+                } else {
+                    obj = this.serializer.deserialize(this.classLoader.loadClass(type), arg.getArg());
+                }
                 commandArgs[i] = obj;
             }
             invokerCommand.setArgs(commandArgProtocolFactory.encode(commandArgs, protocolFactory));
