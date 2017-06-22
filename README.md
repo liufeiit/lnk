@@ -38,10 +38,6 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 
 # * 使用Spring进行配置
 
-+ Server端配置
-
-  - Server端全部配置
-  
 	<lnk:server id="paymentServer" client="paymentClient" listen-port="8888" worker-threads="20" 
 		selector-threads="15" channel-maxidletime-seconds="120" 
 		socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
