@@ -1,6 +1,4 @@
-package io.lnk.remoting;
-
-import io.lnk.api.SystemConfiguration;
+package io.lnk.api;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -9,7 +7,7 @@ import io.lnk.api.SystemConfiguration;
  * @since 2017年5月19日 下午10:39:38
  */
 public class ClientConfiguration implements Cloneable, SystemConfiguration {
-    private RemotingProvider provider = RemotingProvider.Netty;
+    private String provider;
     private int workerThreads = 4;
     private int connectTimeoutMillis = 3000;
     private int channelMaxIdleTimeSeconds = 120;
@@ -17,11 +15,11 @@ public class ClientConfiguration implements Cloneable, SystemConfiguration {
     private int socketRcvBufSize = Integer.getInteger(IO_SOCKET_RCVBUF_SIZE, 65535);
     private int defaultExecutorThreads = 4;
 
-    public RemotingProvider getProvider() {
+    public String getProvider() {
         return provider;
     }
 
-    public void setProvider(RemotingProvider provider) {
+    public void setProvider(String provider) {
         this.provider = provider;
     }
 

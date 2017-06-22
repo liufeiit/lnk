@@ -14,7 +14,7 @@
 			window.WebSocket = window.MozWebSocket;
 		}
 		if (window.WebSocket) {
-			ws = new WebSocket("ws://10.10.25.230:43000");
+			ws = new WebSocket("ws://127.0.0.1:43000");
 		}
 		ws.onopen = function(event) {
 			document.getElementById('messages').innerHTML = 'Connection established<br/>';
@@ -34,6 +34,14 @@
 			alert("WebSocket.onclose event : " + event);
 		};
 		function start() {
+			var authRequest = {
+					txnId:"XSDNEDOZLX1F36FF9B7FFDFBC095E10006DFF02AF0C",
+					memberId:"123456",
+					name:"刘飞",
+					mobile:"13522874567",
+					cardNo:"6222021001138822740",
+					identityNo:"413537199112015138"
+			};
 			var msg = {
 				invokeType:0,
 				version:"2.0.0",
@@ -47,7 +55,7 @@
 				args:[
 					{
 						type:"io.lnk.demo.AuthRequest",
-						arg:"{\"txnId\":\"XSDNEDOZLX1F36FF9B7FFDFBC095E10006DFF02AF0C\",\"memberId\":\"123456\",\"name\":\"刘飞\",\"mobile\":\"13522874567\",\"cardNo\":\"6222021001138822740\",\"identityNo\":\"413537199112015138\"}"
+						arg:JSON.stringify(authRequest)
 					}
 					],
 				timeoutMillis:3000}

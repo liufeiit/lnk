@@ -18,6 +18,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import io.lnk.api.ClientConfiguration;
 import io.lnk.api.URI;
 import io.lnk.api.cluster.LoadBalance;
 import io.lnk.cluster.ConsistencyHashLoadBalance;
@@ -31,8 +32,6 @@ import io.lnk.lookup.LnkRegistry;
 import io.lnk.protocol.LnkProtocolFactorySelector;
 import io.lnk.protocol.broker.LnkBrokerProtocolFactorySelector;
 import io.lnk.protocol.object.LnkObjectProtocolFactory;
-import io.lnk.remoting.ClientConfiguration;
-import io.lnk.remoting.RemotingProvider;
 import io.lnk.spring.core.SpringLnkInvoker;
 import io.lnk.spring.utils.BeanRegister;
 import io.lnk.spring.utils.BeanRegister.BeanDefinitionCallback;
@@ -114,7 +113,7 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         String socketRcvbufSize = element.getAttribute(SOCKET_RCVBUF_SIZE_ATTR);
         String defaultExecutorThreads = element.getAttribute(DEFAULT_EXECUTOR_THREADS_ATTR);
         ClientConfiguration configuration = new ClientConfiguration();
-        configuration.setProvider(RemotingProvider.valueOfProvider(provider));
+        configuration.setProvider(provider);
         configuration.setWorkerThreads(NumberUtils.toInt(workerThreads, 4));
         configuration.setConnectTimeoutMillis(NumberUtils.toInt(connectTimeoutMillis, 3000));
         configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(channelMaxidletimeSeconds, 120));

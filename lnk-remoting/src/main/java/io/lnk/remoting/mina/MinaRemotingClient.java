@@ -17,9 +17,9 @@ import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.logging.MdcInjectionFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import io.lnk.api.ClientConfiguration;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.utils.LnkThreadFactory;
-import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;

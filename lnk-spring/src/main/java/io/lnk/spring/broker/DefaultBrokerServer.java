@@ -8,10 +8,11 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
 
 import io.lnk.api.Address;
+import io.lnk.api.ServerConfiguration;
 import io.lnk.api.app.Application;
 import io.lnk.api.broker.BrokerCaller;
 import io.lnk.api.broker.BrokerCallerAware;
-import io.lnk.api.broker.BrokerConfiguration;
+import io.lnk.api.broker.BrokerProvider;
 import io.lnk.api.broker.BrokerServer;
 import io.lnk.api.port.ServerPortAllocator;
 import io.lnk.api.utils.NetUtils;
@@ -33,7 +34,7 @@ public class DefaultBrokerServer implements BrokerCallerAware, BeanFactoryAware,
     private BeanFactory beanFactory;
     private BrokerServer brokerServer;
     private ServerPortAllocator serverPortAllocator;
-    private BrokerConfiguration configuration;
+    private ServerConfiguration configuration;
     private BrokerCaller caller;
     private Address serverAddress;
     private Application application;
@@ -43,7 +44,8 @@ public class DefaultBrokerServer implements BrokerCallerAware, BeanFactoryAware,
         LnkApplication lnkApplication = this.beanFactory.getBean(LnkApplication.LNK_APPLICATION_NAME, LnkApplication.class);
         this.application = lnkApplication.getApplication();
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
-        switch (configuration.getProvider()) {
+        BrokerProvider brokerProvider = BrokerProvider.valueOfProvider(configuration.getProvider());
+        switch (brokerProvider) {
             case HTTP:
                 brokerServer = new HttpBrokerServer(configuration);
                 break;
@@ -103,7 +105,7 @@ public class DefaultBrokerServer implements BrokerCallerAware, BeanFactoryAware,
         this.caller = caller;
     }
 
-    public void setConfiguration(BrokerConfiguration configuration) {
+    public void setConfiguration(ServerConfiguration configuration) {
         this.configuration = configuration;
     }
 

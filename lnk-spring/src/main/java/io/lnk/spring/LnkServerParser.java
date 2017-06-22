@@ -19,6 +19,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import io.lnk.api.ServerConfiguration;
 import io.lnk.api.ServiceGroup;
 import io.lnk.api.URI;
 import io.lnk.api.track.Tracker;
@@ -26,8 +27,6 @@ import io.lnk.flow.SemaphoreFlowController;
 import io.lnk.lookup.LnkRegistry;
 import io.lnk.port.DefaultServerPortAllocator;
 import io.lnk.protocol.LnkProtocolFactorySelector;
-import io.lnk.remoting.RemotingProvider;
-import io.lnk.remoting.ServerConfiguration;
 import io.lnk.spring.core.DefaultServiceObjectFinder;
 import io.lnk.spring.core.SpringLnkServer;
 import io.lnk.spring.utils.BeanRegister;
@@ -92,7 +91,7 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
         if (port > 0) {
             configuration.setListenPort(port);
         }
-        configuration.setProvider(RemotingProvider.valueOfProvider(provider));
+        configuration.setProvider(provider);
         configuration.setWorkerThreads(NumberUtils.toInt(workerThreads, 10));
         configuration.setSelectorThreads(NumberUtils.toInt(selectorThreads, 5));
         configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(channelMaxidletimeSeconds, 120));

@@ -1,9 +1,7 @@
-package io.lnk.remoting;
+package io.lnk.api;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import io.lnk.api.SystemConfiguration;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -12,7 +10,7 @@ import io.lnk.api.SystemConfiguration;
  * @since 2017年5月19日 下午10:28:53
  */
 public class ServerConfiguration implements Cloneable, SystemConfiguration {
-    private RemotingProvider provider = RemotingProvider.Netty;
+    private String provider;
     private int listenPort = 8888;
     private int workerThreads = 10;
     //mina实现中未设置
@@ -32,11 +30,11 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
     //mina实现中未设置
     private boolean useEpollNativeSelector = false;
 
-    public RemotingProvider getProvider() {
+    public String getProvider() {
         return provider;
     }
 
-    public void setProvider(RemotingProvider provider) {
+    public void setProvider(String provider) {
         this.provider = provider;
     }
 

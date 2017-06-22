@@ -14,8 +14,7 @@ import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-import io.lnk.api.broker.BrokerConfiguration;
-import io.lnk.api.broker.BrokerProvider;
+import io.lnk.api.ServerConfiguration;
 import io.lnk.port.DefaultServerPortAllocator;
 import io.lnk.spring.broker.DefaultBrokerServer;
 import io.lnk.spring.utils.BeanRegister;
@@ -65,12 +64,12 @@ public class LnkBrokerParser extends AbstractSingleBeanDefinitionParser {
         String defaultWorkerProcessorThreads = element.getAttribute(DEFAULT_WORKER_PROCESSOR_THREADS_ATTR);
         String defaultExecutorThreads = element.getAttribute(DEFAULT_EXECUTOR_THREADS_ATTR);
         String useEpollNativeSelector = element.getAttribute(USE_EPOLL_NATIVE_SELECTOR_ATTR);
-        BrokerConfiguration configuration = new BrokerConfiguration();
+        ServerConfiguration configuration = new ServerConfiguration();
         int port = NumberUtils.toInt(listenPort, -1);
         if (port > 0) {
             configuration.setListenPort(port);
         }
-        configuration.setProvider(BrokerProvider.valueOfProvider(provider));
+        configuration.setProvider(provider);
         configuration.setWorkerThreads(NumberUtils.toInt(workerThreads, 10));
         configuration.setSelectorThreads(NumberUtils.toInt(selectorThreads, 5));
         configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(channelMaxidletimeSeconds, 120));

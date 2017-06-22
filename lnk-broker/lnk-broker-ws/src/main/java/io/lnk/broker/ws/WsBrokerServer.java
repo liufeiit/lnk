@@ -5,8 +5,8 @@ import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.lnk.api.ServerConfiguration;
 import io.lnk.api.broker.BrokerCaller;
-import io.lnk.api.broker.BrokerConfiguration;
 import io.lnk.api.broker.BrokerServer;
 import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.remoting.utils.RemotingUtils;
@@ -36,13 +36,13 @@ public class WsBrokerServer implements BrokerServer {
     private final ServerBootstrap serverBootstrap;
     private final EventLoopGroup eventLoopGroupSelector;
     private final EventLoopGroup eventLoopGroupBoss;
-    private final BrokerConfiguration configuration;
+    private final ServerConfiguration configuration;
     private DefaultEventExecutorGroup defaultEventExecutorGroup;
     private Channel serverChannel;
     private InetSocketAddress serverAddress;
     private BrokerCaller caller;
 
-    public WsBrokerServer(final BrokerConfiguration configuration) {
+    public WsBrokerServer(final ServerConfiguration configuration) {
         this.serverBootstrap = new ServerBootstrap();
         this.configuration = configuration;
         this.eventLoopGroupBoss = new NioEventLoopGroup(2, LnkThreadFactory.newThreadFactory("WsBrokerServerBoss-%d", false));

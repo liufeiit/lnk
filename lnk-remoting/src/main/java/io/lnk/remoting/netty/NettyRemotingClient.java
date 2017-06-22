@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import io.lnk.api.ClientConfiguration;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.utils.LnkThreadFactory;
-import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;

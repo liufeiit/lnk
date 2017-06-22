@@ -8,6 +8,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.lnk.api.ClientConfiguration;
+import io.lnk.api.ServerConfiguration;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.protocol.LnkProtocolFactorySelector;

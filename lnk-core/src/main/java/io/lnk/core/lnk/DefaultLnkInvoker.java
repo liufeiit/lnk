@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.lnk.api.Address;
+import io.lnk.api.ClientConfiguration;
 import io.lnk.api.InvokerCallback;
 import io.lnk.api.InvokerCommand;
 import io.lnk.api.RemoteObjectFactory;
@@ -24,9 +25,9 @@ import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.registry.Registry;
 import io.lnk.api.utils.NetUtils;
 import io.lnk.core.LnkInvoker;
-import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingClient;
+import io.lnk.remoting.RemotingProvider;
 import io.lnk.remoting.ReplyFuture;
 import io.lnk.remoting.exception.RemotingConnectException;
 import io.lnk.remoting.exception.RemotingSendRequestException;
@@ -71,7 +72,8 @@ public class DefaultLnkInvoker implements LnkInvoker {
             return;
         }
         this.ip = NetUtils.getLocalAddress().getHostAddress();
-        switch (configuration.getProvider()) {
+        RemotingProvider remotingProvider = RemotingProvider.valueOfProvider(configuration.getProvider());
+        switch (remotingProvider) {
             case Netty:
                 remotingClient = new NettyRemotingClient(protocolFactorySelector, configuration);
                 break;

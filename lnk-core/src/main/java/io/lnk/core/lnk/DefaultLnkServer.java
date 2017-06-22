@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import io.lnk.api.Address;
+import io.lnk.api.ServerConfiguration;
 import io.lnk.api.ServiceGroup;
 import io.lnk.api.app.Application;
 import io.lnk.api.exception.LnkException;
@@ -26,8 +27,8 @@ import io.lnk.core.ServiceObjectFinder;
 import io.lnk.core.processor.LnkCommandProcessor;
 import io.lnk.protocol.object.LnkObjectProtocolFactory;
 import io.lnk.remoting.CommandProcessor;
+import io.lnk.remoting.RemotingProvider;
 import io.lnk.remoting.RemotingServer;
-import io.lnk.remoting.ServerConfiguration;
 import io.lnk.remoting.mina.MinaRemotingServer;
 import io.lnk.remoting.netty.NettyRemotingServer;
 import sun.misc.Signal;
@@ -72,7 +73,8 @@ public class DefaultLnkServer implements LnkServer {
         objectProtocolFactory.setRemoteObjectFactory(invoker.getRemoteObjectFactory());
         this.objectProtocolFactory = objectProtocolFactory;
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
-        switch (configuration.getProvider()) {
+        RemotingProvider remotingProvider = RemotingProvider.valueOfProvider(configuration.getProvider());
+        switch (remotingProvider) {
             case Netty:
                 remotingServer = new NettyRemotingServer(protocolFactorySelector, configuration);
                 break;

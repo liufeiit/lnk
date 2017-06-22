@@ -8,16 +8,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.lnk.api.ClientConfiguration;
+import io.lnk.api.ServerConfiguration;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.protocol.LnkProtocolFactorySelector;
 import io.lnk.protocol.jackson.JacksonProtocolFactory;
 import io.lnk.protocol.jackson.JacksonSerializer;
-import io.lnk.remoting.CommandProcessor;
-import io.lnk.remoting.RemotingCallback;
-import io.lnk.remoting.RemotingClient;
-import io.lnk.remoting.RemotingServer;
-import io.lnk.remoting.ReplyFuture;
 import io.lnk.remoting.RemotingCommandTest.SimpleBean;
 import io.lnk.remoting.exception.RemotingConnectException;
 import io.lnk.remoting.exception.RemotingSendRequestException;
