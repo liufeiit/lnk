@@ -167,7 +167,7 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 	}
 	
 	// 标记服务发布的版本
-	@LnkServiceVersion(version = "2.0.0")
+	@LnkVersion(version = "2.0.0")
 	public class V2AuthService implements AuthService {
 	
 	    @Override
@@ -200,11 +200,11 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 # * 服务端依赖注入
 	
 	// 注入默认版本的服务代理
-	@Lnkwired(localWiredPriority = false)
+	@Lnkwired
     AuthService defaultAuthService;
     
     // 注入2.0.0版本的服务代理
-    @Lnkwired(version = "2.0.0", localWiredPriority = false)
+    @Lnkwired(version = "2.0.0")
     AuthService v2AuthService;
   
 # * 使用websocket协议broker
