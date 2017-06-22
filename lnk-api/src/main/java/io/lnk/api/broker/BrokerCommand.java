@@ -5,7 +5,6 @@ import java.io.Serializable;
 import io.lnk.api.BrokerProtocols;
 import io.lnk.api.Protocols;
 import io.lnk.api.ServiceVersion;
-import io.lnk.api.app.Application;
 
 /**
  * 使用JSON协议代理调用.
@@ -17,9 +16,14 @@ import io.lnk.api.app.Application;
  */
 public class BrokerCommand implements Serializable {
     private static final long serialVersionUID = -133662870644828334L;
+    public static final BrokerCommand NULL = new BrokerCommand();
+    public static final int SYNC = 0;
+    public static final int ASYNC = 1;
+    public static final int MULTICAST = 2;
     private String id;// 可选
     private String ip;// 可选
-    private Application application;
+    private int invokeType = SYNC;
+    private String application;
     private String version = ServiceVersion.DEFAULT_VERSION;
     private int protocol = Protocols.DEFAULT_PROTOCOL;
     private String brokerProtocol = BrokerProtocols.JACKSON;
@@ -48,11 +52,19 @@ public class BrokerCommand implements Serializable {
         this.ip = ip;
     }
 
-    public Application getApplication() {
+    public int getInvokeType() {
+        return invokeType;
+    }
+
+    public void setInvokeType(int invokeType) {
+        this.invokeType = invokeType;
+    }
+
+    public String getApplication() {
         return application;
     }
 
-    public void setApplication(Application application) {
+    public void setApplication(String application) {
         this.application = application;
     }
 

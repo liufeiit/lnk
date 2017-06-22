@@ -1,8 +1,8 @@
 package io.lnk.protocol.jackson;
 
 import io.lnk.api.Protocols;
+import io.lnk.api.protocol.Serializer;
 import io.lnk.protocol.BasicProtocolFactory;
-import io.lnk.protocol.Serializer;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
+import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
@@ -27,7 +28,6 @@ import io.lnk.remoting.exception.RemotingSendRequestException;
 import io.lnk.remoting.exception.RemotingTimeoutException;
 import io.lnk.remoting.protocol.CommandCode;
 import io.lnk.remoting.protocol.RemotingCommand;
-import io.lnk.remoting.utils.RemotingThreadFactory;
 import io.lnk.remoting.utils.RemotingUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -53,7 +53,7 @@ public abstract class NettyAbstractRemotingService {
         this.protocolFactorySelector = protocolFactorySelector;
         replies = new ConcurrentHashMap<Long, ReplyFuture>(256);
         processors = new HashMap<Integer, Pair<CommandProcessor, ExecutorService>>(64);
-        scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(2, RemotingThreadFactory.newThreadFactory("RemotingReply-%d", false), new CallerRunsPolicy() {
+        scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(2, LnkThreadFactory.newThreadFactory("RemotingReply-%d", false), new CallerRunsPolicy() {
             public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
                 log.info("rejectedExecution Thread resource work out.");
                 super.rejectedExecution(r, e);

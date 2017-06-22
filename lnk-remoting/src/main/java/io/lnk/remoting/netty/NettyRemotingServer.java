@@ -5,17 +5,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import io.lnk.api.protocol.ProtocolFactorySelector;
+import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.remoting.CommandProcessor;
-import io.lnk.remoting.ServerConfiguration;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingServer;
+import io.lnk.remoting.ServerConfiguration;
 import io.lnk.remoting.exception.RemotingSendRequestException;
 import io.lnk.remoting.exception.RemotingTimeoutException;
 import io.lnk.remoting.netty.codec.CommandProtocolDecoder;
 import io.lnk.remoting.netty.codec.CommandProtocolEncoder;
 import io.lnk.remoting.protocol.RemotingCommand;
-import io.lnk.remoting.utils.RemotingThreadFactory;
 import io.lnk.remoting.utils.RemotingUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -56,19 +56,19 @@ public class NettyRemotingServer extends NettyAbstractRemotingService implements
         super(protocolFactorySelector);
         this.serverBootstrap = new ServerBootstrap();
         this.configuration = configuration;
-        this.defaultThreadPoolExecutor = Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("NettyRemotingServerDefaultThreadPoolExecutor-%d", false));
-        this.eventLoopGroupBoss = new NioEventLoopGroup(2, RemotingThreadFactory.newThreadFactory("NettyRemotingServerBoss-%d", false));
+        this.defaultThreadPoolExecutor = Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), LnkThreadFactory.newThreadFactory("NettyRemotingServerDefaultThreadPoolExecutor-%d", false));
+        this.eventLoopGroupBoss = new NioEventLoopGroup(2, LnkThreadFactory.newThreadFactory("NettyRemotingServerBoss-%d", false));
         int serverSelectorThreads = configuration.getSelectorThreads();
         if (RemotingUtils.isLinuxPlatform() && configuration.isUseEpollNativeSelector()) {
-            this.eventLoopGroupSelector = new EpollEventLoopGroup(serverSelectorThreads, RemotingThreadFactory.newThreadFactory("NettyRemotingServerEPOLLSelector-" + serverSelectorThreads + "-%d", false));
+            this.eventLoopGroupSelector = new EpollEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("NettyRemotingServerEPOLLSelector-" + serverSelectorThreads + "-%d", false));
         } else {
-            this.eventLoopGroupSelector = new NioEventLoopGroup(serverSelectorThreads, RemotingThreadFactory.newThreadFactory("NettyRemotingServerNIOSelector-" + serverSelectorThreads + "-%d", false));
+            this.eventLoopGroupSelector = new NioEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("NettyRemotingServerNIOSelector-" + serverSelectorThreads + "-%d", false));
         }
     }
 
     @Override
     public void start() {
-        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(configuration.getWorkerThreads(), RemotingThreadFactory.newThreadFactory("NettyRemotingServerCodecThread-%d", false));
+        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(configuration.getWorkerThreads(), LnkThreadFactory.newThreadFactory("NettyRemotingServerCodecThread-%d", false));
         ServerBootstrap childHandler = this.serverBootstrap.group(this.eventLoopGroupBoss, this.eventLoopGroupSelector)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 1024)

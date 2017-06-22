@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import io.lnk.protocol.Serializer;
+import io.lnk.api.protocol.Serializer;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

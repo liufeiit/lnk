@@ -9,8 +9,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import io.lnk.api.protocol.ProtocolFactorySelector;
-import io.lnk.remoting.CommandProcessor;
+import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.remoting.ClientConfiguration;
+import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingClient;
@@ -20,7 +21,6 @@ import io.lnk.remoting.exception.RemotingTimeoutException;
 import io.lnk.remoting.netty.codec.CommandProtocolDecoder;
 import io.lnk.remoting.netty.codec.CommandProtocolEncoder;
 import io.lnk.remoting.protocol.RemotingCommand;
-import io.lnk.remoting.utils.RemotingThreadFactory;
 import io.lnk.remoting.utils.RemotingUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -59,13 +59,13 @@ public class NettyRemotingClient extends NettyAbstractRemotingService implements
     public NettyRemotingClient(final ProtocolFactorySelector protocolFactorySelector, final ClientConfiguration configuration) {
         super(protocolFactorySelector);
         this.configuration = configuration;
-        this.defaultThreadPoolExecutor = Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("NettyRemotingClientDefaultThreadPoolExecutor-%d", false));
-        this.eventLoopGroupWorker = new NioEventLoopGroup(1, RemotingThreadFactory.newThreadFactory("NettyRemotingClientSelector-%d", false));
+        this.defaultThreadPoolExecutor = Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), LnkThreadFactory.newThreadFactory("NettyRemotingClientDefaultThreadPoolExecutor-%d", false));
+        this.eventLoopGroupWorker = new NioEventLoopGroup(1, LnkThreadFactory.newThreadFactory("NettyRemotingClientSelector-%d", false));
     }
 
     @Override
     public void start() {
-        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(configuration.getWorkerThreads(), RemotingThreadFactory.newThreadFactory("NettyRemotingWorker-%d", false));
+        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(configuration.getWorkerThreads(), LnkThreadFactory.newThreadFactory("NettyRemotingWorker-%d", false));
         this.bootstrap.group(this.eventLoopGroupWorker).channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.SO_KEEPALIVE, false)

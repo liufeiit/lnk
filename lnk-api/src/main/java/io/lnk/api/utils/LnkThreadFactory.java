@@ -1,4 +1,4 @@
-package io.lnk.remoting.utils;
+package io.lnk.api.utils;
 
 import java.util.concurrent.ThreadFactory;
 
@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
  * @version 1.0.0
  * @since 2017年5月21日 下午2:15:24
  */
-public class RemotingThreadFactory {
+public class LnkThreadFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(RemotingThreadFactory.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(LnkThreadFactory.class.getSimpleName());
 
     public static ThreadFactory newThreadFactory(String namingPattern, boolean daemon) {
         return newThreadFactory(namingPattern, daemon, getDefaultUncaughtExceptionHandler());

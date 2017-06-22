@@ -9,15 +9,16 @@ import io.lnk.api.InvokerCommand;
 import io.lnk.api.ProtocolObject;
 import io.lnk.api.RemoteObject;
 import io.lnk.api.RemoteStub;
+import io.lnk.api.app.Application;
 import io.lnk.api.broker.BrokerArg;
 import io.lnk.api.broker.BrokerCommand;
 import io.lnk.api.exception.transport.CommandTransportException;
 import io.lnk.api.protocol.ProtocolFactory;
+import io.lnk.api.protocol.Serializer;
 import io.lnk.api.protocol.broker.BrokerProtocolFactory;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.api.utils.CorrelationIds;
 import io.lnk.api.utils.NetUtils;
-import io.lnk.protocol.Serializer;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -45,7 +46,10 @@ public abstract class BasicBrokerProtocolFactory implements BrokerProtocolFactor
         InvokerCommand invokerCommand = new InvokerCommand();
         invokerCommand.setId(StringUtils.defaultIfBlank(command.getId(), CorrelationIds.buildGuid()));
         invokerCommand.setIp(StringUtils.defaultIfBlank(command.getIp(), this.ip));
-        invokerCommand.setApplication(command.getApplication());
+        Application application = new Application();
+        application.setApp(command.getApplication());
+        application.setType("broker");
+        invokerCommand.setApplication(application);
         invokerCommand.setVersion(command.getVersion());
         invokerCommand.setProtocol(command.getProtocol());
         invokerCommand.setServiceGroup(command.getServiceGroup());
@@ -85,7 +89,7 @@ public abstract class BasicBrokerProtocolFactory implements BrokerProtocolFactor
         BrokerCommand brokerCommand = new BrokerCommand();
         brokerCommand.setId(command.getId());
         brokerCommand.setIp(command.getIp());
-        brokerCommand.setApplication(command.getApplication());
+        brokerCommand.setApplication(command.getApplication().getApp());
         brokerCommand.setVersion(command.getVersion());
         brokerCommand.setProtocol(command.getProtocol());
         brokerCommand.setServiceGroup(command.getServiceGroup());
@@ -105,5 +109,10 @@ public abstract class BasicBrokerProtocolFactory implements BrokerProtocolFactor
     @Override
     public String getProtocol() {
         return this.protocol;
+    }
+
+    @Override
+    public Serializer serializer() {
+        return this.serializer;
     }
 }

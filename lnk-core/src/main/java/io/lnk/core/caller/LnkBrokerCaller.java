@@ -1,8 +1,10 @@
 package io.lnk.core.caller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.lnk.api.BrokerProtocols;
 import io.lnk.api.InvokerCommand;
 import io.lnk.api.annotation.LnkMethod;
 import io.lnk.api.broker.BrokerCaller;
@@ -11,6 +13,7 @@ import io.lnk.api.exception.LnkException;
 import io.lnk.api.exception.LnkTimeoutException;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
+import io.lnk.api.protocol.Serializer;
 import io.lnk.api.protocol.broker.BrokerProtocolFactory;
 import io.lnk.api.protocol.broker.BrokerProtocolFactorySelector;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
@@ -30,6 +33,40 @@ public class LnkBrokerCaller implements BrokerCaller {
     private ObjectProtocolFactory objectProtocolFactory;
 
     @Override
+    public String invoke(String command) throws LnkException, LnkTimeoutException {
+        BrokerProtocolFactory brokerProtocolFactory = null;
+        if (StringUtils.startsWith(command, "{") && StringUtils.endsWith(command, "}")) {
+            brokerProtocolFactory = this.brokerProtocolFactorySelector.select(BrokerProtocols.JACKSON);
+            Serializer serializer = brokerProtocolFactory.serializer();
+            BrokerCommand response = this.invoke(serializer.deserialize(BrokerCommand.class, command));
+            return serializer.serializeAsString(response);
+        }
+        if (StringUtils.startsWith(command, "<") && StringUtils.endsWith(command, ">")) {
+            brokerProtocolFactory = this.brokerProtocolFactorySelector.select(BrokerProtocols.XSTREAM);
+            Serializer serializer = brokerProtocolFactory.serializer();
+            BrokerCommand response = this.invoke(serializer.deserialize(BrokerCommand.class, command));
+            return serializer.serializeAsString(response);
+        }
+        return null;
+    }
+
+    @Override
+    public BrokerCommand invoke(BrokerCommand command) throws LnkException, LnkTimeoutException {
+        switch (command.getInvokeType()) {
+            case BrokerCommand.SYNC:
+                return this.sync(command);
+            case BrokerCommand.ASYNC:
+                this.async(command);
+                break;
+            case BrokerCommand.MULTICAST:
+                this.multicast(command);
+                break;
+            default:
+                break;
+        }
+        return BrokerCommand.NULL;
+    }
+    
     public BrokerCommand sync(BrokerCommand command) throws LnkException, LnkTimeoutException {
         try {
             ProtocolFactory protocolFactory = protocolFactorySelector.select(command.getProtocol());
@@ -52,7 +89,6 @@ public class LnkBrokerCaller implements BrokerCaller {
         }
     }
 
-    @Override
     public void async(BrokerCommand command) throws LnkException, LnkTimeoutException {
         try {
             ProtocolFactory protocolFactory = protocolFactorySelector.select(command.getProtocol());
@@ -70,15 +106,14 @@ public class LnkBrokerCaller implements BrokerCaller {
         }
     }
 
-    @Override
-    public void async_multicast(BrokerCommand command) {
+    public void multicast(BrokerCommand command) {
         try {
             ProtocolFactory protocolFactory = protocolFactorySelector.select(command.getProtocol());
             BrokerProtocolFactory brokerProtocolFactory = this.brokerProtocolFactorySelector.select(command.getBrokerProtocol());
             this.invoker.async_multicast(brokerProtocolFactory.encode(command, objectProtocolFactory, protocolFactory));
         } catch (Throwable e) {
-            log.error("invoker async_multicast correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
-            throw new LnkException("invoker async_multicast correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
+            log.error("invoker multicast correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
+            throw new LnkException("invoker multicast correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
         }
     }
 

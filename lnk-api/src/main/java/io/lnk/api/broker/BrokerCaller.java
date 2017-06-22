@@ -10,7 +10,6 @@ import io.lnk.api.exception.LnkTimeoutException;
  * @since 2017年6月21日 上午11:16:27
  */
 public interface BrokerCaller {
-    BrokerCommand sync(final BrokerCommand command) throws LnkException, LnkTimeoutException;
-    void async(final BrokerCommand command) throws LnkException, LnkTimeoutException;
-    void async_multicast(final BrokerCommand command);
+    String invoke(final String command) throws LnkException, LnkTimeoutException;
+    BrokerCommand invoke(final BrokerCommand command) throws LnkException, LnkTimeoutException;
 }

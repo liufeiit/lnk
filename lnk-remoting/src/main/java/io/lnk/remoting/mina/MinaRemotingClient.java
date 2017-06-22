@@ -18,6 +18,7 @@ import org.apache.mina.filter.logging.MdcInjectionFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import io.lnk.api.protocol.ProtocolFactorySelector;
+import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.remoting.ClientConfiguration;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.Pair;
@@ -28,7 +29,6 @@ import io.lnk.remoting.exception.RemotingSendRequestException;
 import io.lnk.remoting.exception.RemotingTimeoutException;
 import io.lnk.remoting.mina.codec.CommandProtocolCodecFilter;
 import io.lnk.remoting.protocol.RemotingCommand;
-import io.lnk.remoting.utils.RemotingThreadFactory;
 import io.lnk.remoting.utils.RemotingUtils;
 
 /**
@@ -50,13 +50,13 @@ public class MinaRemotingClient extends MinaAbstractRemotingService implements R
         this.configuration = configuration;
         this.connector = new NioSocketConnector(configuration.getWorkerThreads());
         this.defaultThreadPoolExecutor =
-                Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("MinaRemotingClientDefaultThreadPoolExecutor-%d", false));
+                Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), LnkThreadFactory.newThreadFactory("MinaRemotingClientDefaultThreadPoolExecutor-%d", false));
     }
 
     @Override
     public void start() {
         this.connector.getFilterChain().addLast("exceutor", new ExecutorFilter(
-                Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), RemotingThreadFactory.newThreadFactory("MinaRemotingClientDefaultThreadPoolExecutor-%d", false))));
+                Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), LnkThreadFactory.newThreadFactory("MinaRemotingClientDefaultThreadPoolExecutor-%d", false))));
         this.connector.getFilterChain().addLast("mdc", new MdcInjectionFilter());
         this.connector.getFilterChain().addLast("logger", new LoggingFilter());
         this.connector.getFilterChain().addLast("codec", new CommandProtocolCodecFilter());

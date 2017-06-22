@@ -19,6 +19,7 @@ import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.api.registry.Registry;
 import io.lnk.api.track.Tracker;
+import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.api.utils.NetUtils;
 import io.lnk.core.LnkServer;
 import io.lnk.core.ServiceObjectFinder;
@@ -29,7 +30,6 @@ import io.lnk.remoting.RemotingServer;
 import io.lnk.remoting.ServerConfiguration;
 import io.lnk.remoting.mina.MinaRemotingServer;
 import io.lnk.remoting.netty.NettyRemotingServer;
-import io.lnk.remoting.utils.RemotingThreadFactory;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -83,7 +83,7 @@ public class DefaultLnkServer implements LnkServer {
                 throw new RuntimeException("unsupport RemotingServer provider : " + configuration.getProvider());
         }
         remotingServer.registerDefaultProcessor(this.createLnkCommandProcessor(),
-                Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), RemotingThreadFactory.newThreadFactory("LnkServerWorkerProcessor-%d", false)));
+                Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), LnkThreadFactory.newThreadFactory("LnkServerWorkerProcessor-%d", false)));
         remotingServer.start();
         serverAddress = new Address(NetUtils.getLocalAddress().getHostAddress(), remotingServer.getServerAddress().getPort());
         if (CollectionUtils.isEmpty(serviceGroups) == false) {
@@ -132,7 +132,7 @@ public class DefaultLnkServer implements LnkServer {
         for (ServiceGroup serviceGroup : serviceGroups) {
             int commandCode = serviceGroup.getServiceGroup().hashCode();
             this.remotingServer.registerProcessor(commandCode, this.createLnkCommandProcessor(), Executors.newFixedThreadPool(serviceGroup.getServiceGroupWorkerProcessorThreads(),
-                    RemotingThreadFactory.newThreadFactory("LnkServerWorkerProcessor[" + serviceGroup.getServiceGroup() + "]-%d", false)));
+                    LnkThreadFactory.newThreadFactory("LnkServerWorkerProcessor[" + serviceGroup.getServiceGroup() + "]-%d", false)));
             log.info("bind serviceGroup {} success.", serviceGroup.getServiceGroup());
         }
     }

@@ -3,6 +3,7 @@ package io.lnk.api.protocol.broker;
 import io.lnk.api.InvokerCommand;
 import io.lnk.api.broker.BrokerCommand;
 import io.lnk.api.protocol.ProtocolFactory;
+import io.lnk.api.protocol.Serializer;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
 
 /**
@@ -13,6 +14,7 @@ import io.lnk.api.protocol.object.ObjectProtocolFactory;
  */
 public interface BrokerProtocolFactory {
     String getProtocol();
+    Serializer serializer();
     InvokerCommand encode(BrokerCommand command, ObjectProtocolFactory objectProtocolFactory, ProtocolFactory protocolFactory) throws Throwable;
     BrokerCommand decode(InvokerCommand command, ProtocolFactory protocolFactory) throws Throwable;
 }

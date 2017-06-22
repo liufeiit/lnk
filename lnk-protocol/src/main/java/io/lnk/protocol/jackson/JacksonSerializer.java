@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 
-import io.lnk.protocol.Serializer;
+import io.lnk.api.protocol.Serializer;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

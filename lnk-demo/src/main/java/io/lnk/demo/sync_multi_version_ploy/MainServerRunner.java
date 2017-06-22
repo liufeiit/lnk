@@ -18,16 +18,15 @@ import io.lnk.api.BrokerProtocols;
 import io.lnk.api.Protocols;
 import io.lnk.api.RemoteObject;
 import io.lnk.api.annotation.Lnkwired;
-import io.lnk.api.app.Application;
 import io.lnk.api.broker.BrokerArg;
 import io.lnk.api.broker.BrokerCaller;
 import io.lnk.api.broker.BrokerCommand;
+import io.lnk.api.protocol.Serializer;
 import io.lnk.api.utils.CorrelationIds;
 import io.lnk.demo.AppBizException;
 import io.lnk.demo.AuthRequest;
 import io.lnk.demo.AuthResponse;
 import io.lnk.demo.BasicMainServerRunner;
-import io.lnk.protocol.Serializer;
 import io.lnk.protocol.jackson.JacksonSerializer;
 
 /**
@@ -56,10 +55,8 @@ public class MainServerRunner extends BasicMainServerRunner {
     public void testBrokerCaller() {
         try {
             BrokerCommand brokerCommand = new BrokerCommand();
-            Application application = new Application();
-            application.setApp("test.broker");
-            application.setType("broker");
-            brokerCommand.setApplication(application);
+            brokerCommand.setInvokeType(BrokerCommand.SYNC);
+            brokerCommand.setApplication("test.broker");
             brokerCommand.setVersion("2.0.0");
             brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
             brokerCommand.setBrokerProtocol(BrokerProtocols.JACKSON);
@@ -72,7 +69,7 @@ public class MainServerRunner extends BasicMainServerRunner {
             arg.setArg(serializer.serializeAsString(buildAuthRequest()));
             brokerCommand.setArgs(new BrokerArg[] {arg});
             brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
-            BrokerCommand response = brokerCaller.sync(brokerCommand);
+            BrokerCommand response = brokerCaller.invoke(brokerCommand);
             System.err.println("request command : " + JSON.toJSONString(brokerCommand, true));
             System.err.println("response command : " + JSON.toJSONString(response, true));
         } catch (Exception e) {
