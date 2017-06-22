@@ -6,9 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.lnk.api.broker.BrokerCaller;
-import io.lnk.api.broker.BrokerCallerAware;
+import io.lnk.api.broker.BrokerConfiguration;
+import io.lnk.api.broker.BrokerServer;
 import io.lnk.api.utils.LnkThreadFactory;
-import io.lnk.remoting.ServerConfiguration;
 import io.lnk.remoting.utils.RemotingUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -31,18 +31,19 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
  * @version 1.0.0
  * @since 2017年5月19日 下午6:54:31
  */
-public class WsBrokerServer implements BrokerCallerAware {
+public class WsBrokerServer implements BrokerServer {
     protected static final Logger log = LoggerFactory.getLogger(WsBrokerServer.class.getSimpleName());
     private final ServerBootstrap serverBootstrap;
     private final EventLoopGroup eventLoopGroupSelector;
     private final EventLoopGroup eventLoopGroupBoss;
+    private final BrokerConfiguration configuration;
     private DefaultEventExecutorGroup defaultEventExecutorGroup;
     private Channel serverChannel;
     private InetSocketAddress serverAddress;
-    private final ServerConfiguration configuration;
     private BrokerCaller caller;
+    private String context;
 
-    public WsBrokerServer(final ServerConfiguration configuration) {
+    public WsBrokerServer(final BrokerConfiguration configuration) {
         this.serverBootstrap = new ServerBootstrap();
         this.configuration = configuration;
         this.eventLoopGroupBoss = new NioEventLoopGroup(2, LnkThreadFactory.newThreadFactory("WsBrokerServerBoss-%d", false));
@@ -70,7 +71,7 @@ public class WsBrokerServer implements BrokerCallerAware {
                         ch.pipeline().addLast(defaultEventExecutorGroup)
                         .addLast("codec-http", new HttpServerCodec())
                         .addLast("aggregator", new HttpObjectAggregator(1024 * 1024 * 100))// 100M
-                        .addLast("handler", new WsIoHandler(caller));
+                        .addLast("handler", new WsIoHandler(caller, context));
                     }
                 });
         if (configuration.isPooledByteBufAllocatorEnable()) {
@@ -108,5 +109,9 @@ public class WsBrokerServer implements BrokerCallerAware {
     @Override
     public void setBrokerCaller(BrokerCaller caller) {
         this.caller = caller;
+    }
+    
+    public void setContext(String context) {
+        this.context = context;
     }
 }

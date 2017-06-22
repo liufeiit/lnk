@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.lnk.remoting.SystemConfiguration;
+import io.lnk.api.SystemConfiguration;
 import io.lnk.remoting.protocol.RemotingCommand;
 import io.lnk.remoting.utils.RemotingUtils;
 import io.netty.buffer.ByteBuf;
@@ -20,7 +20,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  */
 public class CommandProtocolDecoder extends LengthFieldBasedFrameDecoder {
     private static final Logger log = LoggerFactory.getLogger(CommandProtocolDecoder.class.getSimpleName());
-    private static final int FRAME_MAX_LENGTH = Integer.getInteger(SystemConfiguration.IO_REMOTING_FRAME_MAXLENGTH, (Integer.MAX_VALUE - RemotingCommand.COMMAND_LENGTH_LENGTH));
+    private static final int FRAME_MAX_LENGTH = Integer.getInteger(SystemConfiguration.IO_FRAME_MAXLENGTH, (Integer.MAX_VALUE - RemotingCommand.COMMAND_LENGTH_LENGTH));
 
     public CommandProtocolDecoder() {
         super(FRAME_MAX_LENGTH, (RemotingCommand.COMMAND_LENGTH_LENGTH - RemotingCommand.BODY_LENGTH), RemotingCommand.BODY_LENGTH, 0, 0);

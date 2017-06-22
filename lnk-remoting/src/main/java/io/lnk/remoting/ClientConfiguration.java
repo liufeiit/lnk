@@ -1,5 +1,7 @@
 package io.lnk.remoting;
 
+import io.lnk.api.SystemConfiguration;
+
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
  *
@@ -11,8 +13,8 @@ public class ClientConfiguration implements Cloneable, SystemConfiguration {
     private int workerThreads = 4;
     private int connectTimeoutMillis = 3000;
     private int channelMaxIdleTimeSeconds = 120;
-    private int socketSndBufSize = Integer.getInteger(IO_REMOTING_SOCKET_SNDBUF_SIZE, 65535);
-    private int socketRcvBufSize = Integer.getInteger(IO_REMOTING_SOCKET_RCVBUF_SIZE, 65535);
+    private int socketSndBufSize = Integer.getInteger(IO_SOCKET_SNDBUF_SIZE, 65535);
+    private int socketRcvBufSize = Integer.getInteger(IO_SOCKET_RCVBUF_SIZE, 65535);
     private int defaultExecutorThreads = 4;
 
     public RemotingProvider getProvider() {

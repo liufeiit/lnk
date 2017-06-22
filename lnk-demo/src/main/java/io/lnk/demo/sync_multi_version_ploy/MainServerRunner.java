@@ -3,7 +3,13 @@ package io.lnk.demo.sync_multi_version_ploy;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.URI;
+import java.util.concurrent.Future;
 
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.WriteCallback;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +55,81 @@ public class MainServerRunner extends BasicMainServerRunner {
     @Autowired
     BrokerCaller brokerCaller;
 
-    private final Serializer serializer = new JacksonSerializer();
+    static Serializer serializer = new JacksonSerializer();
+
+    public static class EventSocket extends WebSocketAdapter {
+        public void onWebSocketConnect(Session sess) {
+            super.onWebSocketConnect(sess);
+            System.out.println("Socket Connected: " + sess);
+        }
+
+        public void onWebSocketText(String message) {
+            super.onWebSocketText(message);
+            System.out.println("Received TEXT message: " + message);
+            BrokerCommand response = serializer.deserialize(BrokerCommand.class, message);
+            System.err.println("Received BrokerCommand : " + JSON.toJSONString(response, true));
+        }
+
+        public void onWebSocketClose(int statusCode, String reason) {
+            super.onWebSocketClose(statusCode, reason);
+            System.out.println("Socket Closed: [" + statusCode + "] " + reason);
+        }
+
+        public void onWebSocketError(Throwable cause) {
+            super.onWebSocketError(cause);
+            cause.printStackTrace(System.err);
+        }
+    }
+
+    public static void main(String[] args) {
+        URI uri = URI.create("ws://10.10.19.174:1024/lnk");
+        WebSocketClient client = new WebSocketClient();
+        try {
+            client.start();
+            EventSocket socket = new EventSocket();
+            Future<Session> fut = client.connect(socket, uri);
+            Session session = fut.get();
+            BrokerCommand brokerCommand = new BrokerCommand();
+            brokerCommand.setInvokeType(BrokerCommand.SYNC);
+            brokerCommand.setApplication("test.broker");
+            brokerCommand.setVersion("2.0.0");
+            brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
+            brokerCommand.setBrokerProtocol(BrokerProtocols.JACKSON);
+            brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
+            brokerCommand.setServiceId(AuthService.class.getName());
+            brokerCommand.setMethod("auth");
+            brokerCommand.setSignature(new String[] {AuthRequest.class.getName()});
+            BrokerArg arg = new BrokerArg();
+            arg.setType(AuthRequest.class.getName());
+            arg.setArg(serializer.serializeAsString(buildAuthRequest()));
+            brokerCommand.setArgs(new BrokerArg[] {arg});
+            brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
+            String command = serializer.serializeAsString(brokerCommand);
+            for (int i = 0; i < 100; i++)
+                session.getRemote().sendString(command, new WriteCallback() {
+
+                    @Override
+                    public void writeSuccess() {
+                        System.err.println("send success.");
+                    }
+
+                    @Override
+                    public void writeFailed(Throwable x) {
+                        x.printStackTrace();
+                    }
+                });
+            // session.close();
+            System.err.println("send ws command : " + command);
+        } catch (Throwable t) {
+            t.printStackTrace(System.err);
+        } finally {
+            // try {
+            // client.stop();
+            // } catch (Throwable e) {
+            // e.printStackTrace(System.err);
+            // }
+        }
+    }
 
     @Test
     public void testBrokerCaller() {
@@ -138,7 +218,7 @@ public class MainServerRunner extends BasicMainServerRunner {
         }
     }
 
-    private PolyAuthRequest buildPolyAuthRequest() {
+    private static PolyAuthRequest buildPolyAuthRequest() {
         PolyAuthRequest request = new PolyAuthRequest();
         request.setTxnId(CorrelationIds.buildGuid());
         request.setCardNo("6222021001138822740");
@@ -154,7 +234,7 @@ public class MainServerRunner extends BasicMainServerRunner {
         return request;
     }
 
-    private AuthRequest buildAuthRequest() {
+    private static AuthRequest buildAuthRequest() {
         AuthRequest request = new AuthRequest();
         request.setTxnId(CorrelationIds.buildGuid());
         request.setCardNo("6222021001138822740");

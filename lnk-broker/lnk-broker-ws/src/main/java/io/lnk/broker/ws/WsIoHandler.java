@@ -39,10 +39,12 @@ final class WsIoHandler extends SimpleChannelInboundHandler<Object> {
     private static final String WS_SCHEME = "ws://";
     private WebSocketServerHandshaker handshaker;
     private final BrokerCaller caller;
+    private final String context;
 
-    WsIoHandler(BrokerCaller caller) {
+    WsIoHandler(BrokerCaller caller, String context) {
         super();
         this.caller = caller;
+        this.context = context;
     }
 
     @Override
@@ -122,7 +124,7 @@ final class WsIoHandler extends SimpleChannelInboundHandler<Object> {
     }
     
     private String getWebSocketLocation(FullHttpRequest req) {
-        return WS_SCHEME + req.headers().get(HttpHeaderNames.HOST) + "/lnk";
+        return WS_SCHEME + req.headers().get(HttpHeaderNames.HOST) + this.context;
     }
 
     @Override

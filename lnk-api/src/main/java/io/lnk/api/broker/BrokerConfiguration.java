@@ -1,4 +1,4 @@
-package io.lnk.remoting;
+package io.lnk.api.broker;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -11,11 +11,10 @@ import io.lnk.api.SystemConfiguration;
  * @version 1.0.0
  * @since 2017年5月19日 下午10:28:53
  */
-public class ServerConfiguration implements Cloneable, SystemConfiguration {
-    private RemotingProvider provider = RemotingProvider.Netty;
-    private int listenPort = 8888;
+public class BrokerConfiguration implements Cloneable, SystemConfiguration {
+    private BrokerProvider provider = BrokerProvider.HTTP;
+    private int listenPort = 9999;
     private int workerThreads = 10;
-    //mina实现中未设置
     private int selectorThreads = 5;
     private int channelMaxIdleTimeSeconds = 120;
     private int socketSndBufSize = Integer.getInteger(IO_SOCKET_SNDBUF_SIZE, 65535);
@@ -23,20 +22,20 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
     private boolean pooledByteBufAllocatorEnable = true;
     private int defaultWorkerProcessorThreads = 10;
     private int defaultExecutorThreads = 8;
+    private String context;
     
     /**
      * make make install
      * ../glibc-2.10.1/configure \ --prefix=/usr \ --with-headers=/usr/include \
      * --host=x86_64-linux-gnu \ --build=x86_64-pc-linux-gnu \ --without-gd
      */
-    //mina实现中未设置
     private boolean useEpollNativeSelector = false;
 
-    public RemotingProvider getProvider() {
+    public BrokerProvider getProvider() {
         return provider;
     }
 
-    public void setProvider(RemotingProvider provider) {
+    public void setProvider(BrokerProvider provider) {
         this.provider = provider;
     }
 
@@ -112,6 +111,14 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
         this.defaultExecutorThreads = defaultExecutorThreads;
     }
 
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
     public boolean isUseEpollNativeSelector() {
         return useEpollNativeSelector;
     }
@@ -122,7 +129,7 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return (ServerConfiguration) super.clone();
+        return (BrokerConfiguration) super.clone();
     }
 
     @Override

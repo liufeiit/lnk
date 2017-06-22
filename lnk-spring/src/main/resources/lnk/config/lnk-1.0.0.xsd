@@ -72,6 +72,31 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="broker">
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string" use="required"/>
+			<xsd:attribute name="provider" default="http" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="http"/>
+						<xsd:enumeration value="ws"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="listen-port" type="xsd:int" use="optional"/>
+			<xsd:attribute name="context" type="xsd:string" use="optional" default="/"/>
+			<xsd:attribute name="worker-threads" type="xsd:int" use="optional" default="10"/>
+			<xsd:attribute name="selector-threads" type="xsd:int" use="optional" default="5"/>
+			<xsd:attribute name="channel-maxidletime-seconds" type="xsd:int" use="optional" default="120"/>
+			<xsd:attribute name="socket-sndbuf-size" type="xsd:int" use="optional" default="65535"/>
+			<xsd:attribute name="socket-rcvbuf-size" type="xsd:int" use="optional" default="65535"/>
+			<xsd:attribute name="pooled-bytebuf-allocator-enable" type="xsd:boolean" use="optional" default="true"/>
+			<xsd:attribute name="default-worker-processor-threads" type="xsd:int" use="optional" default="10"/>
+			<xsd:attribute name="default-executor-threads" type="xsd:int" use="optional" default="8"/>
+			<xsd:attribute name="use-epoll-native-selector" type="xsd:boolean" use="optional" default="false"/>
+		</xsd:complexType>
+	</xsd:element>
+	
 	<xsd:complexType name="application-type">
 		<xsd:sequence>
 			<xsd:element name="parameter" maxOccurs="unbounded" minOccurs="0" type="parameter-type"/>
