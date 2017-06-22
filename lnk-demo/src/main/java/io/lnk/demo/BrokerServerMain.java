@@ -176,7 +176,7 @@ public class BrokerServerMain {
         try {
             String file = "/Users/liufei/软件/Office2010/Office_2010激活工具.exe";
             String data = Base64.encodeBase64String(StreamUtils.copyToByteArray(new FileInputStream(file)));
-            request.setDataString(StringUtils.substring(data, 0, 1000));
+//            request.setDataString(StringUtils.substring(data, 0, 1000));
         } catch (Throwable e) {
             e.printStackTrace(System.err);
         }
