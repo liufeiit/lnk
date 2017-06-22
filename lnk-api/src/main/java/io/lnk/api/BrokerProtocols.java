@@ -7,5 +7,5 @@ package io.lnk.api;
  * @since 2017年5月26日 上午11:57:55
  */
 public interface BrokerProtocols {
-    String JACKSON = "jackson";
+    String JSON = "json";
 }

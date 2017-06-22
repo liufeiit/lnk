@@ -25,7 +25,7 @@ public class BrokerCommand implements Serializable {
     private int invokeType = SYNC;
     private String version = ServiceVersion.DEFAULT_VERSION;
     private int protocol = Protocols.DEFAULT_PROTOCOL;
-    private String brokerProtocol = BrokerProtocols.JACKSON;
+    private String brokerProtocol = BrokerProtocols.JSON;
     private String application;
     private String serviceGroup;
     private String serviceId;

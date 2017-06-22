@@ -11,6 +11,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<context:annotation-config />
+	<context:property-placeholder location="classpath:config.properties"/>
 	<aop:aspectj-autoproxy />
 	
 	<bean id="defaultAuthService" class="io.lnk.demo.sync_multi_version_ploy.DefaultAuthService"/>

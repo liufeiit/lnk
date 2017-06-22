@@ -59,7 +59,7 @@ public class MainServerRunner extends BasicMainServerRunner {
             brokerCommand.setApplication("test.broker");
             brokerCommand.setVersion("2.0.0");
             brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
-            brokerCommand.setBrokerProtocol(BrokerProtocols.JACKSON);
+            brokerCommand.setBrokerProtocol(BrokerProtocols.JSON);
             brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
             brokerCommand.setServiceId(AuthService.class.getName());
             brokerCommand.setMethod("auth");

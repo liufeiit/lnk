@@ -36,7 +36,7 @@ public class LnkBrokerCaller implements BrokerCaller {
     public String invoke(String command) throws LnkException, LnkTimeoutException {
         BrokerProtocolFactory brokerProtocolFactory = null;
         if (StringUtils.startsWith(command, "{") && StringUtils.endsWith(command, "}")) {
-            brokerProtocolFactory = this.brokerProtocolFactorySelector.select(BrokerProtocols.JACKSON);
+            brokerProtocolFactory = this.brokerProtocolFactorySelector.select(BrokerProtocols.JSON);
             Serializer serializer = brokerProtocolFactory.serializer();
             BrokerCommand response = this.invoke(serializer.deserialize(BrokerCommand.class, command));
             return serializer.serializeAsString(response);

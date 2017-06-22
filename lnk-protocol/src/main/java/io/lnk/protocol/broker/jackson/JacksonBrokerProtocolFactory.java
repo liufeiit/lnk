@@ -13,6 +13,6 @@ import io.lnk.protocol.jackson.JacksonSerializer;
 public class JacksonBrokerProtocolFactory extends BasicBrokerProtocolFactory {
 
     public JacksonBrokerProtocolFactory() {
-        super(BrokerProtocols.JACKSON, new JacksonSerializer());
+        super(BrokerProtocols.JSON, new JacksonSerializer());
     }
 }

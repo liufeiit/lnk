@@ -67,9 +67,10 @@ public class HttpBrokerServer implements BrokerServer {
                 .localAddress(new InetSocketAddress(this.configuration.getListenPort()))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(defaultEventExecutorGroup, 
-                                new HttpServerCodec(), new HttpObjectAggregator(1024 * 1024 * 100),
-                                new HttpIoHandler(caller));
+                        ch.pipeline().addLast(defaultEventExecutorGroup)
+                        .addLast("codec-http", new HttpServerCodec())
+                        .addLast("aggregator", new HttpObjectAggregator(1024 * 1024 * 100))
+                        .addLast("handler", new HttpIoHandler(caller));
                     }
                 });
         if (configuration.isPooledByteBufAllocatorEnable()) {

@@ -1,10 +1,8 @@
 package io.lnk.demo;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.concurrent.Future;
 
 import org.apache.commons.codec.binary.Base64;
@@ -63,14 +61,14 @@ public class BrokerServerMain {
     public static void brokerInvokeHttp() {
         try {
             CloseableHttpClient client = HttpClients.createDefault();
-            String uri = "http://10.10.19.174:42000";
+            String uri = "http://127.0.0.1:42000";
             HttpPost request = new HttpPost(uri);
             BrokerCommand brokerCommand = new BrokerCommand();
             brokerCommand.setInvokeType(BrokerCommand.SYNC);
             brokerCommand.setApplication("test.broker");
             brokerCommand.setVersion("2.0.0");
             brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
-            brokerCommand.setBrokerProtocol(BrokerProtocols.JACKSON);
+            brokerCommand.setBrokerProtocol(BrokerProtocols.JSON);
             brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
             brokerCommand.setServiceId(AuthService.class.getName());
             brokerCommand.setMethod("auth");
@@ -98,7 +96,7 @@ public class BrokerServerMain {
     }
 
     public static void brokerInvokeWs() {
-        URI uri = URI.create("ws://10.10.19.174:43000");
+        URI uri = URI.create("ws://127.0.0.1:43000");
         WebSocketClient client = new WebSocketClient();
         try {
             client.start();
@@ -110,7 +108,7 @@ public class BrokerServerMain {
             brokerCommand.setApplication("test.broker");
             brokerCommand.setVersion("2.0.0");
             brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
-            brokerCommand.setBrokerProtocol(BrokerProtocols.JACKSON);
+            brokerCommand.setBrokerProtocol(BrokerProtocols.JSON);
             brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
             brokerCommand.setServiceId(AuthService.class.getName());
             brokerCommand.setMethod("auth");
@@ -178,10 +176,8 @@ public class BrokerServerMain {
         try {
             String file = "/Users/liufei/软件/Office2010/Office_2010激活工具.exe";
             String data = Base64.encodeBase64String(StreamUtils.copyToByteArray(new FileInputStream(file)));
-            request.setDataString(StringUtils.substring(data, 0, 10000));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace(System.err);
-        } catch (IOException e) {
+            request.setDataString(StringUtils.substring(data, 0, 1000));
+        } catch (Throwable e) {
             e.printStackTrace(System.err);
         }
         return request;
