@@ -34,8 +34,6 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
   - 7.支持异常
   - 8.支持RPC服务序列化（实现异步回调的基础）
 
-
-
 # * 使用Spring进行配置 Server端配置
 
 	<lnk:server id="paymentServer" client="paymentClient" listen-port="8888" worker-threads="20" 
@@ -106,8 +104,6 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 	tracker子节点主要标示链路跟踪单元，目前只支持日志跟踪，后续接入cat和另外开发一套梳理应用关系展示和调用链路的web系统。
 	
 	bind子节点主要是用于将服务端的服务划分为不同的组别，不同的组别使用自身组别的线程池，是的各个组别对外提供服务的线程等资源相互隔离。service-group标示组别名称，worker-threads标示改组请求处理线程池大小。默认为10.
-    
-    ***
     
 # * 使用Spring进行配置 Client端配置
 
