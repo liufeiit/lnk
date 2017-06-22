@@ -36,7 +36,7 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 
 
 
-# * 使用Spring进行配置
+# * 使用Spring进行配置 Server端配置
 
 	<lnk:server id="paymentServer" client="paymentClient" listen-port="8888" worker-threads="20" 
 		selector-threads="15" channel-maxidletime-seconds="120" 
@@ -55,8 +55,6 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 		</lnk:bind>
 	</lnk:server>
 	
-  - Server端简单配置
-    
 	<lnk:server id="paymentServer" client="paymentClient">
 		<lnk:application app="biz-pay-bgw-payment-srv"/>
 		<lnk:registry address="zk://10.100.156.26:2181"/>
@@ -70,14 +68,12 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 		</lnk:bind>
 	</lnk:server>
     
-  - Server端极简配置
-    
 	<lnk:server id="paymentServer" client="paymentClient">
 		<lnk:application app="biz-pay-bgw-payment-srv"/>
 		<lnk:registry address="zk://127.0.0.1:2181"/>
 	</lnk:server>
     
-  - 配置项说明
+# * 配置项说明
 
 	client：依赖的client客户端配置，主要用于服务回调支持
 
@@ -113,10 +109,8 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
     
     ***
     
-+ Client端配置
+# * 使用Spring进行配置 Client端配置
 
-  - Client端全部配置
-    
 	<lnk:client id="paymentClient" worker-threads="4" connect-timeout-millis="3000" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" 
 		socket-rcvbuf-size="65535" default-executor-threads="4">
@@ -126,8 +120,6 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 		<lnk:load-balance type="hash"/>
 	</lnk:client>
 	
-  - Client端简单配置
-	
 	<lnk:client id="paymentClient">
 		<lnk:application app="biz-pay-bgw-payment-srv"/>
 		<lnk:lookup address="zk://127.0.0.1:2181"/>
@@ -135,15 +127,13 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 		<lnk:load-balance type="hash"/>
 	</lnk:client>
 	
-  - Client端极简配置
-    
 	<lnk:client id="paymentClient">
 		<lnk:application app="biz-pay-bgw-payment-srv"/>
 		<lnk:lookup address="zk://127.0.0.1:2181"/>
 		<lnk:load-balance type="hash"/>
 	</lnk:client>
 	
-  - 配置项说明
+# * 配置项说明
   
 	worker-threads：Netty和Mina客户端事件处理线程池大小。默认为4.
 	
@@ -221,18 +211,14 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
     @Lnkwired(version = "2.0.0", localWiredPriority = false)
     AuthService v2AuthService;
   
-# * 使用broker代理模式
-
- + 使用websocket协议broker
-   
-   - broker xml配置
+# * 使用websocket协议broker
    
 	<lnk:broker id="paymentWsBrokerServer" provider="ws" listen-port="43000" worker-threads="20" selector-threads="15" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
 		use-epoll-native-selector="false"/>
 	
-   - websocket客户端
+# * websocket客户端
 
 	<script type="text/javascript">
 		var ws;
@@ -303,16 +289,14 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 		}
 	</script>
 	
- + 使用http协议broker
+# * 使用http协议broker
  
-  - broker xml配置
-   
 	<lnk:broker id="paymentHttpBrokerServer" provider="http" listen-port="42000" worker-threads="20" selector-threads="15" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
 		use-epoll-native-selector="false"/>
 
-  - http客户端调用
+# * http客户端调用
   
 	CloseableHttpClient client = HttpClients.createDefault();
 	String uri = "http://127.0.0.1:42000";
