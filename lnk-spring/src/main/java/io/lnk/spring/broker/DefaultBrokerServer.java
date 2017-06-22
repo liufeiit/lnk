@@ -2,9 +2,13 @@ package io.lnk.spring.broker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
 
 import io.lnk.api.Address;
+import io.lnk.api.app.Application;
 import io.lnk.api.broker.BrokerCaller;
 import io.lnk.api.broker.BrokerCallerAware;
 import io.lnk.api.broker.BrokerConfiguration;
@@ -13,6 +17,7 @@ import io.lnk.api.port.ServerPortAllocator;
 import io.lnk.api.utils.NetUtils;
 import io.lnk.broker.http.HttpBrokerServer;
 import io.lnk.broker.ws.WsBrokerServer;
+import io.lnk.spring.core.LnkApplication;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -23,17 +28,21 @@ import sun.misc.SignalHandler;
  * @since 2017年6月22日 上午11:21:37
  */
 @SuppressWarnings("restriction")
-public class DefaultBrokerServer implements BrokerCallerAware, InitializingBean {
+public class DefaultBrokerServer implements BrokerCallerAware, BeanFactoryAware, InitializingBean {
     protected static final Logger log = LoggerFactory.getLogger(DefaultBrokerServer.class.getSimpleName());
+    private BeanFactory beanFactory;
     private BrokerServer brokerServer;
     private ServerPortAllocator serverPortAllocator;
     private BrokerConfiguration configuration;
     private BrokerCaller caller;
     private Address serverAddress;
+    private Application application;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), null));
+        LnkApplication lnkApplication = this.beanFactory.getBean(LnkApplication.LNK_APPLICATION_NAME, LnkApplication.class);
+        this.application = lnkApplication.getApplication();
+        configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
         switch (configuration.getProvider()) {
             case HTTP:
                 brokerServer = new HttpBrokerServer(configuration);
@@ -100,5 +109,10 @@ public class DefaultBrokerServer implements BrokerCallerAware, InitializingBean 
 
     public void setServerPortAllocator(ServerPortAllocator serverPortAllocator) {
         this.serverPortAllocator = serverPortAllocator;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 }
