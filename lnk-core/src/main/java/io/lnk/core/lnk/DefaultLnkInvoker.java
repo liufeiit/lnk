@@ -253,7 +253,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
     }
 
     @Override
-    public final void async_multicast(InvokerCommand command) {
+    public final void multicast(InvokerCommand command) {
         if (this.multicastTryAcquireFailure(3000L)) {
             throw new LnkRejectException(command.commandSignature());
         }

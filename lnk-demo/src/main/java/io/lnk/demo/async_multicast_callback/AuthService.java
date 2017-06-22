@@ -16,6 +16,6 @@ import io.lnk.demo.AuthRequest;
 public interface AuthService {
     @LnkMethod(type = InvokeType.ASYNC)
     void auth(AuthRequest request, AuthCallbackService callback) throws AppBizException;
-    @LnkMethod(type = InvokeType.ASYNC_MULTI_CAST)
+    @LnkMethod(type = InvokeType.MULTICAST)
     void auth_multi_cast(AuthRequest request, AuthCallbackService callback) throws AppBizException;
 }

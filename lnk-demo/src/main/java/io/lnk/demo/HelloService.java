@@ -21,13 +21,13 @@ public interface HelloService {
     @LnkMethod(type = InvokeType.ASYNC, timeoutMillis = 5000L)
     void welcome(String name, WelcomeCallback callback);
 
-    @LnkMethod(type = InvokeType.ASYNC_MULTI_CAST, timeoutMillis = 5000L)
+    @LnkMethod(type = InvokeType.MULTICAST, timeoutMillis = 5000L)
     void welcomeMulticast(String name, WelcomeCallback callback);
 
     @LnkMethod(type = InvokeType.ASYNC, timeoutMillis = 5000L)
     void welcome(String name);
 
-    @LnkMethod(type = InvokeType.ASYNC_MULTI_CAST, timeoutMillis = 5000L)
+    @LnkMethod(type = InvokeType.MULTICAST, timeoutMillis = 5000L)
     void welcomeMulticast(String name);
 
     public static class ComplexRequest implements Serializable {

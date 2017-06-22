@@ -164,6 +164,12 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 	    
 	    @LnkMethod(type = InvokeType.SYNC, timeoutMillis = 3000L)
 	    AuthResponse auth_poly(AuthRequest request) throws AppBizException;
+	    
+	    @LnkMethod(type = InvokeType.ASYNC)
+	    void auth(AuthRequest request, AuthCallbackService callback) throws AppBizException;
+	    
+	    @LnkMethod(type = InvokeType.MULTICAST)
+	    void auth_multi_cast(AuthRequest request, AuthCallbackService callback) throws AppBizException;
 	}
 	
 	// 标记服务发布的版本

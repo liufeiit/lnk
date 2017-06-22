@@ -71,7 +71,7 @@ public class LnkCaller implements InvocationHandler {
         }
         final Class<?> returnType = method.getReturnType();
         if (returnType == void.class) {
-            if (type != InvokeType.ASYNC_MULTI_CAST) {
+            if (type != InvokeType.MULTICAST) {
                 type = InvokeType.ASYNC;
             }
         }
@@ -92,8 +92,8 @@ public class LnkCaller implements InvocationHandler {
                 this.invoker.async(command);
             }
                 break;
-            case ASYNC_MULTI_CAST: {
-                this.invoker.async_multicast(command);
+            case MULTICAST: {
+                this.invoker.multicast(command);
             }
                 break;
         }

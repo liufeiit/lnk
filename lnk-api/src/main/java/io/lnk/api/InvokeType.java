@@ -7,5 +7,5 @@ package io.lnk.api;
  * @since 2017年5月22日 下午9:25:55
  */
 public enum InvokeType {
-    SYNC, ASYNC, ASYNC_MULTI_CAST;
+    SYNC, ASYNC, MULTICAST;
 }

@@ -104,7 +104,7 @@ public class LnkBrokerCaller implements BrokerCaller {
         try {
             ProtocolFactory protocolFactory = protocolFactorySelector.select(command.getProtocol());
             BrokerProtocolFactory brokerProtocolFactory = this.brokerProtocolFactorySelector.select(command.getBrokerProtocol());
-            this.invoker.async_multicast(brokerProtocolFactory.encode(command, objectProtocolFactory, protocolFactory));
+            this.invoker.multicast(brokerProtocolFactory.encode(command, objectProtocolFactory, protocolFactory));
         } catch (Throwable e) {
             log.error("invoker multicast correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);
             throw new LnkException("invoker multicast correlationId<" + command.getId() + ">, serviceId<" + command.getServiceId() + "> " + e.getLocalizedMessage(), e);

@@ -15,7 +15,7 @@ public interface LnkInvoker {
     InvokerCommand sync(final InvokerCommand command, final long timeoutMillis) throws LnkException, LnkTimeoutException;
     void async_callback(final InvokerCommand command, final long timeoutMillis, final InvokerCallback callback) throws LnkException, LnkTimeoutException;
     void async(final InvokerCommand command) throws LnkException, LnkTimeoutException;
-    void async_multicast(final InvokerCommand command);
+    void multicast(final InvokerCommand command);
     void start();
     boolean isStarted();
     void shutdown();
