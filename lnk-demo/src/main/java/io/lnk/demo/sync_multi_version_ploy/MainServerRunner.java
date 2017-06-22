@@ -48,7 +48,7 @@ public class MainServerRunner extends BasicMainServerRunner {
 
     @Autowired
     BrokerCaller brokerCaller;
-    
+
     private final Serializer serializer = new JacksonSerializer();
 
     @Test
@@ -69,9 +69,12 @@ public class MainServerRunner extends BasicMainServerRunner {
             arg.setArg(serializer.serializeAsString(buildAuthRequest()));
             brokerCommand.setArgs(new BrokerArg[] {arg});
             brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
-            BrokerCommand response = brokerCaller.invoke(brokerCommand);
-            System.err.println("request command : " + JSON.toJSONString(brokerCommand, true));
-            System.err.println("response command : " + JSON.toJSONString(response, true));
+            String command = serializer.serializeAsString(brokerCommand);
+            String response = brokerCaller.invoke(command);
+            // System.err.println("request command : " + JSON.toJSONString(brokerCommand, true));
+            // System.err.println("response command : " + JSON.toJSONString(response, true));
+            System.err.println("request command : " + command);
+            System.err.println("response command : " + response);
         } catch (Exception e) {
             e.printStackTrace();
         }
