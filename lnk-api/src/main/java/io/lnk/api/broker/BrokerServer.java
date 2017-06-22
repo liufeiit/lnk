@@ -12,5 +12,4 @@ public interface BrokerServer extends BrokerCallerAware {
     void start();
     void shutdown();
     InetSocketAddress getServerAddress();
-    void setContext(String context);
 }

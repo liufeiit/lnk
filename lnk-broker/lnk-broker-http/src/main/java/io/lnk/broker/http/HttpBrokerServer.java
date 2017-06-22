@@ -1,4 +1,4 @@
-package io.lnk.broker.ws;
+package io.lnk.broker.http;
 
 import java.net.InetSocketAddress;
 
@@ -21,7 +21,6 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
@@ -31,8 +30,8 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
  * @version 1.0.0
  * @since 2017年5月19日 下午6:54:31
  */
-public class WsBrokerServer implements BrokerServer {
-    protected static final Logger log = LoggerFactory.getLogger(WsBrokerServer.class.getSimpleName());
+public class HttpBrokerServer implements BrokerServer {
+    protected static final Logger log = LoggerFactory.getLogger(HttpBrokerServer.class.getSimpleName());
     private final ServerBootstrap serverBootstrap;
     private final EventLoopGroup eventLoopGroupSelector;
     private final EventLoopGroup eventLoopGroupBoss;
@@ -42,20 +41,20 @@ public class WsBrokerServer implements BrokerServer {
     private InetSocketAddress serverAddress;
     private BrokerCaller caller;
 
-    public WsBrokerServer(final BrokerConfiguration configuration) {
+    public HttpBrokerServer(final BrokerConfiguration configuration) {
         this.serverBootstrap = new ServerBootstrap();
         this.configuration = configuration;
-        this.eventLoopGroupBoss = new NioEventLoopGroup(2, LnkThreadFactory.newThreadFactory("WsBrokerServerBoss-%d", false));
+        this.eventLoopGroupBoss = new NioEventLoopGroup(2, LnkThreadFactory.newThreadFactory("HttpBrokerServerBoss-%d", false));
         int serverSelectorThreads = configuration.getSelectorThreads();
         if (RemotingUtils.isLinuxPlatform() && configuration.isUseEpollNativeSelector()) {
-            this.eventLoopGroupSelector = new EpollEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("WsBrokerServerEPOLLSelector-" + serverSelectorThreads + "-%d", false));
+            this.eventLoopGroupSelector = new EpollEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("HttpBrokerServerEPOLLSelector-" + serverSelectorThreads + "-%d", false));
         } else {
-            this.eventLoopGroupSelector = new NioEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("WsBrokerServerNIOSelector-" + serverSelectorThreads + "-%d", false));
+            this.eventLoopGroupSelector = new NioEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("HttpBrokerServerNIOSelector-" + serverSelectorThreads + "-%d", false));
         }
     }
 
     public void start() {
-        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(configuration.getWorkerThreads(), LnkThreadFactory.newThreadFactory("WsBrokerServerCodecThread-%d", false));
+        this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(configuration.getWorkerThreads(), LnkThreadFactory.newThreadFactory("HttpBrokerServerCodecThread-%d", false));
         ServerBootstrap childHandler = this.serverBootstrap.group(this.eventLoopGroupBoss, this.eventLoopGroupSelector)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 1024)
@@ -67,10 +66,9 @@ public class WsBrokerServer implements BrokerServer {
                 .localAddress(new InetSocketAddress(this.configuration.getListenPort()))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     public void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(defaultEventExecutorGroup)
-                        .addLast("codec-http", new HttpServerCodec())
-                        .addLast("aggregator", new HttpObjectAggregator(1024 * 1024 * 100))// 100M
-                        .addLast("handler", new WsIoHandler(caller));
+                        ch.pipeline().addLast(defaultEventExecutorGroup, 
+                                new HttpServerCodec(), 
+                                new HttpIoHandler(caller));
                     }
                 });
         if (configuration.isPooledByteBufAllocatorEnable()) {
@@ -101,7 +99,7 @@ public class WsBrokerServer implements BrokerServer {
                 this.defaultEventExecutorGroup.shutdownGracefully();
             }
         } catch (Throwable e) {
-            log.error("WsBrokerServer shutdown Error.", e);
+            log.error("HttpBrokerServer shutdown Error.", e);
         }
     }
 

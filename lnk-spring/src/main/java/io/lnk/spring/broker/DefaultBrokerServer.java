@@ -11,6 +11,7 @@ import io.lnk.api.broker.BrokerConfiguration;
 import io.lnk.api.broker.BrokerServer;
 import io.lnk.api.port.ServerPortAllocator;
 import io.lnk.api.utils.NetUtils;
+import io.lnk.broker.http.HttpBrokerServer;
 import io.lnk.broker.ws.WsBrokerServer;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -35,7 +36,7 @@ public class DefaultBrokerServer implements BrokerCallerAware, InitializingBean 
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), null));
         switch (configuration.getProvider()) {
             case HTTP:
-                brokerServer = new WsBrokerServer(configuration);
+                brokerServer = new HttpBrokerServer(configuration);
                 break;
             case WS:
                 brokerServer = new WsBrokerServer(configuration);
@@ -44,7 +45,6 @@ public class DefaultBrokerServer implements BrokerCallerAware, InitializingBean 
                 throw new RuntimeException("unsupport BrokerServer provider : " + configuration.getProvider());
         }
         brokerServer.setBrokerCaller(caller);
-        brokerServer.setContext(configuration.getContext());
         brokerServer.start();
         serverAddress = new Address(NetUtils.getLocalAddress().getHostAddress(), brokerServer.getServerAddress().getPort());
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

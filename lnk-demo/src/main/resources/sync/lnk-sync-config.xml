@@ -29,7 +29,12 @@
 		</lnk:bind>
 	</lnk:server>
 	
-	<lnk:broker id="paymentBrokerServer" provider="ws" listen-port="41000" context="/lnk" worker-threads="20" selector-threads="15" 
+	<lnk:broker id="paymentHttpBrokerServer" provider="http" listen-port="42000" worker-threads="20" selector-threads="15" 
+		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
+		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
+		use-epoll-native-selector="false"/>
+	
+	<lnk:broker id="paymentWsBrokerServer" provider="ws" listen-port="43000" worker-threads="20" selector-threads="15" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
 		use-epoll-native-selector="false"/>

@@ -22,7 +22,6 @@ public class BrokerConfiguration implements Cloneable, SystemConfiguration {
     private boolean pooledByteBufAllocatorEnable = true;
     private int defaultWorkerProcessorThreads = 10;
     private int defaultExecutorThreads = 8;
-    private String context;
     
     /**
      * make make install
@@ -109,14 +108,6 @@ public class BrokerConfiguration implements Cloneable, SystemConfiguration {
 
     public void setDefaultExecutorThreads(int defaultExecutorThreads) {
         this.defaultExecutorThreads = defaultExecutorThreads;
-    }
-
-    public String getContext() {
-        return context;
-    }
-
-    public void setContext(String context) {
-        this.context = context;
     }
 
     public boolean isUseEpollNativeSelector() {
