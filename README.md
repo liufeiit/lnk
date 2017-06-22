@@ -42,8 +42,7 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 
   - Server端全部配置
   
-  
-	``<lnk:server id="paymentServer" client="paymentClient" listen-port="8888" worker-threads="20" 
+	<lnk:server id="paymentServer" client="paymentClient" listen-port="8888" worker-threads="20" 
 		selector-threads="15" channel-maxidletime-seconds="120" 
 		socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" 
@@ -58,13 +57,11 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 			<lnk:service-group service-group="biz-pay-bgw-payment.router.srv" 
 				worker-threads="30"/>
 		</lnk:bind>
-	</lnk:server>``
-	
+	</lnk:server>
 	
   - Server端简单配置
     
-    
-	``<lnk:server id="paymentServer" client="paymentClient">
+	<lnk:server id="paymentServer" client="paymentClient">
 		<lnk:application app="biz-pay-bgw-payment-srv"/>
 		<lnk:registry address="zk://10.100.156.26:2181"/>
 		<lnk:flow-control type="semaphore" permits="10000000"/>
@@ -75,17 +72,14 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 			<lnk:service-group service-group="biz-pay-bgw-payment.router.srv" 
 				worker-threads="10"/>
 		</lnk:bind>
-	</lnk:server>``
-    
+	</lnk:server>
     
   - Server端极简配置
     
-    
-	``<lnk:server id="paymentServer" client="paymentClient">
+	<lnk:server id="paymentServer" client="paymentClient">
 		<lnk:application app="biz-pay-bgw-payment-srv"/>
 		<lnk:registry address="zk://127.0.0.1:2181"/>
-	</lnk:server>``
-    
+	</lnk:server>
     
   - 配置项说明
 
@@ -127,37 +121,31 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 
   - Client端全部配置
     
-    
-	``<lnk:client id="paymentClient" worker-threads="4" connect-timeout-millis="3000" 
+	<lnk:client id="paymentClient" worker-threads="4" connect-timeout-millis="3000" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" 
 		socket-rcvbuf-size="65535" default-executor-threads="4">
 		<lnk:application app="biz-pay-bgw-payment-srv" type="jar"/>
 		<lnk:lookup address="zk://127.0.0.1:2181"/>
 		<lnk:flow-control type="semaphore" permits="1000"/>
 		<lnk:load-balance type="hash"/>
-	</lnk:client>``
-	
+	</lnk:client>
 	
   - Client端简单配置
 	
-	
-	``<lnk:client id="paymentClient">
+	<lnk:client id="paymentClient">
 		<lnk:application app="biz-pay-bgw-payment-srv"/>
 		<lnk:lookup address="zk://127.0.0.1:2181"/>
 		<lnk:flow-control type="semaphore" permits="1000"/>
 		<lnk:load-balance type="hash"/>
-	</lnk:client>``
-	
+	</lnk:client>
 	
   - Client端极简配置
     
-    
-	``<lnk:client id="paymentClient">
+	<lnk:client id="paymentClient">
 		<lnk:application app="biz-pay-bgw-payment-srv"/>
 		<lnk:lookup address="zk://127.0.0.1:2181"/>
 		<lnk:load-balance type="hash"/>
-	</lnk:client>``
-	
+	</lnk:client>
 	
   - 配置项说明
   
@@ -243,10 +231,10 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
    
    - broker xml配置
    
-	``<lnk:broker id="paymentWsBrokerServer" provider="ws" listen-port="43000" worker-threads="20" selector-threads="15" 
+	<lnk:broker id="paymentWsBrokerServer" provider="ws" listen-port="43000" worker-threads="20" selector-threads="15" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
-		use-epoll-native-selector="false"/>``
+		use-epoll-native-selector="false"/>
 	
    - websocket客户端
 
@@ -323,10 +311,10 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
  
   - broker xml配置
    
-	``<lnk:broker id="paymentHttpBrokerServer" provider="http" listen-port="42000" worker-threads="20" selector-threads="15" 
+	<lnk:broker id="paymentHttpBrokerServer" provider="http" listen-port="42000" worker-threads="20" selector-threads="15" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
-		use-epoll-native-selector="false"/>``
+		use-epoll-native-selector="false"/>
 
   - http客户端调用
   
