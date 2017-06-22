@@ -227,7 +227,7 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 	    }
 	}
 	
-# 服务端依赖注入
+# * 服务端依赖注入
 	
 	// 注入默认版本的服务代理
 	@Lnkwired(localWiredPriority = false)
@@ -237,9 +237,127 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
     @Lnkwired(version = "2.0.0", localWiredPriority = false)
     AuthService v2AuthService;
   
+# * 使用broker代理模式
 
+ + 使用websocket协议broker
+   
+   - broker xml配置
+   
+	``<lnk:broker id="paymentWsBrokerServer" provider="ws" listen-port="43000" worker-threads="20" selector-threads="15" 
+		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
+		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
+		use-epoll-native-selector="false"/>``
+	
+   - websocket客户端
 
+	<script type="text/javascript">
+		var ws;
+		if (!window.WebSocket) {
+			window.WebSocket = window.MozWebSocket;
+		}
+		if (window.WebSocket) {
+			ws = new WebSocket("ws://127.0.0.1:43000");
+		}
+		ws.onopen = function(event) {
+			document.getElementById('messages').innerHTML = 'Connection established<br/>';
+			console.log("WebSocket.readyState : " + ws.readyState);
+			console.log("WebSocket.onopen event : " + event);
+		};
+		ws.onmessage = function(event) {
+			console.log("WebSocket.onmessage event : " + event.data);
+			document.getElementById('messages').innerHTML += '<br/>' + event.data;
+		};
+		ws.onerror = function(event) {
+			console.log("WebSocket.onerror event : " + event);
+			alert("WebSocket.onerror event : " + event);
+		};
+		ws.onclose = function(event) {
+			console.log("WebSocket.onclose event : " + event);
+			alert("WebSocket.onclose event : " + event);
+		};
+		function start() {
+			var authRequest = {
+					txnId:"XSDNEDOZLX1F36FF9B7FFDFBC095E10006DFF02AF0C",
+					memberId:"123456",
+					name:"刘飞",
+					mobile:"13522874567",
+					cardNo:"6222021001138822740",
+					identityNo:"413537199112015138"
+			};
+			var msg = {
+				invokeType:0,
+				version:"2.0.0",
+				protocol:0,
+				brokerProtocol:"json",
+				application:"test.broker",
+				serviceGroup:"biz-pay-bgw-payment.srv",
+				serviceId:"io.lnk.demo.sync_multi_version_ploy.AuthService",
+				method:"auth",
+				signature:["io.lnk.demo.AuthRequest"],
+				args:[
+					{
+						type:"io.lnk.demo.AuthRequest",
+						arg:JSON.stringify(authRequest)
+					}
+					],
+				timeoutMillis:3000}
+				;
+			var msgJSON = JSON.stringify(msg);
+			alert(msgJSON);
+			send(msgJSON);
+			return false;
+		}
+		function send(message) {
+			if (!window.WebSocket) {
+				return;
+			}
+			if (ws.readyState == WebSocket.OPEN) {
+				ws.send(message);
+			} else {
+				alert("The socket is not open.");
+			}
+		}
+	</script>
+	
+ + 使用http协议broker
+ 
+  - broker xml配置
+   
+	``<lnk:broker id="paymentHttpBrokerServer" provider="http" listen-port="42000" worker-threads="20" selector-threads="15" 
+		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
+		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
+		use-epoll-native-selector="false"/>``
 
+  - http客户端调用
+  
+	CloseableHttpClient client = HttpClients.createDefault();
+	String uri = "http://127.0.0.1:42000";
+	HttpPost request = new HttpPost(uri);
+	BrokerCommand brokerCommand = new BrokerCommand();
+	brokerCommand.setInvokeType(BrokerCommand.SYNC);
+	brokerCommand.setApplication("test.broker");
+	brokerCommand.setVersion("2.0.0");
+	brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
+	brokerCommand.setBrokerProtocol(BrokerProtocols.JSON);
+	brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
+	brokerCommand.setServiceId(AuthService.class.getName());
+	brokerCommand.setMethod("auth");
+	brokerCommand.setSignature(new String[] {AuthRequest.class.getName()});
+	BrokerArg arg = new BrokerArg();
+	arg.setType(AuthRequest.class.getName());
+	arg.setArg(serializer.serializeAsString(buildAuthRequest()));
+	brokerCommand.setArgs(new BrokerArg[] {arg});
+	brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
+	String command = serializer.serializeAsString(brokerCommand);
+	System.err.println("http client send BrokerCommand : " + command);
+	HttpEntity entity = new StringEntity(command);
+	request.setEntity(entity);
+	BrokerCommand response = client.execute(HttpHost.create(uri), request, new AbstractResponseHandler<BrokerCommand>() {
+	    public BrokerCommand handleEntity(HttpEntity entity) throws IOException {
+	        return serializer.deserialize(BrokerCommand.class, StreamUtils.copyToString(entity.getContent(), Charsets.UTF_8));
+	    }
+	});
+	System.err.println("http client Received BrokerCommand : " + JSON.toJSONString(response, true));
 
 
 
