@@ -3,6 +3,8 @@ package io.lnk.protocol.hessian;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import org.apache.commons.codec.binary.Base64;
+
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 
@@ -43,11 +45,13 @@ public class HessianSerializer implements Serializer {
 
     @Override
     public String serializeAsString(Object bean) {
-        throw new RuntimeException("unsupport serializeAsString.");
+        byte[] serializeAsBytes = this.serializeAsBytes(bean);
+        return Base64.encodeBase64String(serializeAsBytes);
     }
 
     @Override
     public <T> T deserialize(Class<T> clazz, String serializeString) {
-        throw new RuntimeException("unsupport deserialize.");
+        byte[] serializeAsBytes = Base64.decodeBase64(serializeString);
+        return this.deserialize(clazz, serializeAsBytes);
     }
 }

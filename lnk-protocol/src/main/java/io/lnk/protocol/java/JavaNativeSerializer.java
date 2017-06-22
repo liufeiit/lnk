@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.apache.commons.codec.binary.Base64;
+
 import io.lnk.api.protocol.Serializer;
 
 /**
@@ -18,7 +20,8 @@ public class JavaNativeSerializer implements Serializer {
 
     @Override
     public String serializeAsString(Object bean) {
-        throw new RuntimeException("unsupport serializeAsString.");
+        byte[] serializeAsBytes = this.serializeAsBytes(bean);
+        return Base64.encodeBase64String(serializeAsBytes);
     }
 
     @Override
@@ -36,7 +39,8 @@ public class JavaNativeSerializer implements Serializer {
 
     @Override
     public <T> T deserialize(Class<T> clazz, String serializeString) {
-        throw new RuntimeException("unsupport deserialize.");
+        byte[] serializeAsBytes = Base64.decodeBase64(serializeString);
+        return this.deserialize(clazz, serializeAsBytes);
     }
 
     @Override
