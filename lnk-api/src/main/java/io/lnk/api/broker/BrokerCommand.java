@@ -7,7 +7,7 @@ import io.lnk.api.Protocols;
 import io.lnk.api.ServiceVersion;
 
 /**
- * 使用JSON协议代理调用.
+ * 代理调用.
  * 
  * @author 刘飞 E-mail:liufei_it@126.com
  *
@@ -23,10 +23,10 @@ public class BrokerCommand implements Serializable {
     private String id;// 可选
     private String ip;// 可选
     private int invokeType = SYNC;
-    private String application;
     private String version = ServiceVersion.DEFAULT_VERSION;
     private int protocol = Protocols.DEFAULT_PROTOCOL;
     private String brokerProtocol = BrokerProtocols.JACKSON;
+    private String application;
     private String serviceGroup;
     private String serviceId;
     private String method;

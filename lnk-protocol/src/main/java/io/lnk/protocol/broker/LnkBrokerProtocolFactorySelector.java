@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import io.lnk.api.protocol.broker.BrokerProtocolFactory;
 import io.lnk.api.protocol.broker.BrokerProtocolFactorySelector;
 import io.lnk.protocol.broker.jackson.JacksonBrokerProtocolFactory;
-import io.lnk.protocol.broker.xml.xstream.XStreamBrokerProtocolFactory;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -25,7 +24,6 @@ public class LnkBrokerProtocolFactorySelector implements BrokerProtocolFactorySe
     public LnkBrokerProtocolFactorySelector() {
         super();
         this.registry(new JacksonBrokerProtocolFactory());
-        this.registry(new XStreamBrokerProtocolFactory());
     }
 
     @Override

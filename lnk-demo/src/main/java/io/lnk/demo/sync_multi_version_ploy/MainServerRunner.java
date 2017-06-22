@@ -3,22 +3,7 @@ package io.lnk.demo.sync_multi_version_ploy;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.util.concurrent.Future;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.AbstractResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.api.WriteCallback;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +13,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
 
 import com.alibaba.fastjson.JSON;
-import com.google.common.base.Charsets;
 
 import io.lnk.api.BrokerProtocols;
 import io.lnk.api.Protocols;
@@ -66,116 +50,6 @@ public class MainServerRunner extends BasicMainServerRunner {
     BrokerCaller brokerCaller;
 
     static Serializer serializer = new JacksonSerializer();
-
-    public static void main23(String[] args) {
-        try {
-            CloseableHttpClient client = HttpClients.createDefault();
-            String uri = "http://10.10.19.174:42000";
-            HttpPost request = new HttpPost(uri);
-            BrokerCommand brokerCommand = new BrokerCommand();
-            brokerCommand.setInvokeType(BrokerCommand.SYNC);
-            brokerCommand.setApplication("test.broker");
-            brokerCommand.setVersion("2.0.0");
-            brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
-            brokerCommand.setBrokerProtocol(BrokerProtocols.JACKSON);
-            brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
-            brokerCommand.setServiceId(AuthService.class.getName());
-            brokerCommand.setMethod("auth");
-            brokerCommand.setSignature(new String[] {AuthRequest.class.getName()});
-            BrokerArg arg = new BrokerArg();
-            arg.setType(AuthRequest.class.getName());
-            arg.setArg(serializer.serializeAsString(buildAuthRequest()));
-            brokerCommand.setArgs(new BrokerArg[] {arg});
-            brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
-            String command = serializer.serializeAsString(brokerCommand);
-            HttpEntity entity = new StringEntity(command);
-            request.setEntity(entity);
-            BrokerCommand response = client.execute(HttpHost.create(uri), request, new AbstractResponseHandler<BrokerCommand>() {
-                public BrokerCommand handleEntity(HttpEntity entity) throws IOException {
-                    return serializer.deserialize(BrokerCommand.class, StreamUtils.copyToString(entity.getContent(), Charsets.UTF_8));
-                }
-            });
-            System.err.println("http client Received BrokerCommand : " + JSON.toJSONString(response, true));
-        } catch (ClientProtocolException e) {
-            e.printStackTrace(System.err);
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
-    }
-
-    public static class EventSocket extends WebSocketAdapter {
-        public void onWebSocketConnect(Session sess) {
-            super.onWebSocketConnect(sess);
-            System.out.println("Socket Connected: " + sess);
-        }
-
-        public void onWebSocketText(String message) {
-            super.onWebSocketText(message);
-            System.out.println("Received TEXT message: " + message);
-            BrokerCommand response = serializer.deserialize(BrokerCommand.class, message);
-            System.err.println("Received BrokerCommand : " + JSON.toJSONString(response, true));
-        }
-
-        public void onWebSocketClose(int statusCode, String reason) {
-            super.onWebSocketClose(statusCode, reason);
-            System.out.println("Socket Closed: [" + statusCode + "] " + reason);
-        }
-
-        public void onWebSocketError(Throwable cause) {
-            super.onWebSocketError(cause);
-            cause.printStackTrace(System.err);
-        }
-    }
-
-    public static void main(String[] args) {
-        URI uri = URI.create("ws://10.10.19.174:43000");
-        WebSocketClient client = new WebSocketClient();
-        try {
-            client.start();
-            EventSocket socket = new EventSocket();
-            Future<Session> fut = client.connect(socket, uri);
-            Session session = fut.get();
-            BrokerCommand brokerCommand = new BrokerCommand();
-            brokerCommand.setInvokeType(BrokerCommand.SYNC);
-            brokerCommand.setApplication("test.broker");
-            brokerCommand.setVersion("2.0.0");
-            brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
-            brokerCommand.setBrokerProtocol(BrokerProtocols.JACKSON);
-            brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
-            brokerCommand.setServiceId(AuthService.class.getName());
-            brokerCommand.setMethod("auth");
-            brokerCommand.setSignature(new String[] {AuthRequest.class.getName()});
-            BrokerArg arg = new BrokerArg();
-            arg.setType(AuthRequest.class.getName());
-            arg.setArg(serializer.serializeAsString(buildAuthRequest()));
-            brokerCommand.setArgs(new BrokerArg[] {arg});
-            brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
-            String command = serializer.serializeAsString(brokerCommand);
-            for (int i = 0; i < 100; i++)
-                session.getRemote().sendString(command, new WriteCallback() {
-
-                    @Override
-                    public void writeSuccess() {
-                        System.err.println("send success.");
-                    }
-
-                    @Override
-                    public void writeFailed(Throwable x) {
-                        x.printStackTrace();
-                    }
-                });
-            // session.close();
-            System.err.println("send ws command : " + command);
-        } catch (Throwable t) {
-            t.printStackTrace(System.err);
-        } finally {
-            // try {
-            // client.stop();
-            // } catch (Throwable e) {
-            // e.printStackTrace(System.err);
-            // }
-        }
-    }
 
     @Test
     public void testBrokerCaller() {

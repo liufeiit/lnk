@@ -8,5 +8,4 @@ package io.lnk.api;
  */
 public interface BrokerProtocols {
     String JACKSON = "jackson";
-    String XSTREAM = "xstream";
 }

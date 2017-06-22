@@ -21,6 +21,7 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
@@ -67,7 +68,7 @@ public class HttpBrokerServer implements BrokerServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(defaultEventExecutorGroup, 
-                                new HttpServerCodec(), 
+                                new HttpServerCodec(), new HttpObjectAggregator(1024 * 1024 * 200),
                                 new HttpIoHandler(caller));
                     }
                 });

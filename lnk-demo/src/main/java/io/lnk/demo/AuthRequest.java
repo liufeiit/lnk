@@ -16,6 +16,7 @@ public class AuthRequest implements Serializable {
     private String mobile;
     private String cardNo;
     private String identityNo;
+    private String dataString;
 
     public String getTxnId() {
         return txnId;
@@ -65,8 +66,17 @@ public class AuthRequest implements Serializable {
         this.identityNo = identityNo;
     }
 
+    public String getDataString() {
+        return dataString;
+    }
+
+    public void setDataString(String dataString) {
+        this.dataString = dataString;
+    }
+
     @Override
     public String toString() {
-        return "AuthRequest[txnId=" + txnId + ", memberId=" + memberId + ", name=" + name + ", mobile=" + mobile + ", cardNo=" + cardNo + ", identityNo=" + identityNo + "]";
+        return "AuthRequest [txnId=" + txnId + ", memberId=" + memberId + ", name=" + name + ", mobile=" + mobile + ", cardNo=" + cardNo + ", identityNo=" + identityNo + ", dataString=" + dataString
+                + "]";
     }
 }

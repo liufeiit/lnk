@@ -41,12 +41,6 @@ public class LnkBrokerCaller implements BrokerCaller {
             BrokerCommand response = this.invoke(serializer.deserialize(BrokerCommand.class, command));
             return serializer.serializeAsString(response);
         }
-        if (StringUtils.startsWith(command, "<") && StringUtils.endsWith(command, ">")) {
-            brokerProtocolFactory = this.brokerProtocolFactorySelector.select(BrokerProtocols.XSTREAM);
-            Serializer serializer = brokerProtocolFactory.serializer();
-            BrokerCommand response = this.invoke(serializer.deserialize(BrokerCommand.class, command));
-            return serializer.serializeAsString(response);
-        }
         return null;
     }
 

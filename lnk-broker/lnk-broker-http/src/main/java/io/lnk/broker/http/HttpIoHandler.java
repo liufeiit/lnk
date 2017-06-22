@@ -60,7 +60,7 @@ final class HttpIoHandler extends ChannelInboundHandlerAdapter {
             ByteBuf content = httpContent.content();
             String command = content.toString(this.charset);
             content.release();
-            log.info("http server incoming message : {}", message);
+            log.info("http server incoming message : {}", command);
             String resp = this.caller.invoke(command);
             log.info("http server outcoming message : {}", resp);
             FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.wrappedBuffer(resp.getBytes(this.charset)));
