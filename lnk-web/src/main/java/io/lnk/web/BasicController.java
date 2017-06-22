@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import io.lnk.api.URI;
+import io.lnk.api.protocol.Serializer;
 import io.lnk.lookup.zookeeper.ZooKeeperProvider;
-import io.lnk.protocol.Serializer;
 import io.lnk.protocol.jackson.JacksonSerializer;
 
 /**
