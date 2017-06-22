@@ -4,6 +4,8 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Charsets;
 
 import io.lnk.api.URI;
+import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.lookup.zookeeper.ZooKeeperClient.Credentials;
 import io.lnk.lookup.zookeeper.notify.NotifyHandler;
 import io.lnk.lookup.zookeeper.notify.NotifyMessage;
@@ -33,7 +36,9 @@ import io.lnk.lookup.zookeeper.utils.ZooKeeperUtils;
  */
 public class ZooKeeperProvider implements Command {
     protected final Logger log = LoggerFactory.getLogger(getClass().getSimpleName());
-    static {System.setProperty("zookeeper.disableAutoWatchReset", String.valueOf(false));}
+    static {
+        System.setProperty("zookeeper.disableAutoWatchReset", String.valueOf(false));
+    }
     private static final String NODE_PATH_SPL = "/";
     private static final String CHARSET = "charset";
     private static final String SESSION_TIMEOUT_MILLIS = "sessionTimeoutMillis";
@@ -45,7 +50,8 @@ public class ZooKeeperProvider implements Command {
     private final String connectString;
     private final Charset charset;
     private final byte[] defaultData;
-    private Map<String, NotifyHandler> notifyHandlers = new HashMap<String, NotifyHandler>();
+    private final ExecutorService executor;
+    private final Map<String, NotifyHandler> notifyHandlers = new HashMap<String, NotifyHandler>();
 
     public ZooKeeperProvider(URI uri) {
         this(uri, uri.getInt(CONNECT_TIMEOUT_MILLIS, 30000), uri.getInt(SESSION_TIMEOUT_MILLIS, 30000), uri.getAddress());
@@ -63,6 +69,7 @@ public class ZooKeeperProvider implements Command {
         this.connectString = connectString;
         this.charset = charset;
         this.defaultData = StringUtils.EMPTY.getBytes(charset);
+        this.executor = Executors.newFixedThreadPool(2, LnkThreadFactory.newThreadFactory("ZooKeeperProvider-%d", false));
         this.client = this.buildClient();
     }
 
@@ -76,12 +83,18 @@ public class ZooKeeperProvider implements Command {
 
     @Override
     public void execute() throws RuntimeException {
-        if (notifyHandlers.isEmpty()) {
-            return;
-        }
-        for (Map.Entry<String, NotifyHandler> e : notifyHandlers.entrySet()) {
-            registerHandler(e.getKey(), e.getValue());
-        }
+        executor.submit(new Runnable() {
+            public void run() {
+                if (notifyHandlers.isEmpty()) {
+                    return;
+                }
+                for (int i = 0; i < 30; i++) {
+                    for (Map.Entry<String, NotifyHandler> e : notifyHandlers.entrySet()) {
+                        registerHandler(e.getKey(), e.getValue());
+                    }
+                }
+            }
+        });
     }
 
     public void create(String path, CreateMode createMode) {
@@ -95,7 +108,7 @@ public class ZooKeeperProvider implements Command {
             log.error("create path : " + path + " Error.", e);
         }
     }
-    
+
     public void delete(String path) {
         try {
             this.client.get(connectTimeoutMillis).delete(path, ZooKeeperUtils.ANY_VERSION, new VoidCallback() {
