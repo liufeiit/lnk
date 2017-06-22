@@ -69,7 +69,7 @@ public class WsBrokerServer implements BrokerServer {
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(defaultEventExecutorGroup)
                         .addLast("codec-http", new HttpServerCodec())
-                        .addLast("aggregator", new HttpObjectAggregator(1024 * 1024 * 200))// 100M
+                        .addLast("aggregator", new HttpObjectAggregator(1024 * 1024 * 100))
                         .addLast("handler", new WsIoHandler(caller));
                     }
                 });

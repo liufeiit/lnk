@@ -68,7 +68,7 @@ public class HttpBrokerServer implements BrokerServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(defaultEventExecutorGroup, 
-                                new HttpServerCodec(), new HttpObjectAggregator(1024 * 1024 * 200),
+                                new HttpServerCodec(), new HttpObjectAggregator(1024 * 1024 * 100),
                                 new HttpIoHandler(caller));
                     }
                 });
