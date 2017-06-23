@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 import io.lnk.api.ServerConfiguration;
 import io.lnk.port.DefaultServerPortAllocator;
 import io.lnk.spring.broker.DefaultBrokerServer;
-import io.lnk.spring.utils.BeanRegister;
+import io.lnk.spring.utils.LnkComponentUtils;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -50,7 +50,7 @@ public class LnkBrokerParser extends AbstractSingleBeanDefinitionParser {
         String serverId = this.resolveId(element);
         String serverPortAllocatorId = "defaultBrokerServerPortAllocator";
         
-        BeanRegister.register(serverPortAllocatorId, DefaultServerPortAllocator.class, element, parserContext);
+        LnkComponentUtils.parse(serverPortAllocatorId, DefaultServerPortAllocator.class, element, parserContext);
         builder.addPropertyValue("serverPortAllocator", new RuntimeBeanReference(serverPortAllocatorId));
 
         String listenPort = element.getAttribute(LISTEN_PORT_ATTR);

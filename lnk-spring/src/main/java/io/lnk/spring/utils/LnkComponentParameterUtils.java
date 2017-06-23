@@ -20,8 +20,8 @@ import org.w3c.dom.Element;
  * @version 1.0.0
  * @since 2017年6月2日 下午2:13:26
  */
-public class ParametersParser {
-    private static final Logger log = LoggerFactory.getLogger(ParametersParser.class.getSimpleName());
+public class LnkComponentParameterUtils {
+    private static final Logger log = LoggerFactory.getLogger(LnkComponentParameterUtils.class.getSimpleName());
 
     public static Map<String, String> parse(final Element element) {
         Map<String, String> parameters = new HashMap<String, String>();
@@ -42,7 +42,7 @@ public class ParametersParser {
     
     public static void wiredParameters(final Element element, Object bean) {
         BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(bean);
-        Map<String, String> parameters = ParametersParser.parse(element);
+        Map<String, String> parameters = LnkComponentParameterUtils.parse(element);
         if (MapUtils.isNotEmpty(parameters)) {
             for (Map.Entry<String, String> e : parameters.entrySet()) {
                 String name = e.getKey();

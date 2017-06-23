@@ -1,7 +1,5 @@
 package io.lnk.spring.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
@@ -16,11 +14,9 @@ import org.w3c.dom.Element;
  * @version 1.0.0
  * @since 2017年1月6日 下午4:37:35
  */
-public class BeanRegister {
+public class LnkComponentUtils {
     
-    private static final Logger log = LoggerFactory.getLogger(BeanRegister.class.getSimpleName());
-
-    public static void register(String id, Class<?> beanType, Element rootElement, ParserContext parserContext) {
+    public static void parse(String id, Class<?> beanType, Element rootElement, ParserContext parserContext) {
         try {
             Object eleSource = parserContext.extractSource(rootElement);
             RootBeanDefinition beanDefinition = new RootBeanDefinition();
@@ -35,14 +31,12 @@ public class BeanRegister {
             BeanDefinitionReaderUtils.registerBeanDefinition(beanholder, parserContext.getRegistry());
             BeanComponentDefinition componentDefinition = new BeanComponentDefinition(beanholder);
             parserContext.registerComponent(componentDefinition);
-            log.info("BeanRegister#register BeanDefinition : {}", id);
         } catch (Throwable e) {
-            log.error("BeanRegister#register BeanDefinition " + id + " Error.", e);
             parserContext.getReaderContext().error(e.getMessage(), rootElement);
         }
     }
     
-    public static void register(String id, Class<?> beanType, Element rootElement, ParserContext parserContext, BeanDefinitionCallback callback) {
+    public static void parse(String id, Class<?> beanType, Element rootElement, ParserContext parserContext, ComponentCallback callback) {
         try {
             Object eleSource = parserContext.extractSource(rootElement);
             RootBeanDefinition beanDefinition = new RootBeanDefinition();
@@ -53,19 +47,17 @@ public class BeanRegister {
             beanDefinition.setDependencyCheck(RootBeanDefinition.DEPENDENCY_CHECK_NONE);
             beanDefinition.setAutowireCandidate(true);
             beanDefinition.setAutowireMode(RootBeanDefinition.AUTOWIRE_BY_NAME);
-            callback.doInRegister(beanDefinition);
+            callback.onParse(beanDefinition);
             BeanDefinitionHolder beanholder = new BeanDefinitionHolder(beanDefinition, id);
             BeanDefinitionReaderUtils.registerBeanDefinition(beanholder, parserContext.getRegistry());
             BeanComponentDefinition componentDefinition = new BeanComponentDefinition(beanholder);
             parserContext.registerComponent(componentDefinition);
-            log.info("BeanRegister#register BeanDefinition : {}", id);
         } catch (Throwable e) {
-            log.error("BeanRegister#register BeanDefinition " + id + " Error.", e);
             parserContext.getReaderContext().error(e.getMessage(), rootElement);
         }
     }
     
-    public static interface BeanDefinitionCallback {
-        void doInRegister(RootBeanDefinition beanDefinition);
+    public static interface ComponentCallback {
+        void onParse(RootBeanDefinition beanDefinition);
     }
 }

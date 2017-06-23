@@ -29,8 +29,8 @@ import io.lnk.port.DefaultServerPortAllocator;
 import io.lnk.protocol.LnkProtocolFactorySelector;
 import io.lnk.spring.core.DefaultServiceObjectFinder;
 import io.lnk.spring.core.SpringLnkServer;
-import io.lnk.spring.utils.BeanRegister;
-import io.lnk.spring.utils.ParametersParser;
+import io.lnk.spring.utils.LnkComponentUtils;
+import io.lnk.spring.utils.LnkComponentParameterUtils;
 import io.lnk.track.LogTracker;
 
 /**
@@ -68,11 +68,11 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
         String serviceObjectFinderId = "defaultServiceObjectFinder";
         
         builder.addPropertyValue("invoker", new RuntimeBeanReference(element.getAttribute("client")));
-        BeanRegister.register(serverPortAllocatorId, DefaultServerPortAllocator.class, element, parserContext);
+        LnkComponentUtils.parse(serverPortAllocatorId, DefaultServerPortAllocator.class, element, parserContext);
         builder.addPropertyValue("serverPortAllocator", new RuntimeBeanReference(serverPortAllocatorId));
-        BeanRegister.register(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
+        LnkComponentUtils.parse(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
         builder.addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
-        BeanRegister.register(serviceObjectFinderId, DefaultServiceObjectFinder.class, element, parserContext);
+        LnkComponentUtils.parse(serviceObjectFinderId, DefaultServiceObjectFinder.class, element, parserContext);
         builder.addPropertyValue("serviceObjectFinder", new RuntimeBeanReference(serviceObjectFinderId));
 
         String listenPort = element.getAttribute(LISTEN_PORT_ATTR);
@@ -107,7 +107,7 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
         List<Element> registryElements = DomUtils.getChildElementsByTagName(element, "registry");
         Element registryElement = registryElements.get(0);
         URI uri = URI.valueOf(registryElement.getAttribute("address"));
-        uri = uri.addParameters(ParametersParser.parse(registryElement));
+        uri = uri.addParameters(LnkComponentParameterUtils.parse(registryElement));
         builder.addPropertyValue("registry", new LnkRegistry(uri));
 
         List<Element> flowControlElements = DomUtils.getChildElementsByTagName(element, "flow-control");
@@ -117,7 +117,7 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
             int permits = NumberUtils.toInt(permitsString);
             if (StringUtils.isNotBlank(permitsString) && permits > 0) {
                 SemaphoreFlowController flowController = new SemaphoreFlowController(permits);
-                ParametersParser.wiredParameters(flowControlElement, flowController);
+                LnkComponentParameterUtils.wiredParameters(flowControlElement, flowController);
                 builder.addPropertyValue("flowController", flowController);
             }
         }
@@ -132,7 +132,7 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
             } else {
                 tracker = new LogTracker();
             }
-            ParametersParser.wiredParameters(trackerElement, tracker);
+            LnkComponentParameterUtils.wiredParameters(trackerElement, tracker);
             builder.addPropertyValue("tracker", tracker);
         }
 

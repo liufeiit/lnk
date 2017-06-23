@@ -12,7 +12,7 @@ import org.w3c.dom.Element;
 
 import io.lnk.api.app.Application;
 import io.lnk.spring.core.LnkApplication;
-import io.lnk.spring.utils.ParametersParser;
+import io.lnk.spring.utils.LnkComponentParameterUtils;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -34,7 +34,7 @@ public class LnkApplicationParser extends AbstractSingleBeanDefinitionParser {
         final Application application = new Application();
         application.setApp(element.getAttribute("app"));
         application.setType(element.getAttribute("type"));
-        application.setParameters(ParametersParser.parse(element));
+        application.setParameters(LnkComponentParameterUtils.parse(element));
         builder.addPropertyValue("application", application);
         log.info("parse LnkApplication bean success.");
     }

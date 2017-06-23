@@ -33,9 +33,9 @@ import io.lnk.protocol.LnkProtocolFactorySelector;
 import io.lnk.protocol.broker.LnkBrokerProtocolFactorySelector;
 import io.lnk.protocol.object.LnkObjectProtocolFactory;
 import io.lnk.spring.core.SpringLnkInvoker;
-import io.lnk.spring.utils.BeanRegister;
-import io.lnk.spring.utils.BeanRegister.BeanDefinitionCallback;
-import io.lnk.spring.utils.ParametersParser;
+import io.lnk.spring.utils.LnkComponentUtils;
+import io.lnk.spring.utils.LnkComponentUtils.ComponentCallback;
+import io.lnk.spring.utils.LnkComponentParameterUtils;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -69,19 +69,19 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         final String objectProtocolFactoryId = invokerId + ".ObjectProtocolFactory";
         final String brokerProtocolFactorySelectorId = invokerId + ".BrokerProtocolFactorySelector";
         
-        BeanRegister.register(objectProtocolFactoryId, LnkObjectProtocolFactory.class, element, parserContext, new BeanDefinitionCallback() {
-            public void doInRegister(RootBeanDefinition beanDefinition) {
+        LnkComponentUtils.parse(objectProtocolFactoryId, LnkObjectProtocolFactory.class, element, parserContext, new ComponentCallback() {
+            public void onParse(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
             }
         });
         
-        BeanRegister.register(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
+        LnkComponentUtils.parse(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
         builder.addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
         
-        BeanRegister.register(brokerProtocolFactorySelectorId, LnkBrokerProtocolFactorySelector.class, element, parserContext);
+        LnkComponentUtils.parse(brokerProtocolFactorySelectorId, LnkBrokerProtocolFactorySelector.class, element, parserContext);
         
-        BeanRegister.register(brokerCallerId, LnkBrokerCaller.class, element, parserContext, new BeanDefinitionCallback() {
-            public void doInRegister(RootBeanDefinition beanDefinition) {
+        LnkComponentUtils.parse(brokerCallerId, LnkBrokerCaller.class, element, parserContext, new ComponentCallback() {
+            public void onParse(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(invokerId));
                 beanDefinition.getPropertyValues().addPropertyValue("brokerProtocolFactorySelector", new RuntimeBeanReference(brokerProtocolFactorySelectorId));
                 beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
@@ -93,11 +93,11 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         List<Element> lookupElements = DomUtils.getChildElementsByTagName(element, "lookup");
         Element lookupElement = lookupElements.get(0);
         URI uri = URI.valueOf(lookupElement.getAttribute("address"));
-        uri = uri.addParameters(ParametersParser.parse(lookupElement));
+        uri = uri.addParameters(LnkComponentParameterUtils.parse(lookupElement));
         builder.addPropertyValue("registry", new LnkRegistry(uri));
 
-        BeanRegister.register(remoteObjectFactoryId, LnkRemoteObjectFactory.class, element, parserContext, new BeanDefinitionCallback() {
-            public void doInRegister(RootBeanDefinition beanDefinition) {
+        LnkComponentUtils.parse(remoteObjectFactoryId, LnkRemoteObjectFactory.class, element, parserContext, new ComponentCallback() {
+            public void onParse(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("invoker", new RuntimeBeanReference(invokerId));
                 beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
                 beanDefinition.getPropertyValues().addPropertyValue("objectProtocolFactory", new RuntimeBeanReference(objectProtocolFactoryId));
@@ -138,7 +138,7 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         } else {
             loadBalance = new ConsistencyHashLoadBalance();
         }
-        ParametersParser.wiredParameters(loadBalanceElement, loadBalance);
+        LnkComponentParameterUtils.wiredParameters(loadBalanceElement, loadBalance);
         builder.addPropertyValue("loadBalance", loadBalance);
 
         List<Element> flowControlElements = DomUtils.getChildElementsByTagName(element, "flow-control");
@@ -148,7 +148,7 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
             int permits = NumberUtils.toInt(permitsString);
             if (StringUtils.isNotBlank(permitsString) && permits > 0) {
                 SemaphoreFlowController flowController = new SemaphoreFlowController(permits);
-                ParametersParser.wiredParameters(flowControlElement, flowController);
+                LnkComponentParameterUtils.wiredParameters(flowControlElement, flowController);
                 builder.addPropertyValue("flowController", flowController);
             }
         }
