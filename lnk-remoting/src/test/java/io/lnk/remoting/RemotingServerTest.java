@@ -23,11 +23,19 @@ import io.lnk.remoting.netty.NettyRemotingClient;
 import io.lnk.remoting.netty.NettyRemotingServer;
 import io.lnk.remoting.protocol.CommandCode;
 import io.lnk.remoting.protocol.RemotingCommand;
+import io.lnk.remoting.utils.RemotingUtils;
+import io.netty.channel.epoll.Epoll;
 
 public class RemotingServerTest {
     private static RemotingServer remotingServer;
     private static RemotingClient remotingClient;
 
+    public static void main(String[] args) {
+        System.err.println(System.getProperty("os.name"));
+        System.err.println(RemotingUtils.isLinuxPlatform());
+        System.err.println(Epoll.isAvailable());
+    }
+    
     public static RemotingServer createRemotingServer() throws InterruptedException {
         ServerConfiguration config = new ServerConfiguration();
         final ProtocolFactory protocolFactory = new JacksonProtocolFactory();

@@ -27,8 +27,11 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleState;
@@ -51,17 +54,28 @@ public class NettyRemotingServer extends NettyAbstractRemotingService implements
     private InetSocketAddress serverAddress;
     private final ServerConfiguration configuration;
     private final ExecutorService defaultThreadPoolExecutor;
+    private final boolean usingEpoll;
+    private final Class<? extends ServerSocketChannel> channelClass;
+    
+    private boolean usingEpoll(ServerConfiguration configuration) {
+        return (Epoll.isAvailable() && RemotingUtils.isLinuxPlatform() && configuration.isUseEpollNativeSelector());
+    }
 
     public NettyRemotingServer(final ProtocolFactorySelector protocolFactorySelector, final ServerConfiguration configuration) {
         super(protocolFactorySelector);
         this.serverBootstrap = new ServerBootstrap();
         this.configuration = configuration;
+        this.usingEpoll = this.usingEpoll(this.configuration);
         this.defaultThreadPoolExecutor = Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), LnkThreadFactory.newThreadFactory("NettyRemotingServerDefaultThreadPoolExecutor-%d", false));
-        this.eventLoopGroupBoss = new NioEventLoopGroup(2, LnkThreadFactory.newThreadFactory("NettyRemotingServerBoss-%d", false));
         int serverSelectorThreads = configuration.getSelectorThreads();
-        if (RemotingUtils.isLinuxPlatform() && configuration.isUseEpollNativeSelector()) {
-            this.eventLoopGroupSelector = new EpollEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("NettyRemotingServerEPOLLSelector-" + serverSelectorThreads + "-%d", false));
+        if (this.usingEpoll) {
+            this.channelClass = EpollServerSocketChannel.class;
+            this.eventLoopGroupBoss = new EpollEventLoopGroup(2, LnkThreadFactory.newThreadFactory("NettyRemotingServerEpollBoss-%d", false));
+            this.eventLoopGroupSelector = new EpollEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("NettyRemotingServerEpollSelector-" + serverSelectorThreads + "-%d", false));
+            log.info("OS Platform Epoll isAvailable, so using Epoll sources[EpollServerSocketChannel, EpollEventLoopGroup]");
         } else {
+            this.channelClass = NioServerSocketChannel.class;
+            this.eventLoopGroupBoss = new NioEventLoopGroup(2, LnkThreadFactory.newThreadFactory("NettyRemotingServerNIOBoss-%d", false));
             this.eventLoopGroupSelector = new NioEventLoopGroup(serverSelectorThreads, LnkThreadFactory.newThreadFactory("NettyRemotingServerNIOSelector-" + serverSelectorThreads + "-%d", false));
         }
     }
@@ -70,7 +84,7 @@ public class NettyRemotingServer extends NettyAbstractRemotingService implements
     public void start() {
         this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(configuration.getWorkerThreads(), LnkThreadFactory.newThreadFactory("NettyRemotingServerCodecThread-%d", false));
         ServerBootstrap childHandler = this.serverBootstrap.group(this.eventLoopGroupBoss, this.eventLoopGroupSelector)
-                .channel(NioServerSocketChannel.class)
+                .channel(this.channelClass)
                 .option(ChannelOption.SO_BACKLOG, 1024)
                 .option(ChannelOption.SO_REUSEADDR, true)
                 .option(ChannelOption.SO_KEEPALIVE, false)

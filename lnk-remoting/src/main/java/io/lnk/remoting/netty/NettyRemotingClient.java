@@ -60,7 +60,7 @@ public class NettyRemotingClient extends NettyAbstractRemotingService implements
         super(protocolFactorySelector);
         this.configuration = configuration;
         this.defaultThreadPoolExecutor = Executors.newFixedThreadPool(configuration.getDefaultExecutorThreads(), LnkThreadFactory.newThreadFactory("NettyRemotingClientDefaultThreadPoolExecutor-%d", false));
-        this.eventLoopGroupWorker = new NioEventLoopGroup(1, LnkThreadFactory.newThreadFactory("NettyRemotingClientSelector-%d", false));
+        this.eventLoopGroupWorker = new NioEventLoopGroup(2, LnkThreadFactory.newThreadFactory("NettyRemotingClientNIOSelector-%d", false));
     }
 
     @Override
