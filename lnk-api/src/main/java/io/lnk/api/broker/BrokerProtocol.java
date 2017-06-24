@@ -8,19 +8,19 @@ import org.apache.commons.lang3.StringUtils;
  * @version 1.0.0
  * @since 2017年6月16日 下午2:39:59
  */
-public enum BrokerProvider {
+public enum BrokerProtocol {
     HTTP("http"), WS("ws");
     
     private final String name;
 
-    private BrokerProvider(String name) {
+    private BrokerProtocol(String name) {
         this.name = name;
     }
 
-    public static BrokerProvider valueOfProvider(String name) {
-        for (BrokerProvider remotingProvider : values()) {
-            if (StringUtils.equalsIgnoreCase(remotingProvider.name, name)) {
-                return remotingProvider;
+    public static BrokerProtocol valueOfProtocol(String name) {
+        for (BrokerProtocol brokerProtocol : values()) {
+            if (StringUtils.equalsIgnoreCase(brokerProtocol.name, name)) {
+                return brokerProtocol;
             }
         }
         return HTTP;

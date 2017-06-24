@@ -27,7 +27,7 @@ import io.lnk.core.ServiceObjectFinder;
 import io.lnk.core.processor.LnkCommandProcessor;
 import io.lnk.protocol.object.LnkObjectProtocolFactory;
 import io.lnk.remoting.CommandProcessor;
-import io.lnk.remoting.RemotingProvider;
+import io.lnk.remoting.RemotingProtocol;
 import io.lnk.remoting.RemotingServer;
 import io.lnk.remoting.mina.MinaRemotingServer;
 import io.lnk.remoting.netty.NettyRemotingServer;
@@ -73,8 +73,8 @@ public class DefaultLnkServer implements LnkServer {
         objectProtocolFactory.setRemoteObjectFactory(invoker.getRemoteObjectFactory());
         this.objectProtocolFactory = objectProtocolFactory;
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
-        RemotingProvider remotingProvider = RemotingProvider.valueOfProvider(configuration.getProvider());
-        switch (remotingProvider) {
+        RemotingProtocol remotingProtocol = RemotingProtocol.valueOfProtocol(configuration.getProtocol());
+        switch (remotingProtocol) {
             case Netty:
                 remotingServer = new NettyRemotingServer(protocolFactorySelector, configuration);
                 break;
@@ -82,7 +82,7 @@ public class DefaultLnkServer implements LnkServer {
                 remotingServer = new MinaRemotingServer(protocolFactorySelector, configuration);
                 break;
             default:
-                throw new RuntimeException("unsupport RemotingServer provider : " + configuration.getProvider());
+                throw new RuntimeException("unsupport RemotingServer provider : " + configuration.getProtocol());
         }
         remotingServer.registerDefaultProcessor(this.createLnkCommandProcessor(),
                 Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), LnkThreadFactory.newThreadFactory("LnkServerWorkerProcessor-%d", false)));

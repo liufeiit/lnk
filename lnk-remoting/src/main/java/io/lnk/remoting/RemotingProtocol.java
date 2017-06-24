@@ -8,19 +8,19 @@ import org.apache.commons.lang3.StringUtils;
  * @version 1.0.0
  * @since 2017年6月16日 下午2:39:59
  */
-public enum RemotingProvider {
+public enum RemotingProtocol {
     Netty("netty"), Mina("mina");
     
     private final String name;
 
-    private RemotingProvider(String name) {
+    private RemotingProtocol(String name) {
         this.name = name;
     }
 
-    public static RemotingProvider valueOfProvider(String name) {
-        for (RemotingProvider remotingProvider : values()) {
-            if (StringUtils.equalsIgnoreCase(remotingProvider.name, name)) {
-                return remotingProvider;
+    public static RemotingProtocol valueOfProtocol(String name) {
+        for (RemotingProtocol remotingProtocol : values()) {
+            if (StringUtils.equalsIgnoreCase(remotingProtocol.name, name)) {
+                return remotingProtocol;
             }
         }
         return Netty;

@@ -12,7 +12,7 @@ import io.lnk.api.ServerConfiguration;
 import io.lnk.api.app.Application;
 import io.lnk.api.broker.BrokerCaller;
 import io.lnk.api.broker.BrokerCallerAware;
-import io.lnk.api.broker.BrokerProvider;
+import io.lnk.api.broker.BrokerProtocol;
 import io.lnk.api.broker.BrokerServer;
 import io.lnk.api.port.ServerPortAllocator;
 import io.lnk.api.utils.NetUtils;
@@ -44,8 +44,8 @@ public class DefaultBrokerServer implements BrokerCallerAware, BeanFactoryAware,
         LnkApplication lnkApplication = this.beanFactory.getBean(LnkApplication.LNK_APPLICATION_NAME, LnkApplication.class);
         this.application = lnkApplication.getApplication();
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
-        BrokerProvider brokerProvider = BrokerProvider.valueOfProvider(configuration.getProvider());
-        switch (brokerProvider) {
+        BrokerProtocol brokerProtocol = BrokerProtocol.valueOfProtocol(configuration.getProtocol());
+        switch (brokerProtocol) {
             case HTTP:
                 brokerServer = new HttpBrokerServer(configuration);
                 break;
@@ -53,7 +53,7 @@ public class DefaultBrokerServer implements BrokerCallerAware, BeanFactoryAware,
                 brokerServer = new WsBrokerServer(configuration);
                 break;
             default:
-                throw new RuntimeException("unsupport BrokerServer provider : " + configuration.getProvider());
+                throw new RuntimeException("unsupport BrokerServer protocol : " + configuration.getProtocol());
         }
         brokerServer.setBrokerCaller(caller);
         brokerServer.start();

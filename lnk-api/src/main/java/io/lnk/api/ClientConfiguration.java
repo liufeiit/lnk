@@ -7,7 +7,7 @@ package io.lnk.api;
  * @since 2017年5月19日 下午10:39:38
  */
 public class ClientConfiguration implements Cloneable, SystemConfiguration {
-    private String provider;
+    private String protocol;
     private int workerThreads = 4;
     private int connectTimeoutMillis = 3000;
     private int channelMaxIdleTimeSeconds = 120;
@@ -15,12 +15,12 @@ public class ClientConfiguration implements Cloneable, SystemConfiguration {
     private int socketRcvBufSize = Integer.getInteger(IO_SOCKET_RCVBUF_SIZE, 65535);
     private int defaultExecutorThreads = 4;
 
-    public String getProvider() {
-        return provider;
+    public String getProtocol() {
+        return protocol;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
     public int getWorkerThreads() {

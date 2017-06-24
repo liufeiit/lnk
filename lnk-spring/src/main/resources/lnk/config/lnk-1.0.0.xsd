@@ -25,7 +25,7 @@
 				</xsd:element>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:string" use="required"/>
-			<xsd:attribute name="provider" default="netty" use="optional">
+			<xsd:attribute name="protocol" default="netty" use="optional">
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:NMTOKEN">
 						<xsd:enumeration value="netty"/>
@@ -55,7 +55,7 @@
 				<xsd:element name="load-balance" maxOccurs="1" minOccurs="1" type="load-balance-type"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:string" use="required"/>
-			<xsd:attribute name="provider" default="netty" use="optional">
+			<xsd:attribute name="protocol" default="netty" use="optional">
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:NMTOKEN">
 						<xsd:enumeration value="netty"/>
@@ -75,7 +75,7 @@
 	<xsd:element name="broker">
 		<xsd:complexType>
 			<xsd:attribute name="id" type="xsd:string" use="required"/>
-			<xsd:attribute name="provider" default="http" use="optional">
+			<xsd:attribute name="protocol" default="http" use="optional">
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:NMTOKEN">
 						<xsd:enumeration value="http"/>

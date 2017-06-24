@@ -27,7 +27,7 @@ import io.lnk.api.utils.NetUtils;
 import io.lnk.core.LnkInvoker;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingClient;
-import io.lnk.remoting.RemotingProvider;
+import io.lnk.remoting.RemotingProtocol;
 import io.lnk.remoting.ReplyFuture;
 import io.lnk.remoting.exception.RemotingConnectException;
 import io.lnk.remoting.exception.RemotingSendRequestException;
@@ -72,8 +72,8 @@ public class DefaultLnkInvoker implements LnkInvoker {
             return;
         }
         this.ip = NetUtils.getLocalAddress().getHostAddress();
-        RemotingProvider remotingProvider = RemotingProvider.valueOfProvider(configuration.getProvider());
-        switch (remotingProvider) {
+        RemotingProtocol remotingProtocol = RemotingProtocol.valueOfProtocol(configuration.getProtocol());
+        switch (remotingProtocol) {
             case Netty:
                 remotingClient = new NettyRemotingClient(protocolFactorySelector, configuration);
                 break;
@@ -81,7 +81,7 @@ public class DefaultLnkInvoker implements LnkInvoker {
                 remotingClient = new MinaRemotingClient(protocolFactorySelector, configuration);
                 break;
             default:
-                throw new RuntimeException("unsupport RemotingClient provider : " + configuration.getProvider());
+                throw new RuntimeException("unsupport RemotingClient provider : " + configuration.getProtocol());
         }
         remotingClient.start();
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

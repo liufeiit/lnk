@@ -51,7 +51,7 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
     private static final String CHANNEL_MAXIDLETIME_SECONDS_ATTR = "channel-maxidletime-seconds";
     private static final String CONNECT_TIMEOUT_MILLIS_ATTR = "connect-timeout-millis";
     private static final String WORKER_THREADS_ATTR = "worker-threads";
-    private static final String PROVIDER_ATTR = "provider";
+    private static final String PROTOCOL_ATTR = "protocol";
 
     @Override
     protected Class<?> getBeanClass(Element element) {
@@ -105,7 +105,7 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         });
         builder.addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
 
-        String provider = element.getAttribute(PROVIDER_ATTR);
+        String protocol = element.getAttribute(PROTOCOL_ATTR);
         String workerThreads = element.getAttribute(WORKER_THREADS_ATTR);
         String connectTimeoutMillis = element.getAttribute(CONNECT_TIMEOUT_MILLIS_ATTR);
         String channelMaxidletimeSeconds = element.getAttribute(CHANNEL_MAXIDLETIME_SECONDS_ATTR);
@@ -113,7 +113,7 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         String socketRcvbufSize = element.getAttribute(SOCKET_RCVBUF_SIZE_ATTR);
         String defaultExecutorThreads = element.getAttribute(DEFAULT_EXECUTOR_THREADS_ATTR);
         ClientConfiguration configuration = new ClientConfiguration();
-        configuration.setProvider(provider);
+        configuration.setProtocol(protocol);
         configuration.setWorkerThreads(NumberUtils.toInt(workerThreads, 4));
         configuration.setConnectTimeoutMillis(NumberUtils.toInt(connectTimeoutMillis, 3000));
         configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(channelMaxidletimeSeconds, 120));

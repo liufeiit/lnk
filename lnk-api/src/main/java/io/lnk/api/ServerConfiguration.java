@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @since 2017年5月19日 下午10:28:53
  */
 public class ServerConfiguration implements Cloneable, SystemConfiguration {
-    private String provider;
+    private String protocol;
     private int listenPort = 8888;
     private int workerThreads = 10;
     //mina实现中未设置
@@ -30,12 +30,12 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
     //mina实现中未设置
     private boolean useEpollNativeSelector = false;
 
-    public String getProvider() {
-        return provider;
+    public String getProtocol() {
+        return protocol;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
     public int getListenPort() {

@@ -36,7 +36,7 @@ public class LnkBrokerParser extends AbstractSingleBeanDefinitionParser {
     private static final String CHANNEL_MAXIDLETIME_SECONDS_ATTR = "channel-maxidletime-seconds";
     private static final String SELECTOR_THREADS_ATTR = "selector-threads";
     private static final String WORKER_THREADS_ATTR = "worker-threads";
-    private static final String PROVIDER_ATTR = "provider";
+    private static final String PROTOCOL_ATTR = "protocol";
     private static final String LISTEN_PORT_ATTR = "listen-port";
 
     @Override
@@ -54,7 +54,7 @@ public class LnkBrokerParser extends AbstractSingleBeanDefinitionParser {
         builder.addPropertyValue("serverPortAllocator", new RuntimeBeanReference(serverPortAllocatorId));
 
         String listenPort = element.getAttribute(LISTEN_PORT_ATTR);
-        String provider = element.getAttribute(PROVIDER_ATTR);
+        String protocol = element.getAttribute(PROTOCOL_ATTR);
         String workerThreads = element.getAttribute(WORKER_THREADS_ATTR);
         String selectorThreads = element.getAttribute(SELECTOR_THREADS_ATTR);
         String channelMaxidletimeSeconds = element.getAttribute(CHANNEL_MAXIDLETIME_SECONDS_ATTR);
@@ -69,7 +69,7 @@ public class LnkBrokerParser extends AbstractSingleBeanDefinitionParser {
         if (port > 0) {
             configuration.setListenPort(port);
         }
-        configuration.setProvider(provider);
+        configuration.setProtocol(protocol);
         configuration.setWorkerThreads(NumberUtils.toInt(workerThreads, 10));
         configuration.setSelectorThreads(NumberUtils.toInt(selectorThreads, 5));
         configuration.setChannelMaxIdleTimeSeconds(NumberUtils.toInt(channelMaxidletimeSeconds, 120));
