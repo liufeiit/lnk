@@ -19,12 +19,13 @@ public class LnkRegistry implements Registry {
     private static final String CONSUL_PROTOCOL = "consul";
     private final Registry registry;
 
-    public LnkRegistry(final URI uri) {
+    public LnkRegistry(final String uri) {
         super();
-        if (StringUtils.equals(uri.getProtocol(), ZK_PROTOCOL)) {
-            this.registry = new ZooKeeperRegistry(uri);
-        } else if (StringUtils.equals(uri.getProtocol(), CONSUL_PROTOCOL)) {
-            this.registry = new ConsulLookupRegistry(uri);
+        URI uriRegistry = URI.valueOf(uri);
+        if (StringUtils.equals(uriRegistry.getProtocol(), ZK_PROTOCOL)) {
+            this.registry = new ZooKeeperRegistry(uriRegistry);
+        } else if (StringUtils.equals(uriRegistry.getProtocol(), CONSUL_PROTOCOL)) {
+            this.registry = new ConsulLookupRegistry(uriRegistry);
         } else {
             throw new RuntimeException("can't support Registry URI : " + uri);
         }
