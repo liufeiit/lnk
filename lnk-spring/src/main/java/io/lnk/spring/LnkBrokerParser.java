@@ -47,12 +47,10 @@ public class LnkBrokerParser extends AbstractSingleBeanDefinitionParser {
     protected void doParse(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder builder) {
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
         String serverId = this.resolveId(element);
-        String serverPortAllocatorId = "defaultBrokerServerPortAllocator";
-
+        String serverPortAllocatorId = serverId + "DefaultServerPortAllocator";
         LnkComponentUtils.parse(serverPortAllocatorId, DefaultServerPortAllocator.class, element, parserContext);
         builder.addPropertyValue("serverPortAllocator", new RuntimeBeanReference(serverPortAllocatorId));
-
-        String serverConfigurationId = "serverConfiguration";
+        String serverConfigurationId = serverId + "ServerConfiguration";
         LnkComponentUtils.parse(serverConfigurationId, ServerConfiguration.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
                 String listenPort = element.getAttribute(LISTEN_PORT_ATTR);
@@ -66,7 +64,6 @@ public class LnkBrokerParser extends AbstractSingleBeanDefinitionParser {
                 String defaultWorkerProcessorThreads = element.getAttribute(DEFAULT_WORKER_PROCESSOR_THREADS_ATTR);
                 String defaultExecutorThreads = element.getAttribute(DEFAULT_EXECUTOR_THREADS_ATTR);
                 String useEpollNativeSelector = element.getAttribute(USE_EPOLL_NATIVE_SELECTOR_ATTR);
-
                 beanDefinition.getPropertyValues().addPropertyValue("listenPort", listenPort);
                 beanDefinition.getPropertyValues().addPropertyValue("protocol", protocol);
                 beanDefinition.getPropertyValues().addPropertyValue("workerThreads", workerThreads);

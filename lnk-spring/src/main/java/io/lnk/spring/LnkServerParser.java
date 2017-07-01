@@ -61,10 +61,10 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
     protected void doParse(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder builder) {
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
         String serverId = this.resolveId(element);
-
-        String serverPortAllocatorId = "defaultServerPortAllocator";
-        String protocolFactorySelectorId = serverId + ".ProtocolFactorySelector";
-        String serviceObjectFinderId = "defaultServiceObjectFinder";
+        String serverPortAllocatorId = serverId + "DefaultServerPortAllocator";
+        String protocolFactorySelectorId = serverId + "ProtocolFactorySelector";
+        String serviceObjectFinderId = serverId + "DefaultServiceObjectFinder";
+        String serverConfigurationId = serverId + "ServerConfiguration";
 
         builder.addPropertyValue("invoker", new RuntimeBeanReference(element.getAttribute("client")));
         LnkComponentUtils.parse(serverPortAllocatorId, DefaultServerPortAllocator.class, element, parserContext);
@@ -74,7 +74,6 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
         LnkComponentUtils.parse(serviceObjectFinderId, DefaultServiceObjectFinder.class, element, parserContext);
         builder.addPropertyValue("serviceObjectFinder", new RuntimeBeanReference(serviceObjectFinderId));
 
-        String serverConfigurationId = "serverConfiguration";
         LnkComponentUtils.parse(serverConfigurationId, ServerConfiguration.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
                 String listenPort = element.getAttribute(LISTEN_PORT_ATTR);

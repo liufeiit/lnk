@@ -56,12 +56,12 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
     protected void doParse(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder builder) {
         final String invokerId = this.resolveId(element);
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
-
         final String protocolFactorySelectorId = invokerId + ".ProtocolFactorySelector";
         final String brokerCallerId = invokerId + ".BrokerCaller";
         final String remoteObjectFactoryId = invokerId + ".RemoteObjectFactory";
         final String objectProtocolFactoryId = invokerId + ".ObjectProtocolFactory";
         final String brokerProtocolFactorySelectorId = invokerId + ".BrokerProtocolFactorySelector";
+        final String clientConfigurationId = invokerId + "ClientConfiguration";
 
         LnkComponentUtils.parse(objectProtocolFactoryId, LnkObjectProtocolFactory.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
@@ -104,7 +104,6 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
         });
         builder.addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
 
-        String clientConfigurationId = "clientConfiguration";
         LnkComponentUtils.parse(clientConfigurationId, ClientConfiguration.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
                 String protocol = element.getAttribute(PROTOCOL_ATTR);

@@ -8,18 +8,18 @@
 	<packaging>pom</packaging>
 	<name>lnk</name>
 	<properties>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<org.springframework.version>4.1.2.RELEASE</org.springframework.version>
+		<org.springframework.ldap-version>2.0.4.RELEASE</org.springframework.ldap-version>
+		<org.springframework.security-version>3.1.3.RELEASE</org.springframework.security-version>
 		<hibernate.version>4.1.0.Final</hibernate.version>
 		<netty.version>4.1.11.Final</netty.version>
 		<mina-core.version>2.0.9</mina-core.version>
 		<jackson.version>2.6.0</jackson.version>
 		<zookeeper.version>3.4.9</zookeeper.version>
-		<curator-framework.version>2.6.0</curator-framework.version>
 		<tomcat.jdbc.version>8.0.28</tomcat.jdbc.version>
 		<mysql-connector-java.version>5.1.37</mysql-connector-java.version>
-		<!-- <jetty-version>9.4.6.v20170531</jetty-version> -->
 		<jetty-version>9.3.1.v20150714</jetty-version>
 	</properties>
 	<modules>
@@ -56,26 +56,6 @@
 				<version>2.2.1</version>
 			</dependency>
 			<dependency>
-				<groupId>com.thoughtworks.xstream</groupId>
-				<artifactId>xstream</artifactId>
-				<version>1.4.10</version>
-			</dependency>
-			<dependency>
-				<groupId>org.msgpack</groupId>
-				<artifactId>msgpack</artifactId>
-				<version>0.6.7</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>3.3.1</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java-util</artifactId>
-				<version>3.3.1</version>
-			</dependency>
-			<dependency>
 				<groupId>com.caucho</groupId>
 				<artifactId>hessian</artifactId>
 				<version>4.0.38</version>
@@ -92,9 +72,9 @@
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.curator</groupId>
-				<artifactId>curator-framework</artifactId>
-				<version>${curator-framework.version}</version>
+				<groupId>com.ecwid.consul</groupId>
+				<artifactId>consul-api</artifactId>
+				<version>1.2.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.zookeeper</groupId>
@@ -111,6 +91,7 @@
 				<artifactId>netty-all</artifactId>
 				<version>${netty.version}</version>
 			</dependency>
+			
 			<dependency>
 				<groupId>javax.websocket</groupId>
 				<artifactId>javax.websocket-api</artifactId>
@@ -151,6 +132,7 @@
 				<artifactId>websocket-servlet</artifactId>
 				<version>${jetty-version}</version>
 			</dependency>
+			
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
@@ -252,7 +234,6 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
 				<version>${org.springframework.version}</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -414,7 +395,6 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.12</version>
-				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
