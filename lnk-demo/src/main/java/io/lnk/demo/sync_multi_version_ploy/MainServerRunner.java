@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -14,13 +13,8 @@ import org.springframework.util.StreamUtils;
 
 import com.alibaba.fastjson.JSON;
 
-import io.lnk.api.BrokerProtocols;
-import io.lnk.api.Protocols;
 import io.lnk.api.RemoteObject;
 import io.lnk.api.annotation.Lnkwired;
-import io.lnk.api.broker.BrokerArg;
-import io.lnk.api.broker.BrokerCaller;
-import io.lnk.api.broker.BrokerCommand;
 import io.lnk.api.protocol.Serializer;
 import io.lnk.api.utils.CorrelationIds;
 import io.lnk.demo.AppBizException;
@@ -46,39 +40,7 @@ public class MainServerRunner extends BasicMainServerRunner {
     @Lnkwired(version = "2.0.0")
     AuthService v2AuthService;
 
-    @Autowired
-    BrokerCaller brokerCaller;
-
     static Serializer serializer = new JacksonSerializer();
-
-    @Test
-    public void testBrokerCaller() {
-        try {
-            BrokerCommand brokerCommand = new BrokerCommand();
-            brokerCommand.setInvokeType(BrokerCommand.SYNC);
-            brokerCommand.setApplication("test.broker");
-            brokerCommand.setVersion("2.0.0");
-            brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
-            brokerCommand.setBrokerProtocol(BrokerProtocols.JSON);
-            brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
-            brokerCommand.setServiceId(AuthService.class.getName());
-            brokerCommand.setMethod("auth");
-            brokerCommand.setSignature(new String[] {AuthRequest.class.getName()});
-            BrokerArg arg = new BrokerArg();
-            arg.setType(AuthRequest.class.getName());
-            arg.setArg(serializer.serializeAsString(buildAuthRequest()));
-            brokerCommand.setArgs(new BrokerArg[] {arg});
-            brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
-            String command = serializer.serializeAsString(brokerCommand);
-            String response = brokerCaller.invoke(command);
-            // System.err.println("request command : " + JSON.toJSONString(brokerCommand, true));
-            // System.err.println("response command : " + JSON.toJSONString(response, true));
-            System.err.println("request command : " + command);
-            System.err.println("response command : " + response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 多态演示

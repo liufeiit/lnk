@@ -20,22 +20,20 @@
 		<zookeeper.version>3.4.9</zookeeper.version>
 		<tomcat.jdbc.version>8.0.28</tomcat.jdbc.version>
 		<mysql-connector-java.version>5.1.37</mysql-connector-java.version>
-		<jetty-version>9.3.1.v20150714</jetty-version>
 	</properties>
 	<modules>
 		<module>lnk-api</module>
 		<module>lnk-protocol</module>
 		<module>lnk-cluster</module>
 		<module>lnk-flow</module>
+		<module>lnk-zookeeper</module>
 		<module>lnk-lookup</module>
 		<module>lnk-port</module>
 		<module>lnk-track</module>
 		<module>lnk-remoting</module>
 		<module>lnk-core</module>
 		<module>lnk-spring</module>
-		<module>lnk-broker</module>
 		<module>lnk-web</module>
-		<module>lnk-quartz</module>
 		<module>lnk-demo</module>
 	</modules>
 	<dependencyManagement>
@@ -72,11 +70,6 @@
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.ecwid.consul</groupId>
-				<artifactId>consul-api</artifactId>
-				<version>1.2.1</version>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.zookeeper</groupId>
 				<artifactId>zookeeper</artifactId>
 				<version>${zookeeper.version}</version>
@@ -91,48 +84,6 @@
 				<artifactId>netty-all</artifactId>
 				<version>${netty.version}</version>
 			</dependency>
-			
-			<dependency>
-				<groupId>javax.websocket</groupId>
-				<artifactId>javax.websocket-api</artifactId>
-				<version>1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.websocket</groupId>
-				<artifactId>javax.websocket-client-api</artifactId>
-				<version>1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>javax-websocket-server-impl</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>javax-websocket-client-impl</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>websocket-client</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-server</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>websocket-server</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jetty.websocket</groupId>
-				<artifactId>websocket-servlet</artifactId>
-				<version>${jetty-version}</version>
-			</dependency>
-			
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>

@@ -1,6 +1,6 @@
 # lnk
 
-Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步和异步回调三种RPC调用方式，支持参数和返回值多态。支持多种负载均衡方式，支持调用流量控制，支持zookeeper和consul等服务注册发现方式，服务端口支持开发人员，运维人员配置以及动态分配，支持服务依赖关系梳理以及调用链路跟踪。支持spring配置。在服务端通过分组策略将来自不同组别的请求处理资源隔离，该思路借鉴与RocketMQ的实现思想。
+Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步和异步回调三种RPC调用方式，支持参数和返回值多态。支持多种负载均衡方式，支持调用流量控制，支持zookeeper服务注册发现方式，服务端口支持开发人员，运维人员配置以及动态分配，支持服务依赖关系梳理以及调用链路跟踪。支持spring配置。在服务端通过分组策略将来自不同组别的请求处理资源隔离，该思路借鉴与RocketMQ的实现思想。
 
 + 使用MQ实现的RPC特性：
 
@@ -97,7 +97,7 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 	
 	application子节点主要是标示应用名称和应用类型，主要用于做服务调用链路跟踪和应用以来关系梳理。app属性标示应用名称，type标示应用类型分为jar和war类型。
 	
-	registry子节点主要标示服务注册中心类型和地址，用于server端注册自己的服务调用地址和端口，目前支持zookeeper和consul类型的注册中心，address标示注册中心地址
+	registry子节点主要标示服务注册中心类型和地址，用于server端注册自己的服务调用地址和端口，目前支持zookeeper注册中心，address标示注册中心地址
 	
 	flow-control子节点主要标示流量控制单元，目前只支持使用semaphore信号量实现的流量控制。
 	
@@ -145,7 +145,7 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 	
 	application子节点主要是标示应用名称和应用类型，主要用于做服务调用链路跟踪和应用以来关系梳理。app属性标示应用名称，type标示应用类型分为jar和war类型。
 	
-	lookup子节点主要标示服务发现中心类型和地址，用于client端发现自己的依赖的服务调用地址和端口，目前支持zookeeper和consul类型的注册中心，address标示注册中心地址
+	lookup子节点主要标示服务发现中心类型和地址，用于client端发现自己的依赖的服务调用地址和端口，目前支持zookeeper注册中心，address标示注册中心地址
 	
 	flow-control子节点主要标示流量控制单元，目前只支持使用semaphore信号量实现的流量控制。
 	
@@ -212,122 +212,6 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
     // 注入2.0.0版本的服务代理
     @Lnkwired(version = "2.0.0")
     AuthService v2AuthService;
-  
-# * 使用websocket协议broker
-   
-	<lnk:broker id="paymentWsBrokerServer" provider="ws" listen-port="43000" worker-threads="20" selector-threads="15" 
-		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
-		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
-		use-epoll-native-selector="false"/>
-	
-# * websocket客户端
-
-	<script type="text/javascript">
-		var ws;
-		if (!window.WebSocket) {
-			window.WebSocket = window.MozWebSocket;
-		}
-		if (window.WebSocket) {
-			ws = new WebSocket("ws://127.0.0.1:43000");
-		}
-		ws.onopen = function(event) {
-			document.getElementById('messages').innerHTML = 'Connection established<br/>';
-			console.log("WebSocket.readyState : " + ws.readyState);
-			console.log("WebSocket.onopen event : " + event);
-		};
-		ws.onmessage = function(event) {
-			console.log("WebSocket.onmessage event : " + event.data);
-			document.getElementById('messages').innerHTML += '<br/>' + event.data;
-		};
-		ws.onerror = function(event) {
-			console.log("WebSocket.onerror event : " + event);
-			alert("WebSocket.onerror event : " + event);
-		};
-		ws.onclose = function(event) {
-			console.log("WebSocket.onclose event : " + event);
-			alert("WebSocket.onclose event : " + event);
-		};
-		function start() {
-			var authRequest = {
-					txnId:"XSDNEDOZLX1F36FF9B7FFDFBC095E10006DFF02AF0C",
-					memberId:"123456",
-					name:"刘飞",
-					mobile:"13522874567",
-					cardNo:"6222021001138822740",
-					identityNo:"413537199112015138"
-			};
-			var msg = {
-				invokeType:0,
-				version:"2.0.0",
-				protocol:0,
-				brokerProtocol:"json",
-				application:"test.broker",
-				serviceGroup:"biz-pay-bgw-payment.srv",
-				serviceId:"io.lnk.demo.sync_multi_version_ploy.AuthService",
-				method:"auth",
-				signature:["io.lnk.demo.AuthRequest"],
-				args:[
-					{
-						type:"io.lnk.demo.AuthRequest",
-						arg:JSON.stringify(authRequest)
-					}
-					],
-				timeoutMillis:3000}
-				;
-			var msgJSON = JSON.stringify(msg);
-			alert(msgJSON);
-			send(msgJSON);
-			return false;
-		}
-		function send(message) {
-			if (!window.WebSocket) {
-				return;
-			}
-			if (ws.readyState == WebSocket.OPEN) {
-				ws.send(message);
-			} else {
-				alert("The socket is not open.");
-			}
-		}
-	</script>
-	
-# * 使用http协议broker
- 
-	<lnk:broker id="paymentHttpBrokerServer" provider="http" listen-port="42000" worker-threads="20" selector-threads="15" 
-		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
-		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
-		use-epoll-native-selector="false"/>
-
-# * http客户端调用
-  
-	CloseableHttpClient client = HttpClients.createDefault();
-	String uri = "http://127.0.0.1:42000";
-	HttpPost request = new HttpPost(uri);
-	BrokerCommand brokerCommand = new BrokerCommand();
-	brokerCommand.setInvokeType(BrokerCommand.SYNC);
-	brokerCommand.setApplication("test.broker");
-	brokerCommand.setVersion("2.0.0");
-	brokerCommand.setProtocol(Protocols.DEFAULT_PROTOCOL);
-	brokerCommand.setBrokerProtocol(BrokerProtocols.JSON);
-	brokerCommand.setServiceGroup("biz-pay-bgw-payment.srv");
-	brokerCommand.setServiceId(AuthService.class.getName());
-	brokerCommand.setMethod("auth");
-	brokerCommand.setSignature(new String[] {AuthRequest.class.getName()});
-	BrokerArg arg = new BrokerArg();
-	arg.setType(AuthRequest.class.getName());
-	arg.setArg(serializer.serializeAsString(buildAuthRequest()));
-	brokerCommand.setArgs(new BrokerArg[] {arg});
-	brokerCommand.setTimeoutMillis(Long.MAX_VALUE);
-	String command = serializer.serializeAsString(brokerCommand);
-	System.err.println("http client send BrokerCommand : " + command);
-	HttpEntity entity = new StringEntity(command);
-	request.setEntity(entity);
-	BrokerCommand response = client.execute(HttpHost.create(uri), request, new AbstractResponseHandler<BrokerCommand>() {
-	    public BrokerCommand handleEntity(HttpEntity entity) throws IOException {
-	        return serializer.deserialize(BrokerCommand.class, StreamUtils.copyToString(entity.getContent(), Charsets.UTF_8));
-	    }
-	});
-	System.err.println("http client Received BrokerCommand : " + JSON.toJSONString(response, true));
 
 
 

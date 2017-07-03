@@ -8,18 +8,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>jar</packaging>
 	<groupId>io.lnk</groupId>
-	<artifactId>lnk-lookup</artifactId>
+	<artifactId>lnk-zookeeper</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>lnk-lookup</name>
+	<name>lnk-zookeeper</name>
 	<dependencies>
 		<dependency>
 			<groupId>io.lnk</groupId>
 			<artifactId>lnk-api</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>io.lnk</groupId>
-			<artifactId>lnk-zookeeper</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

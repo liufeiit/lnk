@@ -14,6 +14,5 @@ public class LnkNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("application", new LnkApplicationParser());
         registerBeanDefinitionParser("server", new LnkServerParser());
         registerBeanDefinitionParser("client", new LnkClientParser());
-        registerBeanDefinitionParser("broker", new LnkBrokerParser());
     }
 }
