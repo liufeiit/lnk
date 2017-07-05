@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.lnk.com/schema/io/lnk/statemachine"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tool="http://www.springframework.org/schema/tool" xmlns:beans="http://www.springframework.org/schema/beans"
+	targetNamespace="http://www.lnk.com/schema/io/lnk/statemachine"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans" />
+	<xsd:import namespace="http://www.springframework.org/schema/tool" />
+	
+	<xsd:element name="statemachine">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="state-diagrams" maxOccurs="1" minOccurs="1">
+					<xsd:complexType>
+						<xsd:choice maxOccurs="unbounded" minOccurs="1">
+							<xsd:element name="state-diagram" type="state-diagram-complex-type" />
+						</xsd:choice>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attribute name="id" type="xsd:string" use="required"/>
+			<xsd:attribute name="handler-exception-resolver" type="xsd:string" use="required"/>
+			<xsd:attribute name="async-task-executor" type="xsd:string" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="state-diagram-complex-type">
+		<xsd:choice minOccurs="1" maxOccurs="unbounded">
+			<xsd:element name="state" type="state-complex-type"/>
+		</xsd:choice>
+		<xsd:attribute name="id" type="xsd:string" use="required"/>
+		<xsd:attribute name="resources-state-loader" type="xsd:string" use="required"/>
+		<xsd:attribute name="event-type" type="xsd:string" use="optional"/>
+		<xsd:attribute name="state-type" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="state-complex-type">
+		<xsd:attribute name="event" type="xsd:string" use="required"/>
+		<xsd:attribute name="source" type="xsd:string" use="required"/>
+		<xsd:attribute name="target" type="xsd:string" use="required"/>
+		<xsd:attribute name="task-ref" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+</xsd:schema>

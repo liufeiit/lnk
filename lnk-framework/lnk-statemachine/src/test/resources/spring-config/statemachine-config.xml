@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:sm="http://www.lnk.com/schema/io/lnk/statemachine"
+	xmlns="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.lnk.com/schema/io/lnk/statemachine http://www.lnk.com/schema/io/lnk/statemachine/statemachine-1.0.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:annotation-config />
+	<aop:aspectj-autoproxy />
+	
+	<sm:statemachine id="paymentStateMachine" handler-exception-resolver="smpHandlerExceptionResolver" async-task-executor="threadPoolTaskExecutor">
+		<sm:state-diagrams>
+			<sm:state-diagram id="payment1StateDiagram" resources-state-loader="smpResourcesStateLoader" event-type="test.spi.Events" state-type="test.spi.States">
+				<sm:state event="SUSPEND" source="WAITING" target="CRITICAL" task-ref="smpTask"/>
+				<sm:state event="WAITING" source="CRITICAL" target="WAITING" task-ref="smpTask"/>
+				<sm:state event="SUCCESS" source="CRITICAL" target="SUCCESS" task-ref="smpTask"/>
+				<sm:state event="FAILURE" source="CRITICAL" target="FAILURE" task-ref="smpTask"/>
+				<sm:state event="RETRY" source="FAILURE" target="WAITING" task-ref="smpTask"/>
+			</sm:state-diagram>
+		</sm:state-diagrams>
+	</sm:statemachine>
+	
+	<bean id="smpHandlerExceptionResolver" class="test.spi.SmpHandlerExceptionResolver"/>
+	
+	<bean id="smpResourcesStateLoader" class="test.spi.SmpResourcesStateLoader"/>
+	
+	<bean id="smpTask" class="test.spi.SmpTask"/>
+	
+	<bean id="threadPoolTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="8"/>
+		<property name="maxPoolSize" value="20"/>
+		<property name="keepAliveSeconds" value="60"/>
+		<property name="queueCapacity" value="102400"/>
+	</bean>
+		
+</beans>

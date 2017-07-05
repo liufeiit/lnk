@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.lnk.com/schema/io/lnk/dispatcher"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tool="http://www.springframework.org/schema/tool" xmlns:beans="http://www.springframework.org/schema/beans"
+	targetNamespace="http://www.lnk.com/schema/io/lnk/dispatcher"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans" />
+	<xsd:import namespace="http://www.springframework.org/schema/tool" />
+	
+	<xsd:element name="dispatcher">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="invokers" maxOccurs="1" minOccurs="1">
+					<xsd:complexType>
+						<xsd:choice maxOccurs="unbounded" minOccurs="1">
+							<xsd:element name="invoker" type="invoker" />
+						</xsd:choice>
+						<xsd:attribute name="id" type="xsd:string" use="required"/>
+						<xsd:attribute name="dispatcher-invoker" type="xsd:string" use="required"/>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="invoker">
+		<xsd:attribute name="invoker-code" type="xsd:string" use="required"/>
+		<xsd:attribute name="invoker-handler" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+</xsd:schema>

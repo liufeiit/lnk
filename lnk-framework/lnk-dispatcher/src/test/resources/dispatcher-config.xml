@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:command="http://www.lnk.com/schema/io/lnk/dispatcher" xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.lnk.com/schema/io/lnk/dispatcher http://www.lnk.com/schema/io/lnk/dispatcher/dispatcher-1.0.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:annotation-config />
+	<aop:aspectj-autoproxy />
+	
+	<command:dispatcher>
+		<command:invokers id="TestInvokersDispatcher" dispatcher-invoker="test.TestInvokerAgent">
+			<command:invoker invoker-code="test.TestInvokerTypeCode.Test_001" invoker-handler="Test1Invoker"/>
+			<command:invoker invoker-code="test.TestInvokerTypeCode.Test_002" invoker-handler="Test2Invoker"/>
+		</command:invokers>
+	</command:dispatcher>
+	
+	<bean id="Test1Invoker" class="test.Test1Invoker"/>
+	
+	<bean id="Test2Invoker" class="test.Test2Invoker"/>
+	
+</beans>
