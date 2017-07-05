@@ -58,7 +58,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>../lib/</classpathPrefix>
-							<mainClass>com.ly.fn.inf.config.ctx.ServerMain</mainClass>
+							<mainClass>io.lnk.config.ctx.ServerMain</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
