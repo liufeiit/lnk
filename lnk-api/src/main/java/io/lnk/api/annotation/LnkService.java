@@ -18,5 +18,4 @@ import io.lnk.api.Protocols;
 public @interface LnkService {
     public String group();
     public int protocol() default Protocols.DEFAULT_PROTOCOL;
-    Class<?> serviceInterface() default void.class;
 }
