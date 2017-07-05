@@ -12,7 +12,7 @@ import java.util.Map;
 public class Application implements Serializable {
     private static final long serialVersionUID = 4119167501893693281L;
     private String app;
-    private String type;// jar, war, broker
+    private String type;// jar, war
     private Map<String, String> parameters;
 
     public String getApp() {

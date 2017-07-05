@@ -48,7 +48,7 @@ public class DefaultServerPortAllocator implements ServerPortAllocator {
         if (StringUtils.isBlank(allocPortHome)) {
             allocPortHome = System.getProperty("user.home") + "/.lnk_alloc_port";
         }
-        File appPortFile = new File(allocPortHome + "/" + application + ".properties");
+        File appPortFile = new File(allocPortHome + "/" + application.getApp() + ".properties");
         if (appPortFile.exists()) {
             try {
                 Properties portProps = new Properties();
@@ -57,14 +57,14 @@ public class DefaultServerPortAllocator implements ServerPortAllocator {
                 if (StringUtils.isBlank(portString)) {
                     int port = NetUtils.getAvailablePort(10024);
                     portProps.setProperty(portKey, port + "");
-                    portProps.store(new FileWriter(appPortFile), application + " port alloc.");
+                    portProps.store(new FileWriter(appPortFile), application.getApp() + " port alloc.");
                     return port;
                 }
                 int port = NumberUtils.toInt(portString, -1);
                 if (NetUtils.isAvailable(port) == false) {
                     port = NetUtils.getAvailablePort(10029);
                     portProps.setProperty(portKey, port + "");
-                    portProps.store(new FileWriter(appPortFile), application + " port alloc.");
+                    portProps.store(new FileWriter(appPortFile), application.getApp() + " port alloc.");
                     return port;
                 }
                 return port;
@@ -87,11 +87,11 @@ public class DefaultServerPortAllocator implements ServerPortAllocator {
             if (NetUtils.isAvailable(port) == false) {
                 port = NetUtils.getAvailablePort(10044);
                 portProps.setProperty(portKey, port + "");
-                portProps.store(new FileWriter(appPortFile), application + " port alloc.");
+                portProps.store(new FileWriter(appPortFile), application.getApp() + " port alloc.");
                 return port;
             }
             portProps.setProperty(portKey, port + "");
-            portProps.store(new FileWriter(appPortFile), application + " port alloc.");
+            portProps.store(new FileWriter(appPortFile), application.getApp() + " port alloc.");
             return port;
         } catch (Throwable e) {
             log.error("selectPort create alloc port file Error.", e);

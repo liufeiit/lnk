@@ -34,7 +34,7 @@
 				</xsd:simpleType>
 			</xsd:attribute>
 			<xsd:attribute name="client" type="xsd:string" use="optional"/>
-			<xsd:attribute name="listen-port" type="xsd:int" use="optional"/>
+			<xsd:attribute name="listen-port" type="xsd:int" use="optional" default="0"/>
 			<xsd:attribute name="worker-threads" type="xsd:int" use="optional" default="10"/>
 			<xsd:attribute name="selector-threads" type="xsd:int" use="optional" default="5"/>
 			<xsd:attribute name="channel-maxidletime-seconds" type="xsd:int" use="optional" default="120"/>
