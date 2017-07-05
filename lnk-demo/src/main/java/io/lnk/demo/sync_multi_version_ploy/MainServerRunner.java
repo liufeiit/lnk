@@ -11,8 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
 
-import com.alibaba.fastjson.JSON;
-
 import io.lnk.api.RemoteObject;
 import io.lnk.api.annotation.Lnkwired;
 import io.lnk.api.protocol.Serializer;
@@ -70,7 +68,7 @@ public class MainServerRunner extends BasicMainServerRunner {
         System.err.println("defaultAuthService serializeStub : " + ((RemoteObject) defaultAuthService).serializeStub());
         AuthRequest request = buildAuthRequest();
         AuthResponse response = defaultAuthService.auth(request);
-        System.err.println("response : " + JSON.toJSONString(response, true));
+        System.err.println("response : " + response);
     }
 
     /**
@@ -81,7 +79,7 @@ public class MainServerRunner extends BasicMainServerRunner {
         System.err.println("v2AuthService serializeStub : " + ((RemoteObject) v2AuthService).serializeStub());
         AuthRequest request = buildAuthRequest();
         AuthResponse response = v2AuthService.auth(request);
-        System.err.println("response : " + JSON.toJSONString(response, true));
+        System.err.println("response : " + response);
     }
 
     /**
@@ -94,7 +92,7 @@ public class MainServerRunner extends BasicMainServerRunner {
             AuthRequest request = buildAuthRequest();
             request.setName("异常");
             AuthResponse response = defaultAuthService.auth(request);
-            System.err.println("response : " + JSON.toJSONString(response, true));
+            System.err.println("response : " + response);
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

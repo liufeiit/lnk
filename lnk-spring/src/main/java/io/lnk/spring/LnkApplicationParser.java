@@ -6,13 +6,18 @@ import org.springframework.aop.config.AopNamespaceUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
 import io.lnk.api.app.Application;
+import io.lnk.config.ctx.config.PlaceholderConfiguration;
+import io.lnk.config.ctx.ns.NsRegistryImpl;
 import io.lnk.spring.core.LnkApplication;
 import io.lnk.spring.utils.LnkComponentParameterUtils;
+import io.lnk.spring.utils.LnkComponentUtils;
+import io.lnk.spring.utils.LnkComponentUtils.ComponentCallback;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -32,10 +37,22 @@ public class LnkApplicationParser extends AbstractSingleBeanDefinitionParser {
     protected void doParse(final Element element, final ParserContext parserContext, final BeanDefinitionBuilder builder) {
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
         final Application application = new Application();
-        application.setApp(element.getAttribute("app"));
+        final String app = element.getAttribute("app");
+        final String nsHome = element.getAttribute("ns-home");
+        application.setApp(app);
         application.setType(element.getAttribute("type"));
         application.setParameters(LnkComponentParameterUtils.parse(element));
         builder.addPropertyValue("application", application);
+        LnkComponentUtils.parse(PlaceholderConfiguration.class, element, parserContext, new ComponentCallback() {
+            public void onParse(RootBeanDefinition beanDefinition) {
+                beanDefinition.getPropertyValues().addPropertyValue("systemId", app);
+            }
+        });
+        LnkComponentUtils.parse(NsRegistryImpl.class, element, parserContext, new ComponentCallback() {
+            public void onParse(RootBeanDefinition beanDefinition) {
+                beanDefinition.getPropertyValues().addPropertyValue("nsHome", nsHome);
+            }
+        });
         log.info("parse LnkApplication bean success.");
     }
 

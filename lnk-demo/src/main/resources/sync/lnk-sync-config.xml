@@ -11,18 +11,17 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<context:annotation-config />
-	<context:property-placeholder location="classpath:config.properties"/>
 	<aop:aspectj-autoproxy />
 	
 	<bean id="defaultAuthService" class="io.lnk.demo.sync_multi_version_ploy.DefaultAuthService"/>
 	<bean id="v2AuthService" class="io.lnk.demo.sync_multi_version_ploy.V2AuthService"/>
-	<lnk:application app="biz-pay-bgw-payment-srv" type="jar"/>
+	<lnk:application app="lnk-demo" ns-home="${nsHome}" type="jar"/>
 	
 	<lnk:server id="paymentServer1" protocol="netty" client="paymentClient" listen-port="41000" worker-threads="20" selector-threads="15" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
 		use-epoll-native-selector="false">
-		<lnk:registry address="${zk.uri}"/>
+		<lnk:registry address="${registry}"/>
 		<lnk:flow-control permits="256"/>
 		<lnk:tracker type="logger"/>
 		<lnk:bind>
@@ -32,7 +31,7 @@
 	
 	<lnk:client id="paymentClient" protocol="netty" worker-threads="4" connect-timeout-millis="3000" channel-maxidletime-seconds="120"
 		socket-sndbuf-size="65535" socket-rcvbuf-size="65535" default-executor-threads="4">
-		<lnk:lookup address="${zk.uri}"/>
+		<lnk:lookup address="${registry}"/>
 		<lnk:flow-control permits="256"/>
 		<lnk:load-balance type="hash"/>
 	</lnk:client>

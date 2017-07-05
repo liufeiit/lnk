@@ -1,7 +1,5 @@
 package io.lnk.demo.sync_multi_version_ploy;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 import io.lnk.demo.AuthResponse;
 
 /**
@@ -16,7 +14,6 @@ public class PolyAuthResponse extends AuthResponse {
     private String txnType;
     private String productType;
     private String idType;
-    @JSONField(serialize = false)
     private byte[] data;
     public byte[] getData() {
         return data;

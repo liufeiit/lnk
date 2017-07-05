@@ -1,7 +1,5 @@
 package io.lnk.demo.async_multicast_callback;
 
-import com.alibaba.fastjson.JSON;
-
 import io.lnk.demo.AppBizException;
 import io.lnk.demo.AuthResponse;
 
@@ -15,7 +13,7 @@ public class DefaultAuthCallbackService implements AuthCallbackService {
 
     @Override
     public void callback(AuthResponse response) throws AppBizException {
-        System.err.println("resv response : " + JSON.toJSONString(response, true));
+        System.err.println("resv response : " + response);
         sync.countDown();
         sync2.countDown();
     }
