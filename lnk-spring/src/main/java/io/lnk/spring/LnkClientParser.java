@@ -21,7 +21,8 @@ import io.lnk.api.ClientConfiguration;
 import io.lnk.cluster.NestedLoadBalance;
 import io.lnk.core.caller.LnkRemoteObjectFactory;
 import io.lnk.flow.SemaphoreFlowController;
-import io.lnk.lookup.LnkRegistry;
+import io.lnk.lookup.ZooKeeperRegistry;
+import io.lnk.lookup.zookeeper.DefaultZooKeeperService;
 import io.lnk.protocol.LnkProtocolFactorySelector;
 import io.lnk.protocol.object.LnkObjectProtocolFactory;
 import io.lnk.spring.core.SpringLnkInvoker;
@@ -70,10 +71,16 @@ public class LnkClientParser extends AbstractSingleBeanDefinitionParser {
 
         List<Element> lookupElements = DomUtils.getChildElementsByTagName(element, "lookup");
         final Element lookupElement = lookupElements.get(0);
-        String lookupId = "lnkLookup";
-        LnkComponentUtils.parse(lookupId, LnkRegistry.class, element, parserContext, new ComponentCallback() {
+        final String zooKeeperServiceId = "zooKeeperService";
+        LnkComponentUtils.parse(zooKeeperServiceId, DefaultZooKeeperService.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
-                beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, lookupElement.getAttribute("address"));
+                beanDefinition.getPropertyValues().addPropertyValue("zookeeperUri", lookupElement.getAttribute("address"));
+            }
+        });
+        String lookupId = "lnkLookup";
+        LnkComponentUtils.parse(lookupId, ZooKeeperRegistry.class, element, parserContext, new ComponentCallback() {
+            public void onParse(RootBeanDefinition beanDefinition) {
+                beanDefinition.getPropertyValues().addPropertyValue("zooKeeperService", new RuntimeBeanReference(zooKeeperServiceId));
                 beanDefinition.getPropertyValues().addPropertyValues(LnkComponentParameterUtils.parse(lookupElement));
             }
         });

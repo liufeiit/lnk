@@ -33,7 +33,7 @@ import io.lnk.lookup.zookeeper.utils.ZooKeeperUtils;
  * @version 1.0.0
  * @since 2017年6月13日 下午6:06:52
  */
-public class ZooKeeperProvider implements Command {
+public final class ZooKeeperProvider implements Command {
     protected final Logger log = LoggerFactory.getLogger(getClass().getSimpleName());
     static {
         System.setProperty("zookeeper.disableAutoWatchReset", String.valueOf(false));

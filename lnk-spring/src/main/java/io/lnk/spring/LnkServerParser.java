@@ -22,7 +22,8 @@ import org.w3c.dom.Element;
 import io.lnk.api.ServerConfiguration;
 import io.lnk.api.ServiceGroup;
 import io.lnk.flow.SemaphoreFlowController;
-import io.lnk.lookup.LnkRegistry;
+import io.lnk.lookup.ZooKeeperRegistry;
+import io.lnk.lookup.zookeeper.DefaultZooKeeperService;
 import io.lnk.port.DefaultServerPortAllocator;
 import io.lnk.protocol.LnkProtocolFactorySelector;
 import io.lnk.spring.core.DefaultServiceObjectFinder;
@@ -106,10 +107,16 @@ public class LnkServerParser extends AbstractSingleBeanDefinitionParser {
 
         List<Element> registryElements = DomUtils.getChildElementsByTagName(element, "registry");
         final Element registryElement = registryElements.get(0);
-        String registryId = "lnkRegistry";
-        LnkComponentUtils.parse(registryId, LnkRegistry.class, element, parserContext, new ComponentCallback() {
+        final String zooKeeperServiceId = "zooKeeperService";
+        LnkComponentUtils.parse(zooKeeperServiceId, DefaultZooKeeperService.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
-                beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, registryElement.getAttribute("address"));
+                beanDefinition.getPropertyValues().addPropertyValue("zookeeperUri", registryElement.getAttribute("address"));
+            }
+        });
+        String registryId = "lnkRegistry";
+        LnkComponentUtils.parse(registryId, ZooKeeperRegistry.class, element, parserContext, new ComponentCallback() {
+            public void onParse(RootBeanDefinition beanDefinition) {
+                beanDefinition.getPropertyValues().addPropertyValue("zooKeeperService", new RuntimeBeanReference(zooKeeperServiceId));
                 beanDefinition.getPropertyValues().addPropertyValues(LnkComponentParameterUtils.parse(registryElement));
             }
         });
