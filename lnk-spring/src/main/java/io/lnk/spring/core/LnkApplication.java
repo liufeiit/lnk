@@ -16,6 +16,8 @@ import org.springframework.core.PriorityOrdered;
 
 import io.lnk.api.app.Application;
 import io.lnk.api.app.ApplicationAware;
+import io.lnk.config.ctx.ns.NsRegistry;
+import io.lnk.config.ctx.ns.NsRegistryAware;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -27,6 +29,7 @@ public class LnkApplication implements BeanFactoryPostProcessor, PriorityOrdered
     public static final String LNK_APPLICATION_NAME = "lnk.application";
     private ApplicationEventPublisher applicationEventPublisher;
     private Application application;
+    private NsRegistry nsRegistry;
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -35,6 +38,13 @@ public class LnkApplication implements BeanFactoryPostProcessor, PriorityOrdered
             for (Map.Entry<String, ApplicationAware> e : applicationAwares.entrySet()) {
                 ApplicationAware applicationAware = e.getValue();
                 applicationAware.setApplication(this.application);
+            }
+        }
+        Map<String, NsRegistryAware> nsRegistryAwares = beanFactory.getBeansOfType(NsRegistryAware.class);
+        if (MapUtils.isNotEmpty(nsRegistryAwares)) {
+            for (Map.Entry<String, NsRegistryAware> e : nsRegistryAwares.entrySet()) {
+                NsRegistryAware nsRegistryAware = e.getValue();
+                nsRegistryAware.setNsRegistry(this.nsRegistry);
             }
         }
     }
@@ -62,5 +72,9 @@ public class LnkApplication implements BeanFactoryPostProcessor, PriorityOrdered
 
     public Application getApplication() {
         return application;
+    }
+    
+    public void setNsRegistry(NsRegistry nsRegistry) {
+        this.nsRegistry = nsRegistry;
     }
 }

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.config.AopNamespaceUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -43,16 +44,18 @@ public class LnkApplicationParser extends AbstractSingleBeanDefinitionParser {
         application.setType(element.getAttribute("type"));
         application.setParameters(LnkComponentParameterUtils.parse(element));
         builder.addPropertyValue("application", application);
-        LnkComponentUtils.parse(PlaceholderConfiguration.class, element, parserContext, new ComponentCallback() {
+        LnkComponentUtils.parse("configuration", PlaceholderConfiguration.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("systemId", app);
             }
         });
-        LnkComponentUtils.parse(NsRegistryImpl.class, element, parserContext, new ComponentCallback() {
+        String nsRegistryId = "nsRegistry";
+        LnkComponentUtils.parse(nsRegistryId, NsRegistryImpl.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("nsHome", nsHome);
             }
         });
+        builder.addPropertyValue("nsRegistry", new RuntimeBeanReference(nsRegistryId));
         log.info("parse LnkApplication bean success.");
     }
 

@@ -8,14 +8,13 @@ import org.apache.commons.jxpath.JXPathContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import io.lnk.config.ctx.utils.PropertyName;
 
 /**
  * 名字服务对象工厂Bean类。
  */
-public class NsObjectFactoryBean implements FactoryBean<Object>, InitializingBean, DisposableBean {
+public class NsObjectFactoryBean implements NsRegistryAware, FactoryBean<Object>, InitializingBean, DisposableBean {
     /**
      * 对象类型
      */
@@ -142,11 +141,6 @@ public class NsObjectFactoryBean implements FactoryBean<Object>, InitializingBea
         this.nsPath = nsPath;
     }
 
-    public NsRegistry getNsRegistry() {
-        return nsRegistry;
-    }
-
-    @Autowired
     public void setNsRegistry(NsRegistry nsRegistry) {
         this.nsRegistry = nsRegistry;
     }
@@ -154,5 +148,4 @@ public class NsObjectFactoryBean implements FactoryBean<Object>, InitializingBea
     public void setObjectType(Class<?> objectType) {
         this.objectType = objectType;
     }
-
 }
