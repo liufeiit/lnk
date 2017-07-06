@@ -17,10 +17,10 @@ import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.logging.MdcInjectionFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
-import io.lnk.api.ClientConfiguration;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.remoting.CommandProcessor;
+import io.lnk.remoting.Configuration;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingClient;
@@ -39,13 +39,13 @@ import io.lnk.remoting.utils.RemotingUtils;
  */
 public class MinaRemotingClient extends MinaAbstractRemotingService implements RemotingClient {
     private static final long LOCK_TIMEOUT_MILLIS = 3000;
-    private final ClientConfiguration configuration;
+    private final Configuration configuration;
     private final NioSocketConnector connector;
     private final Lock lock = new ReentrantLock();
     private final ConcurrentHashMap<String, RemotingSessionFuture> sessions = new ConcurrentHashMap<String, RemotingSessionFuture>();
     private final ExecutorService defaultThreadPoolExecutor;
 
-    public MinaRemotingClient(final ProtocolFactorySelector protocolFactorySelector, final ClientConfiguration configuration) {
+    public MinaRemotingClient(final ProtocolFactorySelector protocolFactorySelector, final Configuration configuration) {
         super(protocolFactorySelector);
         this.configuration = configuration;
         this.connector = new NioSocketConnector(configuration.getWorkerThreads());

@@ -19,7 +19,7 @@ import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.api.utils.CorrelationIds;
-import io.lnk.core.LnkInvoker;
+import io.lnk.core.LnkEndpoint;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -28,20 +28,20 @@ import io.lnk.core.LnkInvoker;
  * @since 2017年5月22日 下午9:12:40
  */
 public class LnkCaller implements InvocationHandler {
-    private final LnkInvoker invoker;
+    private final LnkEndpoint endpoint;
     private final RemoteStub remoteObject;
     private final ProtocolFactorySelector protocolFactorySelector;
     private RemoteObjectFactory remoteObjectFactory;
     private ProtocolFactory protocolFactory;
     private ObjectProtocolFactory objectProtocolFactory;
 
-    public LnkCaller(LnkInvoker invoker, String serializeStub, ProtocolFactorySelector protocolFactorySelector) {
-        this(invoker, new RemoteStub(serializeStub), protocolFactorySelector);
+    public LnkCaller(LnkEndpoint endpoint, String serializeStub, ProtocolFactorySelector protocolFactorySelector) {
+        this(endpoint, new RemoteStub(serializeStub), protocolFactorySelector);
     }
 
-    public LnkCaller(LnkInvoker invoker, RemoteStub remoteObject, ProtocolFactorySelector protocolFactorySelector) {
+    public LnkCaller(LnkEndpoint endpoint, RemoteStub remoteObject, ProtocolFactorySelector protocolFactorySelector) {
         super();
-        this.invoker = invoker;
+        this.endpoint = endpoint;
         this.remoteObject = remoteObject;
         this.protocolFactorySelector = protocolFactorySelector;
         this.protocolFactory = this.protocolFactorySelector.select(this.remoteObject.getProtocol());
@@ -89,11 +89,11 @@ public class LnkCaller implements InvocationHandler {
                 return this.sync(command, timeoutMillis);
             }
             case ASYNC: {
-                this.invoker.async(command);
+                this.endpoint.async(command);
             }
                 break;
             case MULTICAST: {
-                this.invoker.multicast(command);
+                this.endpoint.multicast(command);
             }
                 break;
         }
@@ -101,7 +101,7 @@ public class LnkCaller implements InvocationHandler {
     }
 
     private Object sync(InvokerCommand command, long timeoutMillis) throws Throwable {
-        InvokerCommand response = this.invoker.sync(command, timeoutMillis);
+        InvokerCommand response = this.endpoint.sync(command, timeoutMillis);
         CommandTransportException exception = response.getException();
         if (exception != null) {
             Throwable e;

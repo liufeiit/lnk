@@ -6,8 +6,6 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -17,36 +15,47 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.util.ReflectionUtils;
 
+import io.lnk.api.RemoteObjectFactory;
+import io.lnk.api.RemoteObjectFactoryAware;
 import io.lnk.api.ServiceVersion;
 import io.lnk.api.annotation.LnkService;
 import io.lnk.api.annotation.LnkVersion;
-import io.lnk.core.lnk.DefaultLnkServer;
+import io.lnk.config.ctx.ns.NsRegistry;
+import io.lnk.config.ctx.ns.NsRegistryAware;
+import io.lnk.core.lnk.DefaultLnkEndpoint;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
  *
  * @version 1.0.0
- * @since 2017年5月22日 下午2:16:27
+ * @since 2017年7月6日 上午11:15:52
  */
-public class SpringLnkServer extends DefaultLnkServer implements BeanFactoryAware, ApplicationListener<ApplicationEvent>, BeanPostProcessor, PriorityOrdered, SmartLifecycle, InitializingBean, DisposableBean {
-    private BeanFactory beanFactory;
+public class SpringLnkEndpoint extends DefaultLnkEndpoint implements ApplicationListener<ApplicationEvent>, BeanPostProcessor, PriorityOrdered, SmartLifecycle, InitializingBean, DisposableBean {
+    private RemoteObjectFactory remoteObjectFactory;
+    private NsRegistry nsRegistry;
     private Set<Object> exportServices = new HashSet<Object>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        LnkApplication lnkApplication = this.beanFactory.getBean(LnkApplication.LNK_APPLICATION_NAME, LnkApplication.class);
-        super.setApplication(lnkApplication.getApplication());
         super.start();
     }
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        if (bean instanceof RemoteObjectFactoryAware) {
+            ((RemoteObjectFactoryAware) bean).setRemoteObjectFactory(this.remoteObjectFactory);
+        }
+        if (bean instanceof NsRegistryAware) {
+            ((NsRegistryAware) bean).setNsRegistry(this.nsRegistry);
+        }
         return bean;
     }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        ReflectionUtils.doWithFields(bean.getClass(), new LnkwiredFieldCallback(this.remoteObjectFactory, bean), new LnkwiredFieldFilter());
         Class<?> beanType = bean.getClass();
         String version = ServiceVersion.DEFAULT_VERSION;
         if (beanType.isAnnotationPresent(LnkVersion.class)) {
@@ -57,13 +66,6 @@ public class SpringLnkServer extends DefaultLnkServer implements BeanFactoryAwar
         return bean;
     }
 
-    @Override
-    public void onApplicationEvent(ApplicationEvent event) {
-        if (event instanceof ContextClosedEvent) {
-            super.shutdown();
-        }
-    }
-    
     private void serviceUnregistry(Class<?> beanType, Object bean, String version) {
         Class<?>[] beanInterfaces = beanType.getInterfaces();
         if (ArrayUtils.isNotEmpty(beanInterfaces)) {
@@ -98,16 +100,28 @@ public class SpringLnkServer extends DefaultLnkServer implements BeanFactoryAwar
     }
 
     @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
+    }
+
+    @Override
+    public void stop() {
+        super.shutdown();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return super.isStarted();
+    }
+
+    @Override
     public int getPhase() {
         return this.getOrder();
     }
 
     @Override
-    public void stop() {}
-
-    @Override
-    public boolean isRunning() {
-        return super.isStarted();
+    public void destroy() throws Exception {
+        super.shutdown();
     }
 
     @Override
@@ -122,8 +136,10 @@ public class SpringLnkServer extends DefaultLnkServer implements BeanFactoryAwar
     }
 
     @Override
-    public void destroy() throws Exception {
-        super.shutdown();
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ContextClosedEvent) {
+            super.shutdown();
+        }
     }
 
     protected void shutdown0() throws Throwable {
@@ -142,13 +158,11 @@ public class SpringLnkServer extends DefaultLnkServer implements BeanFactoryAwar
         this.exportServices.clear();
     }
 
-    @Override
-    public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
+    public void setRemoteObjectFactory(RemoteObjectFactory remoteObjectFactory) {
+        this.remoteObjectFactory = remoteObjectFactory;
     }
-
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
+    
+    public void setNsRegistry(NsRegistry nsRegistry) {
+        this.nsRegistry = nsRegistry;
     }
 }

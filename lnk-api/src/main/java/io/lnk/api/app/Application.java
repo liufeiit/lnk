@@ -1,7 +1,6 @@
 package io.lnk.api.app;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -13,7 +12,6 @@ public class Application implements Serializable {
     private static final long serialVersionUID = 4119167501893693281L;
     private String app;
     private String type;// jar, war
-    private Map<String, String> parameters;
 
     public String getApp() {
         return app;
@@ -29,13 +27,5 @@ public class Application implements Serializable {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
     }
 }

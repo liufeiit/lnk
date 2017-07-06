@@ -9,13 +9,11 @@ import org.springframework.util.ReflectionUtils;
 
 import io.lnk.api.InvokerCommand;
 import io.lnk.api.ProtocolObject;
-import io.lnk.api.app.Application;
 import io.lnk.api.exception.transport.CommandTransportException;
 import io.lnk.api.flow.FlowController;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
-import io.lnk.api.track.Tracker;
 import io.lnk.core.ServiceObjectFinder;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.protocol.RemotingCommand;
@@ -31,8 +29,6 @@ public class LnkCommandProcessor implements CommandProcessor {
     private ProtocolFactorySelector protocolFactorySelector;
     private ServiceObjectFinder serviceObjectFinder;
     private FlowController flowController;
-    private Application application;
-    private Tracker tracker;
     private ObjectProtocolFactory objectProtocolFactory;
 
     @Override
@@ -40,7 +36,6 @@ public class LnkCommandProcessor implements CommandProcessor {
         long startMillis = System.currentTimeMillis();
         ProtocolFactory protocolFactory = protocolFactorySelector.select(request.getProtocol());
         InvokerCommand command = protocolFactory.decode(InvokerCommand.class, request.getBody());
-        this.trackInvokeBefore(command);
         Object serviceObject = serviceObjectFinder.getServiceObject(command);
         try {
             Method serviceMethod = ReflectionUtils.findMethod(serviceObject.getClass(), command.getMethod(), command.getSignature());
@@ -58,7 +53,6 @@ public class LnkCommandProcessor implements CommandProcessor {
             command.setException(new CommandTransportException(e));
             log.error("invoke correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> Error.", e);
         }
-        this.trackInvokeAfter(command);
         command.setArgs(null);// 减少数据的传输量
         RemotingCommand response = RemotingCommand.replyCommand(request, request.getCode());
         response.setBody(protocolFactory.encode(command));
@@ -67,28 +61,6 @@ public class LnkCommandProcessor implements CommandProcessor {
         return response;
     }
     
-    private void trackInvokeBefore(InvokerCommand command) {
-        if (tracker == null) {
-            return;
-        }
-        try {
-            tracker.trackInvokeBefore(command, application);
-        } catch (Throwable e) {
-            log.error("track serviceId<" + command.commandSignature() + "> invoke on application " + application.getApp() + " Error.", e);
-        }
-    }
-    
-    private void trackInvokeAfter(InvokerCommand command) {
-        if (tracker == null) {
-            return;
-        }
-        try {
-            tracker.trackInvokeAfter(command, application);
-        } catch (Throwable e) {
-            log.error("track serviceId<" + command.commandSignature() + "> invoke on application " + application.getApp() + " Error.", e);
-        }
-    }
-
     @Override
     public boolean tryAcquireFailure(long timeoutMillis) {
         if (flowController == null) {
@@ -115,14 +87,6 @@ public class LnkCommandProcessor implements CommandProcessor {
 
     public void setFlowController(FlowController flowController) {
         this.flowController = flowController;
-    }
-
-    public void setApplication(Application application) {
-        this.application = application;
-    }
-
-    public void setTracker(Tracker tracker) {
-        this.tracker = tracker;
     }
     
     public void setObjectProtocolFactory(ObjectProtocolFactory objectProtocolFactory) {

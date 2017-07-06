@@ -8,35 +8,26 @@
 	<xsd:import namespace="http://www.springframework.org/schema/beans" />
 	<xsd:import namespace="http://www.springframework.org/schema/tool" />
 	
-	<xsd:element name="application" type="application-type"/>
-	
-	<xsd:element name="server">
+	<xsd:element name="lnk">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="registry" maxOccurs="1" minOccurs="1" type="registry-lookup-type"/>
-				<xsd:element name="flow-control" maxOccurs="1" minOccurs="0" type="flow-control-type"/>
-				<xsd:element name="tracker" maxOccurs="1" minOccurs="0" type="tracker-type"/>
+				<xsd:element name="application" maxOccurs="1" minOccurs="1" type="application"/>
+				<xsd:element name="registry" maxOccurs="1" minOccurs="1" type="registry"/>
+				<xsd:element name="load-balance" maxOccurs="1" minOccurs="1" type="load-balance"/>
+				<xsd:element name="flow-control" maxOccurs="1" minOccurs="0" type="flow-control"/>
 				<xsd:element name="bind" maxOccurs="1" minOccurs="1">
 					<xsd:complexType>
 						<xsd:choice maxOccurs="unbounded" minOccurs="1">
-							<xsd:element name="service-group" type="service-group-type" />
+							<xsd:element name="service-group" type="service-group" />
 						</xsd:choice>
 					</xsd:complexType>
 				</xsd:element>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:string" use="required"/>
-			<xsd:attribute name="protocol" default="netty" use="optional">
-				<xsd:simpleType>
-					<xsd:restriction base="xsd:NMTOKEN">
-						<xsd:enumeration value="netty"/>
-						<xsd:enumeration value="mina"/>
-					</xsd:restriction>
-				</xsd:simpleType>
-			</xsd:attribute>
-			<xsd:attribute name="client" type="xsd:string" use="optional"/>
 			<xsd:attribute name="listen-port" type="xsd:int" use="optional" default="0"/>
 			<xsd:attribute name="worker-threads" type="xsd:int" use="optional" default="10"/>
 			<xsd:attribute name="selector-threads" type="xsd:int" use="optional" default="5"/>
+			<xsd:attribute name="connect-timeout-millis" type="xsd:int" use="optional" default="3000"/>
 			<xsd:attribute name="channel-maxidletime-seconds" type="xsd:int" use="optional" default="120"/>
 			<xsd:attribute name="socket-sndbuf-size" type="xsd:int" use="optional" default="65535"/>
 			<xsd:attribute name="socket-rcvbuf-size" type="xsd:int" use="optional" default="65535"/>
@@ -47,35 +38,7 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="client">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="lookup" maxOccurs="1" minOccurs="1" type="registry-lookup-type"/>
-				<xsd:element name="flow-control" maxOccurs="1" minOccurs="0" type="flow-control-type"/>
-				<xsd:element name="load-balance" maxOccurs="1" minOccurs="1" type="load-balance-type"/>
-			</xsd:sequence>
-			<xsd:attribute name="id" type="xsd:string" use="required"/>
-			<xsd:attribute name="protocol" default="netty" use="optional">
-				<xsd:simpleType>
-					<xsd:restriction base="xsd:NMTOKEN">
-						<xsd:enumeration value="netty"/>
-						<xsd:enumeration value="mina"/>
-					</xsd:restriction>
-				</xsd:simpleType>
-			</xsd:attribute>
-			<xsd:attribute name="worker-threads" type="xsd:int" use="optional" default="4"/>
-			<xsd:attribute name="connect-timeout-millis" type="xsd:int" use="optional" default="3000"/>
-			<xsd:attribute name="channel-maxidletime-seconds" type="xsd:int" use="optional" default="120"/>
-			<xsd:attribute name="socket-sndbuf-size" type="xsd:int" use="optional" default="65535"/>
-			<xsd:attribute name="socket-rcvbuf-size" type="xsd:int" use="optional" default="65535"/>
-			<xsd:attribute name="default-executor-threads" type="xsd:int" use="optional" default="4"/>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:complexType name="application-type">
-		<xsd:sequence>
-			<xsd:element name="parameter" maxOccurs="unbounded" minOccurs="0" type="parameter-type"/>
-		</xsd:sequence>
+	<xsd:complexType name="application">
 		<xsd:attribute name="app" type="xsd:string" use="required"/>
 		<xsd:attribute name="ns-home" type="xsd:string" use="required"/>
 		<xsd:attribute name="type" default="jar" use="optional">
@@ -83,21 +46,17 @@
 				<xsd:restriction base="xsd:NMTOKEN">
 					<xsd:enumeration value="jar"/>
 					<xsd:enumeration value="war"/>
-					<xsd:enumeration value="broker"/>
 				</xsd:restriction>
 			</xsd:simpleType>
 		</xsd:attribute>
 	</xsd:complexType>
 	
-	<xsd:complexType name="service-group-type">
+	<xsd:complexType name="service-group">
 		<xsd:attribute name="service-group" type="xsd:string" use="required"/>
 		<xsd:attribute name="worker-threads" type="xsd:int" use="optional" default="10"/>
 	</xsd:complexType>
 	
-	<xsd:complexType name="load-balance-type">
-		<xsd:sequence>
-			<xsd:element name="parameter" maxOccurs="unbounded" minOccurs="0" type="parameter-type"/>
-		</xsd:sequence>
+	<xsd:complexType name="load-balance">
 		<xsd:attribute name="type" use="optional" default="hash">
 			<xsd:simpleType>
 				<xsd:restriction base="xsd:NMTOKEN">
@@ -110,36 +69,12 @@
 		</xsd:attribute>
 	</xsd:complexType>
 	
-	<xsd:complexType name="registry-lookup-type">
-		<xsd:sequence>
-			<xsd:element name="parameter" maxOccurs="unbounded" minOccurs="0" type="parameter-type"/>
-		</xsd:sequence>
+	<xsd:complexType name="registry">
 		<xsd:attribute name="address" type="xsd:string" use="required"/>
 	</xsd:complexType>
 	
-	<xsd:complexType name="tracker-type">
-		<xsd:sequence>
-			<xsd:element name="parameter" maxOccurs="unbounded" minOccurs="0" type="parameter-type"/>
-		</xsd:sequence>
-		<xsd:attribute name="type" use="optional" default="logger">
-			<xsd:simpleType>
-				<xsd:restriction base="xsd:NMTOKEN">
-					<xsd:enumeration value="logger"/>
-				</xsd:restriction>
-			</xsd:simpleType>
-		</xsd:attribute>
-	</xsd:complexType>
-	
-	<xsd:complexType name="flow-control-type">
-		<xsd:sequence>
-			<xsd:element name="parameter" maxOccurs="unbounded" minOccurs="0" type="parameter-type"/>
-		</xsd:sequence>
+	<xsd:complexType name="flow-control">
 		<xsd:attribute name="permits" type="xsd:int" use="optional" default="3000"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="parameter-type">
-		<xsd:attribute name="name" type="xsd:string" use="required"/>
-		<xsd:attribute name="value" type="xsd:string" use="required"/>
 	</xsd:complexType>
 	
 </xsd:schema>

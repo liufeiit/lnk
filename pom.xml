@@ -32,7 +32,6 @@
 		<module>lnk-zookeeper</module>
 		<module>lnk-lookup</module>
 		<module>lnk-port</module>
-		<module>lnk-track</module>
 		<module>lnk-remoting</module>
 		<module>lnk-core</module>
 		<module>lnk-spring</module>

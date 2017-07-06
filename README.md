@@ -34,52 +34,31 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
   - 7.支持异常
   - 8.支持RPC服务序列化（实现异步回调的基础）
 
-# * 使用Spring进行配置 Server端配置
+# * 使用Spring进行配置
 
-	<lnk:server id="paymentServer" client="paymentClient" listen-port="8888" worker-threads="20" 
-		selector-threads="15" channel-maxidletime-seconds="120" 
-		socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
-		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" 
-		default-executor-threads="8" use-epoll-native-selector="false">
-		<lnk:application app="biz-pay-bgw-payment-srv" type="jar"/>
-		<lnk:registry address="zk://127.0.0.1:2181"/>
-		<lnk:flow-control type="semaphore" permits="10000"/>
-		<lnk:tracker type="logger"/>
+	<lnk:lnk id="payment-server" worker-threads="20" selector-threads="15" connect-timeout-millis="3000" 
+		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
+		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
+		use-epoll-native-selector="false">
+		<lnk:application app="lnk-demo" ns-home="${nsHome}" type="jar"/>
+		<lnk:registry address="${registry}"/>
+		<lnk:load-balance type="hash"/>
+		<lnk:flow-control permits="10000"/>
 		<lnk:bind>
-			<lnk:service-group service-group="biz-pay-bgw-payment.srv" 
-				worker-threads="30"/>
-			<lnk:service-group service-group="biz-pay-bgw-payment.router.srv" 
-				worker-threads="30"/>
+			<lnk:service-group service-group="biz-pay-bgw-payment.srv" worker-threads="50"/>
+			<lnk:service-group service-group="biz-pay-bgw-payment.router.srv" worker-threads="50"/>
 		</lnk:bind>
-	</lnk:server>
+	</lnk:lnk>
 	
-	<lnk:server id="paymentServer" client="paymentClient">
-		<lnk:application app="biz-pay-bgw-payment-srv"/>
-		<lnk:registry address="zk://10.100.156.26:2181"/>
-		<lnk:flow-control type="semaphore" permits="10000000"/>
-		<lnk:tracker type="logger"/>
-		<lnk:bind>
-			<lnk:service-group service-group="biz-pay-bgw-payment.srv" 
-				worker-threads="10"/>
-			<lnk:service-group service-group="biz-pay-bgw-payment.router.srv" 
-				worker-threads="10"/>
-		</lnk:bind>
-	</lnk:server>
-    
-	<lnk:server id="paymentServer" client="paymentClient">
-		<lnk:application app="biz-pay-bgw-payment-srv"/>
-		<lnk:registry address="zk://127.0.0.1:2181"/>
-	</lnk:server>
-    
 # * 配置项说明
-
-	client：依赖的client客户端配置，主要用于服务回调支持
 
 	listen-port：配置服务监听端口，可选配置，该配置项优先使用开发人员配置，如果没有配置或者端口被占用，框架会通过系统参数获取当前应用的分配端口，如果系统参数没有配置或者系统参数配置分配的端口被占用的话，框架会自动分配一个当前机器未使用的端口。
 	
 	worker-threads：Netty和Mina服务端事件处理线程池大小，默认为10.
 	
 	selector-threads：Netty和Mina服务NIO selector事件处理线程池大小，默认为5
+	
+	connect-timeout-millis：客户端连接超时事件，单位毫秒。默认3000毫米即3秒。
 	
 	channel-maxidletime-seconds：Netty和Mina服务端连接通道最大空闲时间，单位为秒，默认为120秒
 	
@@ -101,59 +80,7 @@ Lnk RPC是一款基于Netty和Mina实现RPC通讯协议，支持同步，异步�
 	
 	flow-control子节点主要标示流量控制单元，目前只支持使用semaphore信号量实现的流量控制。
 	
-	tracker子节点主要标示链路跟踪单元，目前只支持日志跟踪，后续接入cat和另外开发一套梳理应用关系展示和调用链路的web系统。
-	
 	bind子节点主要是用于将服务端的服务划分为不同的组别，不同的组别使用自身组别的线程池，是的各个组别对外提供服务的线程等资源相互隔离。service-group标示组别名称，worker-threads标示改组请求处理线程池大小。默认为10.
-    
-# * 使用Spring进行配置 Client端配置
-
-	<lnk:client id="paymentClient" worker-threads="4" connect-timeout-millis="3000" 
-		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" 
-		socket-rcvbuf-size="65535" default-executor-threads="4">
-		<lnk:application app="biz-pay-bgw-payment-srv" type="jar"/>
-		<lnk:lookup address="zk://127.0.0.1:2181"/>
-		<lnk:flow-control type="semaphore" permits="1000"/>
-		<lnk:load-balance type="hash"/>
-	</lnk:client>
-	
-	<lnk:client id="paymentClient">
-		<lnk:application app="biz-pay-bgw-payment-srv"/>
-		<lnk:lookup address="zk://127.0.0.1:2181"/>
-		<lnk:flow-control type="semaphore" permits="1000"/>
-		<lnk:load-balance type="hash"/>
-	</lnk:client>
-	
-	<lnk:client id="paymentClient">
-		<lnk:application app="biz-pay-bgw-payment-srv"/>
-		<lnk:lookup address="zk://127.0.0.1:2181"/>
-		<lnk:load-balance type="hash"/>
-	</lnk:client>
-	
-# * 配置项说明
-  
-	worker-threads：Netty和Mina客户端事件处理线程池大小。默认为4.
-	
-	connect-timeout-millis：客户端连接超时事件，单位毫秒。默认3000毫米即3秒。
-	
-	channel-maxidletime-seconds：客户端连接通道最大空闲时间，单位秒，默认120秒。
-	
-	socket-sndbuf-size：客户端socket发送数据大小，默认为65535
-	
-	socket-rcvbuf-size：客户端socket接收数据大小，默认为65535
-	
-	default-executor-threads：客户端默认线程池大小，默认为4.
-	
-	application子节点主要是标示应用名称和应用类型，主要用于做服务调用链路跟踪和应用以来关系梳理。app属性标示应用名称，type标示应用类型分为jar和war类型。
-	
-	lookup子节点主要标示服务发现中心类型和地址，用于client端发现自己的依赖的服务调用地址和端口，目前支持zookeeper注册中心，address标示注册中心地址
-	
-	flow-control子节点主要标示流量控制单元，目前只支持使用semaphore信号量实现的流量控制。
-	
-	metrics子节点主要是用于配置上报服务治理相关数据使用的influxdb的相关配置。
-	
-	load-balance子节点表示选择一组服务调用地址的算法，type指定算法类型，目前支持 hash一致性hash算法，random随机算法，roundrobin轮询算法和本地优先算法。
-	
-	***
     
 # * Java代码中注解配置
 

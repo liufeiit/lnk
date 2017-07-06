@@ -15,20 +15,11 @@ import io.lnk.config.ctx.utils.PropertyName;
  * 名字服务注册器实现类。
  */
 public class NsRegistryImpl implements NsRegistry, InitializingBean {
-
     private static String ENV_PATH = "/environment/currentEnv";
-
-    /**
-     * 名字服务映射表
-     */
     private SortedMap<String, String> nsMap;
-
-    /**
-     * ns目录
-     */
     private String nsHome;
 
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws Exception {
         if (nsHome == null) {
             nsHome = ConfigHome.getNsDir();
         }
@@ -47,7 +38,6 @@ public class NsRegistryImpl implements NsRegistry, InitializingBean {
             if (entry.getKey().startsWith(namePrefix) == false) {
                 return retMap;
             }
-
             String key = entry.getKey();
             if (includePrefix == false) {
                 key = key.substring(namePrefix.length());
@@ -55,10 +45,8 @@ public class NsRegistryImpl implements NsRegistry, InitializingBean {
                     key = key.substring(1);
                 }
             }
-
             retMap.put(key, entry.getValue());
         }
-
         return retMap;
     }
 
@@ -79,21 +67,11 @@ public class NsRegistryImpl implements NsRegistry, InitializingBean {
         }
     }
 
-    public SortedMap<String, String> getNsMap() {
-        return nsMap;
-    }
-
     public void setNsMap(SortedMap<String, String> nsMap) {
         this.nsMap = nsMap;
-    }
-
-    public String getNsHome() {
-        return nsHome;
     }
 
     public void setNsHome(String nsHome) {
         this.nsHome = nsHome;
     }
-
-
 }

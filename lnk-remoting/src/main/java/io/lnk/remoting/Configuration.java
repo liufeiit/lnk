@@ -1,4 +1,4 @@
-package io.lnk.api;
+package io.lnk.remoting;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -7,14 +7,17 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author 刘飞 E-mail:liufei_it@126.com
  *
  * @version 1.0.0
- * @since 2017年5月19日 下午10:28:53
+ * @since 2017年7月6日 上午10:23:22
  */
-public class ServerConfiguration implements Cloneable, SystemConfiguration {
-    private String protocol;
+public class Configuration implements Cloneable {
+    public static final String IO_SOCKET_RCVBUF_SIZE = "io.socket.rcvbuf.size";
+    public static final String IO_SOCKET_SNDBUF_SIZE = "io.socket.sndbuf.size";
+    public static final String IO_FRAME_MAXLENGTH = "io.frame.maxlength";
     private int listenPort = 8888;
     private int workerThreads = 10;
     //mina实现中未设置
     private int selectorThreads = 5;
+    private int connectTimeoutMillis = 3000;
     private int channelMaxIdleTimeSeconds = 120;
     private int socketSndBufSize = Integer.getInteger(IO_SOCKET_SNDBUF_SIZE, 65535);
     private int socketRcvBufSize = Integer.getInteger(IO_SOCKET_RCVBUF_SIZE, 65535);
@@ -29,14 +32,6 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
      */
     //mina实现中未设置
     private boolean useEpollNativeSelector = false;
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
 
     public int getListenPort() {
         return listenPort;
@@ -60,6 +55,14 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
 
     public void setSelectorThreads(int selectorThreads) {
         this.selectorThreads = selectorThreads;
+    }
+
+    public int getConnectTimeoutMillis() {
+        return connectTimeoutMillis;
+    }
+
+    public void setConnectTimeoutMillis(int connectTimeoutMillis) {
+        this.connectTimeoutMillis = connectTimeoutMillis;
     }
 
     public int getChannelMaxIdleTimeSeconds() {
@@ -119,8 +122,8 @@ public class ServerConfiguration implements Cloneable, SystemConfiguration {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return (ServerConfiguration) super.clone();
+    public Configuration clone() throws CloneNotSupportedException {
+        return (Configuration) super.clone();
     }
 
     @Override

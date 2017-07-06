@@ -18,26 +18,19 @@
 	<bean id="v2HelloService" class="io.lnk.demo.def.V2HelloService"/>
 	<bean id="defaultDemoService" class="io.lnk.demo.def.DefaultDemoService"/>
 	
-	<lnk:application app="lnk-demo" ns-home="${nsHome}" type="jar"/>
 	
-	<lnk:server id="payment-server" protocol="netty" client="payment-client" worker-threads="20" selector-threads="15" 
+	<lnk:lnk id="payment-server" worker-threads="20" selector-threads="15" connect-timeout-millis="3000" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
 		use-epoll-native-selector="false">
+		<lnk:application app="lnk-demo" ns-home="${nsHome}" type="jar"/>
 		<lnk:registry address="${registry}"/>
+		<lnk:load-balance type="hash"/>
 		<lnk:flow-control permits="10000"/>
-		<lnk:tracker type="logger"/>
 		<lnk:bind>
 			<lnk:service-group service-group="biz-pay-bgw-payment.srv" worker-threads="50"/>
 			<lnk:service-group service-group="biz-pay-bgw-payment.router.srv" worker-threads="50"/>
 		</lnk:bind>
-	</lnk:server>
-	
-	<lnk:client id="payment-client" protocol="netty" worker-threads="4" connect-timeout-millis="3000" channel-maxidletime-seconds="120"
-		socket-sndbuf-size="65535" socket-rcvbuf-size="65535" default-executor-threads="4">
-		<lnk:lookup address="${registry}"/>
-		<lnk:flow-control permits="10000"/>
-		<lnk:load-balance type="hash"/>
-	</lnk:client>
+	</lnk:lnk>
 	
 </beans>

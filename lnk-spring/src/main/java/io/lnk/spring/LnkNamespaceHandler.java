@@ -9,10 +9,8 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * @since 2017年5月23日 下午3:56:44
  */
 public class LnkNamespaceHandler extends NamespaceHandlerSupport {
-    
+
     public void init() {
-        registerBeanDefinitionParser("application", new LnkApplicationParser());
-        registerBeanDefinitionParser("server", new LnkServerParser());
-        registerBeanDefinitionParser("client", new LnkClientParser());
+        registerBeanDefinitionParser("lnk", new LnkEndpointParser());
     }
 }

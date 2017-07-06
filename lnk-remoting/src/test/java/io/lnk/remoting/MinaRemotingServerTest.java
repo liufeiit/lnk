@@ -8,8 +8,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.lnk.api.ClientConfiguration;
-import io.lnk.api.ServerConfiguration;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.protocol.LnkProtocolFactorySelector;
@@ -29,7 +27,7 @@ public class MinaRemotingServerTest {
     private static RemotingClient remotingClient;
 
     public static RemotingServer createRemotingServer() throws InterruptedException {
-        ServerConfiguration config = new ServerConfiguration();
+        Configuration config = new Configuration();
         final ProtocolFactory protocolFactory = new JacksonProtocolFactory();
         ProtocolFactorySelector protocolFactorySelector = new LnkProtocolFactorySelector();;
         RemotingServer remotingServer = new MinaRemotingServer(protocolFactorySelector, config);
@@ -59,7 +57,7 @@ public class MinaRemotingServerTest {
     }
 
     public static RemotingClient createRemotingClient() {
-        ClientConfiguration config = new ClientConfiguration();
+        Configuration config = new Configuration();
         ProtocolFactorySelector protocolFactorySelector = new LnkProtocolFactorySelector();
         RemotingClient client = new MinaRemotingClient(protocolFactorySelector, config);
         client.start();

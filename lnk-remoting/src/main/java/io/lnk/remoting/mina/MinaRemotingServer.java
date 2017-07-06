@@ -15,10 +15,10 @@ import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.logging.MdcInjectionFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
-import io.lnk.api.ServerConfiguration;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.remoting.CommandProcessor;
+import io.lnk.remoting.Configuration;
 import io.lnk.remoting.Pair;
 import io.lnk.remoting.RemotingCallback;
 import io.lnk.remoting.RemotingServer;
@@ -36,11 +36,11 @@ import io.lnk.remoting.utils.RemotingUtils;
  */
 public class MinaRemotingServer extends MinaAbstractRemotingService implements RemotingServer {
     private final NioSocketAcceptor acceptor;
-    private final ServerConfiguration configuration;
+    private final Configuration configuration;
     private final ExecutorService defaultThreadPoolExecutor;
     private InetSocketAddress serverAddress;
 
-    public MinaRemotingServer(final ProtocolFactorySelector protocolFactorySelector, final ServerConfiguration configuration) {
+    public MinaRemotingServer(final ProtocolFactorySelector protocolFactorySelector, final Configuration configuration) {
         super(protocolFactorySelector);
         this.configuration = configuration;
         IoBuffer.setUseDirectBuffer(false);
