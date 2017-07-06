@@ -18,7 +18,7 @@ public class PriorityLocalLoadBalance implements LoadBalance {
     private final LoadBalance loadBalance;
     
     public PriorityLocalLoadBalance() {
-        this.ip = NetUtils.getLocalAddress().getHostAddress();
+        this.ip = NetUtils.getLocalHost();
         this.loadBalance = new RandomLoadBalance();
     }
 

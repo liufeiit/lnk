@@ -77,7 +77,7 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
         remotingServer = new NettyRemotingServer(protocolFactorySelector, configuration);
         remotingServer.registerDefaultProcessor(this.createLnkCommandProcessor(), Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), LnkThreadFactory.newThreadFactory("LnkEndpointWorkerProcessor-%d", false)));
         remotingServer.start();
-        serverAddress = new Address(NetUtils.getLocalAddress().getHostAddress(), remotingServer.getServerAddress().getPort());
+        serverAddress = new Address(NetUtils.getLocalHost(), remotingServer.getServerAddress().getPort());
         if (CollectionUtils.isEmpty(serviceGroups) == false) {
             this.bind(serviceGroups.toArray(new ServiceGroup[serviceGroups.size()]));
         }
