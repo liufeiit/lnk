@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.StringUtils;
 
 import io.lnk.config.ctx.config.ConfigHome;
 import io.lnk.config.ctx.utils.PropertyName;
@@ -15,12 +16,11 @@ import io.lnk.config.ctx.utils.PropertyName;
  * 名字服务注册器实现类。
  */
 public class NsRegistryImpl implements NsRegistry, InitializingBean {
-    private static String ENV_PATH = "/environment/currentEnv";
     private SortedMap<String, String> nsMap;
     private String nsHome;
 
     public void afterPropertiesSet() throws Exception {
-        if (nsHome == null) {
+        if (StringUtils.isEmpty(nsHome)) {
             nsHome = ConfigHome.getNsDir();
         }
         if (nsMap == null || nsMap.isEmpty()) {
@@ -54,11 +54,6 @@ public class NsRegistryImpl implements NsRegistry, InitializingBean {
         return nsMap.get(name);
     }
 
-
-    public String getCurrentEnv() {
-        return this.getValue(ENV_PATH);
-    }
-
     public void setProperties(String nsPath, Object bean) {
         JXPathContext xpathContext = JXPathContext.newContext(bean);
         Map<String, String> nsValues = getValues(nsPath, false);
@@ -67,8 +62,13 @@ public class NsRegistryImpl implements NsRegistry, InitializingBean {
         }
     }
 
-    public void setNsMap(SortedMap<String, String> nsMap) {
-        this.nsMap = nsMap;
+    @Override
+    public String getCurrentEnv() {
+        return System.getProperty(CURRENT_ENV_KEY);
+    }
+
+    public SortedMap<String, String> getNsMap() {
+        return nsMap;
     }
 
     public void setNsHome(String nsHome) {

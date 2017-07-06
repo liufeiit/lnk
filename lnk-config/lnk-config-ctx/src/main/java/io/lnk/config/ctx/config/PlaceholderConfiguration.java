@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 
+import io.lnk.config.ctx.ns.NsRegistry;
 import io.lnk.config.ctx.utils.FileUtils;
 
 /**
@@ -28,7 +29,7 @@ public class PlaceholderConfiguration extends PropertyPlaceholderConfigurer {
     public String getConfigHome() {
         return configHome;
     }
-
+    
     protected Properties loadProperties(String systemId) {
         String configHome = ConfigHome.getDir();
         configHome = configHome + "/" + systemId;
@@ -37,11 +38,15 @@ public class PlaceholderConfiguration extends PropertyPlaceholderConfigurer {
             throw new RuntimeException("Not found the configDir=[" + configHome + "].");
         }
         Properties envProps = new Properties();
+        for (Entry<String, String> entry : System.getenv().entrySet()) {
+            envProps.setProperty(entry.getKey(), entry.getValue());
+        }
         for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
             envProps.put(entry.getKey(), entry.getValue());
         }
         File envFile = new File(configHome + "/" + "env");
         env = FileUtils.readLine(envFile).trim();
+        System.setProperty(NsRegistry.CURRENT_ENV_KEY, env);
         configHome = configHome + "/" + env;
         configDir = new File(configHome);
         this.configHome = configHome;

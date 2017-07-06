@@ -6,6 +6,7 @@ import java.util.SortedMap;
  * 名字服务注册器接口定义类。
  */
 public interface NsRegistry {
+    String CURRENT_ENV_KEY = "lnk.app.current.env";
     /**
      * 获得名字前缀下的值集。
      */
