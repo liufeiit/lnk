@@ -27,7 +27,7 @@ import io.lnk.core.LnkEndpoint;
  * @version 1.0.0
  * @since 2017年5月22日 下午9:12:40
  */
-public class LnkCaller implements InvocationHandler {
+public class RemoteCaller implements InvocationHandler {
     private final LnkEndpoint endpoint;
     private final RemoteStub remoteObject;
     private final ProtocolFactorySelector protocolFactorySelector;
@@ -35,11 +35,11 @@ public class LnkCaller implements InvocationHandler {
     private ProtocolFactory protocolFactory;
     private ObjectProtocolFactory objectProtocolFactory;
 
-    public LnkCaller(LnkEndpoint endpoint, String serializeStub, ProtocolFactorySelector protocolFactorySelector) {
+    public RemoteCaller(LnkEndpoint endpoint, String serializeStub, ProtocolFactorySelector protocolFactorySelector) {
         this(endpoint, new RemoteStub(serializeStub), protocolFactorySelector);
     }
 
-    public LnkCaller(LnkEndpoint endpoint, RemoteStub remoteObject, ProtocolFactorySelector protocolFactorySelector) {
+    public RemoteCaller(LnkEndpoint endpoint, RemoteStub remoteObject, ProtocolFactorySelector protocolFactorySelector) {
         super();
         this.endpoint = endpoint;
         this.remoteObject = remoteObject;

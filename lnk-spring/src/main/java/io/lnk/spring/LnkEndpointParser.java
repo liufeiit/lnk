@@ -24,13 +24,13 @@ import io.lnk.api.app.Application;
 import io.lnk.cluster.NestedLoadBalance;
 import io.lnk.config.ctx.config.PlaceholderConfiguration;
 import io.lnk.config.ctx.ns.NsRegistryImpl;
-import io.lnk.core.caller.LnkRemoteObjectFactory;
+import io.lnk.core.caller.DefaultRemoteObjectFactory;
 import io.lnk.flow.SemaphoreFlowController;
 import io.lnk.lookup.ZooKeeperRegistry;
 import io.lnk.lookup.zookeeper.DefaultZooKeeperService;
 import io.lnk.port.DefaultServerPortAllocator;
-import io.lnk.protocol.LnkProtocolFactorySelector;
-import io.lnk.protocol.object.LnkObjectProtocolFactory;
+import io.lnk.protocol.DefaultProtocolFactorySelector;
+import io.lnk.protocol.object.DefaultObjectProtocolFactory;
 import io.lnk.remoting.Configuration;
 import io.lnk.spring.core.DefaultServiceObjectFinder;
 import io.lnk.spring.core.SpringLnkEndpoint;
@@ -69,12 +69,12 @@ public class LnkEndpointParser extends AbstractSingleBeanDefinitionParser {
         final String serverPortAllocatorId = "defaultServerPortAllocator";
         final String protocolFactorySelectorId = "lnkProtocolFactorySelector";
         final String serviceObjectFinderId = "defaultServiceObjectFinder";
-        final String configurationId = "lnkConfiguration";
-        final String remoteObjectFactoryId = "lnkRemoteObjectFactory";
-        final String objectProtocolFactoryId = "lnkObjectProtocolFactory";
-        final String applicationId = "lnkApplication";
+        final String configurationId = "defaultConfiguration";
+        final String remoteObjectFactoryId = "defaultRemoteObjectFactory";
+        final String objectProtocolFactoryId = "defaultObjectProtocolFactory";
+        final String applicationId = "defaultApplication";
         final String nsRegistryId = "nsRegistry";
-        final String registryId = "lnkRegistry";
+        final String registryId = "defaultRegistry";
         final String zooKeeperServiceId = "zooKeeperService";
         final String loadBalanceId = "nestedLoadBalance";
         final Element applicationElement = DomUtils.getChildElementByTagName(element, "application");
@@ -96,13 +96,13 @@ public class LnkEndpointParser extends AbstractSingleBeanDefinitionParser {
             }
         });
         builder.addPropertyValue("nsRegistry", new RuntimeBeanReference(nsRegistryId));
-        LnkComponentUtils.parse(objectProtocolFactoryId, LnkObjectProtocolFactory.class, element, parserContext, new ComponentCallback() {
+        LnkComponentUtils.parse(objectProtocolFactoryId, DefaultObjectProtocolFactory.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
             }
         });
         builder.addPropertyValue("objectProtocolFactory", new RuntimeBeanReference(objectProtocolFactoryId));
-        LnkComponentUtils.parse(remoteObjectFactoryId, LnkRemoteObjectFactory.class, element, parserContext, new ComponentCallback() {
+        LnkComponentUtils.parse(remoteObjectFactoryId, DefaultRemoteObjectFactory.class, element, parserContext, new ComponentCallback() {
             public void onParse(RootBeanDefinition beanDefinition) {
                 beanDefinition.getPropertyValues().addPropertyValue("endpoint", new RuntimeBeanReference(endpointId));
                 beanDefinition.getPropertyValues().addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
@@ -112,7 +112,7 @@ public class LnkEndpointParser extends AbstractSingleBeanDefinitionParser {
         builder.addPropertyValue("remoteObjectFactory", new RuntimeBeanReference(remoteObjectFactoryId));
         LnkComponentUtils.parse(serverPortAllocatorId, DefaultServerPortAllocator.class, element, parserContext);
         builder.addPropertyValue("serverPortAllocator", new RuntimeBeanReference(serverPortAllocatorId));
-        LnkComponentUtils.parse(protocolFactorySelectorId, LnkProtocolFactorySelector.class, element, parserContext);
+        LnkComponentUtils.parse(protocolFactorySelectorId, DefaultProtocolFactorySelector.class, element, parserContext);
         builder.addPropertyValue("protocolFactorySelector", new RuntimeBeanReference(protocolFactorySelectorId));
         LnkComponentUtils.parse(serviceObjectFinderId, DefaultServiceObjectFinder.class, element, parserContext);
         builder.addPropertyValue("serviceObjectFinder", new RuntimeBeanReference(serviceObjectFinderId));

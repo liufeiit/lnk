@@ -29,7 +29,6 @@ import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.api.utils.NetUtils;
 import io.lnk.core.LnkEndpoint;
 import io.lnk.core.ServiceObjectFinder;
-import io.lnk.core.processor.LnkCommandProcessor;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.Configuration;
 import io.lnk.remoting.RemotingClient;
@@ -76,8 +75,7 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
         }
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
         remotingServer = new NettyRemotingServer(protocolFactorySelector, configuration);
-        remotingServer.registerDefaultProcessor(this.createLnkCommandProcessor(),
-                Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), LnkThreadFactory.newThreadFactory("LnkEndpointWorkerProcessor-%d", false)));
+        remotingServer.registerDefaultProcessor(this.createLnkCommandProcessor(), Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), LnkThreadFactory.newThreadFactory("LnkEndpointWorkerProcessor-%d", false)));
         remotingServer.start();
         serverAddress = new Address(NetUtils.getLocalAddress().getHostAddress(), remotingServer.getServerAddress().getPort());
         if (CollectionUtils.isEmpty(serviceGroups) == false) {
@@ -323,7 +321,7 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
     }
 
     protected final CommandProcessor createLnkCommandProcessor() {
-        LnkCommandProcessor processor = new LnkCommandProcessor();
+        DefaultCommandProcessor processor = new DefaultCommandProcessor();
         processor.setProtocolFactorySelector(protocolFactorySelector);
         processor.setServiceObjectFinder(serviceObjectFinder);
         processor.setFlowController(flowController);

@@ -1,4 +1,4 @@
-package io.lnk.core.processor;
+package io.lnk.core.lnk;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,8 +24,8 @@ import io.lnk.remoting.protocol.RemotingCommand;
  * @version 1.0.0
  * @since 2017年5月22日 下午4:09:36
  */
-public class LnkCommandProcessor implements CommandProcessor {
-    private static final Logger log = LoggerFactory.getLogger(LnkCommandProcessor.class.getSimpleName());
+public class DefaultCommandProcessor implements CommandProcessor {
+    private static final Logger log = LoggerFactory.getLogger(DefaultCommandProcessor.class.getSimpleName());
     private ProtocolFactorySelector protocolFactorySelector;
     private ServiceObjectFinder serviceObjectFinder;
     private FlowController flowController;

@@ -19,11 +19,11 @@ import io.lnk.protocol.java.JavaNativeProtocolFactory;
  * @version 1.0.0
  * @since 2017年5月22日 下午5:53:37
  */
-public class LnkProtocolFactorySelector implements ProtocolFactorySelector {
-    private static final Logger log = LoggerFactory.getLogger(LnkProtocolFactorySelector.class.getSimpleName());
+public class DefaultProtocolFactorySelector implements ProtocolFactorySelector {
+    private static final Logger log = LoggerFactory.getLogger(DefaultProtocolFactorySelector.class.getSimpleName());
     private ConcurrentHashMap<Integer, ProtocolFactory> protocolFactories = new ConcurrentHashMap<Integer, ProtocolFactory>();
 
-    public LnkProtocolFactorySelector() {
+    public DefaultProtocolFactorySelector() {
         super();
         this.registry(new JacksonProtocolFactory());
         this.registry(new JavaNativeProtocolFactory());

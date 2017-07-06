@@ -16,7 +16,7 @@ import io.lnk.api.protocol.object.ObjectProtocolFactory;
  * @version 1.0.0
  * @since 2017年5月30日 下午12:15:03
  */
-public class LnkObjectProtocolFactory implements ObjectProtocolFactory {
+public class DefaultObjectProtocolFactory implements ObjectProtocolFactory {
     private static final int COMMON_OBJECT_ARG = 1;
     private static final int REMOTE_OBJECT_ARG = 2;
     private RemoteObjectFactory remoteObjectFactory;
