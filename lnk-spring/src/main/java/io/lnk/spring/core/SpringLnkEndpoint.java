@@ -50,12 +50,6 @@ public class SpringLnkEndpoint extends DefaultLnkEndpoint implements Application
         if (bean instanceof NsRegistryAware) {
             ((NsRegistryAware) bean).setNsRegistry(this.nsRegistry);
         }
-        return bean;
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        ReflectionUtils.doWithFields(bean.getClass(), new LnkwiredFieldCallback(this.remoteObjectFactory, bean), new LnkwiredFieldFilter());
         Class<?> beanType = bean.getClass();
         String version = ServiceVersion.DEFAULT_VERSION;
         if (beanType.isAnnotationPresent(LnkVersion.class)) {
@@ -63,6 +57,12 @@ public class SpringLnkEndpoint extends DefaultLnkEndpoint implements Application
             version = lnkVersion.value();
         }
         this.serviceRegistry(beanType, bean, version);
+        ReflectionUtils.doWithFields(bean.getClass(), new LnkwiredFieldCallback(this.remoteObjectFactory, bean), new LnkwiredFieldFilter());
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         return bean;
     }
 

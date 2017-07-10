@@ -3,7 +3,7 @@ package io.lnk.demo.async_multicast_callback;
 import io.lnk.api.InvokeType;
 import io.lnk.api.annotation.LnkMethod;
 import io.lnk.api.annotation.LnkService;
-import io.lnk.demo.AppBizException;
+import io.lnk.api.exception.AppBizException;
 import io.lnk.demo.AuthRequest;
 
 /**

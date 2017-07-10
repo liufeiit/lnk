@@ -131,7 +131,7 @@ public class ZooKeeperRegistry implements Registry {
                     }
                     serverList.addAll(savedServers);
                     this.registryServices.put(path, serverList);
-                    log.info("get serverList path : {} merged serverList : {}.", path, serverList);
+                    log.info("get serverList path : {}.", path);
                 }
             } catch (Exception e) {
                 log.error("get serverList path : " + path + " Error.", e);
@@ -183,7 +183,7 @@ public class ZooKeeperRegistry implements Registry {
                     }
                     servers.addAll(serverList);
                     registryServices.put(path, servers);
-                    log.info("handleNotify path : {} merged serverList : {}.", path, servers);
+                    log.info("handleNotify path : {}.", path);
                 }
             });
         } catch (Throwable e) {

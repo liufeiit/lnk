@@ -14,7 +14,9 @@ import io.lnk.api.RemoteObject;
 import io.lnk.api.RemoteObjectFactory;
 import io.lnk.api.RemoteStub;
 import io.lnk.api.annotation.LnkMethod;
-import io.lnk.api.exception.transport.CommandTransportException;
+import io.lnk.api.exception.AppBizException;
+import io.lnk.api.exception.AppBizRtException;
+import io.lnk.api.exception.ex.SimpleLnkException;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
@@ -102,7 +104,7 @@ public class RemoteCaller implements InvocationHandler {
 
     private Object sync(InvokerCommand command, long timeoutMillis) throws Throwable {
         InvokerCommand response = this.endpoint.sync(command, timeoutMillis);
-        CommandTransportException exception = response.getException();
+        SimpleLnkException exception = response.getException();
         if (exception != null) {
             Throwable e;
             @SuppressWarnings("unchecked")
@@ -114,6 +116,12 @@ public class RemoteCaller implements InvocationHandler {
                 e = constructor.newInstance(exception.getMessage());
             }
             e.setStackTrace(exception.buildStackTraceElement());
+            if (e instanceof AppBizException) {
+                ((AppBizException) e).setCode(exception.getCode());
+            }
+            if (e instanceof AppBizRtException) {
+                ((AppBizRtException) e).setCode(exception.getCode());
+            }
             throw e;
         }
         ProtocolObject retObject = response.getRetObject();

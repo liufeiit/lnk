@@ -75,7 +75,7 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
         }
         configuration.setListenPort(serverPortAllocator.selectPort(configuration.getListenPort(), application));
         remotingServer = new NettyRemotingServer(protocolFactorySelector, configuration);
-        remotingServer.registerDefaultProcessor(this.createLnkCommandProcessor(), Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), LnkThreadFactory.newThreadFactory("LnkEndpointWorkerProcessor-%d", false)));
+        remotingServer.registerDefaultProcessor(this.createCommandProcessor(), Executors.newFixedThreadPool(configuration.getDefaultWorkerProcessorThreads(), LnkThreadFactory.newThreadFactory("LnkEndpointWorkerProcessor-%d", false)));
         remotingServer.start();
         serverAddress = new Address(NetUtils.getLocalHost(), remotingServer.getServerAddress().getPort());
         if (CollectionUtils.isEmpty(serviceGroups) == false) {
@@ -142,7 +142,7 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
         }
         for (ServiceGroup serviceGroup : serviceGroups) {
             int commandCode = serviceGroup.getServiceGroup().hashCode();
-            this.remotingServer.registerProcessor(commandCode, this.createLnkCommandProcessor(), Executors.newFixedThreadPool(serviceGroup.getServiceGroupWorkerProcessorThreads(),
+            this.remotingServer.registerProcessor(commandCode, this.createCommandProcessor(), Executors.newFixedThreadPool(serviceGroup.getServiceGroupWorkerProcessorThreads(),
                     LnkThreadFactory.newThreadFactory("LnkEndpointWorkerProcessor[" + serviceGroup.getServiceGroup() + "]-%d", false)));
             log.info("bind serviceGroup {} success.", serviceGroup.getServiceGroup());
         }
@@ -320,7 +320,7 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
         this.flowController.release();
     }
 
-    protected final CommandProcessor createLnkCommandProcessor() {
+    protected final CommandProcessor createCommandProcessor() {
         DefaultCommandProcessor processor = new DefaultCommandProcessor();
         processor.setProtocolFactorySelector(protocolFactorySelector);
         processor.setServiceObjectFinder(serviceObjectFinder);

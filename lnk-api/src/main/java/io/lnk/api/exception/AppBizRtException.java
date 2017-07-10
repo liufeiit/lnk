@@ -6,30 +6,30 @@ package io.lnk.api.exception;
  * @version 1.0.0
  * @since 2017年7月6日 下午5:30:34
  */
-public class AppBizException extends Exception {
+public class AppBizRtException extends RuntimeException {
     private static final long serialVersionUID = -1662113710396548644L;
     private String code;
 
-    public AppBizException() {
+    public AppBizRtException() {
         super();
     }
 
-    public AppBizException(String code) {
+    public AppBizRtException(String code) {
         super();
         this.code = code;
     }
 
-    public AppBizException(String code, String message, Throwable cause) {
+    public AppBizRtException(String code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
     }
 
-    public AppBizException(String code, String message) {
+    public AppBizRtException(String code, String message) {
         super(message);
         this.code = code;
     }
 
-    public AppBizException(String code, Throwable cause) {
+    public AppBizRtException(String code, Throwable cause) {
         super(cause);
         this.code = code;
     }

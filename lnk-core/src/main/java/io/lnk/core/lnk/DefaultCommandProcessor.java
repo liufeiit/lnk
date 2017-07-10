@@ -9,7 +9,7 @@ import org.springframework.util.ReflectionUtils;
 
 import io.lnk.api.InvokerCommand;
 import io.lnk.api.ProtocolObject;
-import io.lnk.api.exception.transport.CommandTransportException;
+import io.lnk.api.exception.ex.SimpleLnkException;
 import io.lnk.api.flow.FlowController;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
@@ -50,7 +50,7 @@ public class DefaultCommandProcessor implements CommandProcessor {
             if (e instanceof InvocationTargetException) {
                 e = ((InvocationTargetException) e).getCause();
             }
-            command.setException(new CommandTransportException(e));
+            command.setException(new SimpleLnkException(e));
             log.error("invoke correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> Error.", e);
         }
         command.setArgs(null);// 减少数据的传输量

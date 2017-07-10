@@ -3,7 +3,7 @@ package io.lnk.api;
 import java.io.Serializable;
 
 import io.lnk.api.app.Application;
-import io.lnk.api.exception.transport.CommandTransportException;
+import io.lnk.api.exception.ex.SimpleLnkException;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -24,7 +24,7 @@ public class InvokerCommand implements Serializable {
     private Class<?>[] signature;
     private ProtocolObject[] args;
     private ProtocolObject retObject;
-    private CommandTransportException exception;
+    private SimpleLnkException exception;
 
     public String commandSignature() {
         StringBuilder sb = new StringBuilder(serviceId).append(".").append(method).append("(");
@@ -116,11 +116,11 @@ public class InvokerCommand implements Serializable {
         this.retObject = retObject;
     }
 
-    public CommandTransportException getException() {
+    public SimpleLnkException getException() {
         return exception;
     }
 
-    public void setException(CommandTransportException exception) {
+    public void setException(SimpleLnkException exception) {
         this.exception = exception;
     }
 

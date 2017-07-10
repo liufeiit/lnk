@@ -1,4 +1,4 @@
-package io.lnk.api.exception.transport;
+package io.lnk.api.exception.ex;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -6,7 +6,7 @@ package io.lnk.api.exception.transport;
  * @version 1.0.0
  * @since 2017年5月31日 上午11:57:10
  */
-public class StackTrace {
+public class LightStackTrace {
     private String declaringClass;
     private String methodName;
     private String fileName;

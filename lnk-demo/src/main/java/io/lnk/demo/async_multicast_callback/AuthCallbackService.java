@@ -5,7 +5,7 @@ import java.util.concurrent.CountDownLatch;
 import io.lnk.api.InvokeType;
 import io.lnk.api.annotation.LnkMethod;
 import io.lnk.api.annotation.LnkService;
-import io.lnk.demo.AppBizException;
+import io.lnk.api.exception.AppBizException;
 import io.lnk.demo.AuthResponse;
 
 /**

@@ -1,7 +1,7 @@
 package io.lnk.demo.sync_multi_version_ploy;
 
 import io.lnk.api.annotation.LnkVersion;
-import io.lnk.demo.AppBizException;
+import io.lnk.api.exception.AppBizException;
 import io.lnk.demo.AuthRequest;
 import io.lnk.demo.AuthResponse;
 
@@ -17,7 +17,7 @@ public class DefaultAuthService implements AuthService {
     @Override
     public AuthResponse auth(AuthRequest request) throws AppBizException {
         if (request.getName().equals("异常")) {
-            throw new AppBizException("测试一下异常 : " + request);
+            throw new AppBizException("EX.001", "测试一下异常 : " + request);
         }
         AuthResponse response = new AuthResponse();
         response.setGateId("0101");

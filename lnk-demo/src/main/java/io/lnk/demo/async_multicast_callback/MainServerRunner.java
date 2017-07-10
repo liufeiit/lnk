@@ -8,8 +8,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import io.lnk.api.RemoteObject;
 import io.lnk.api.annotation.Lnkwired;
+import io.lnk.api.exception.AppBizException;
 import io.lnk.api.utils.CorrelationIds;
-import io.lnk.demo.AppBizException;
 import io.lnk.demo.AuthRequest;
 import io.lnk.demo.BasicMainServerRunner;
 

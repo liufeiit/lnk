@@ -1,6 +1,6 @@
 package io.lnk.demo.async_multicast_callback;
 
-import io.lnk.demo.AppBizException;
+import io.lnk.api.exception.AppBizException;
 import io.lnk.demo.AuthResponse;
 
 /**

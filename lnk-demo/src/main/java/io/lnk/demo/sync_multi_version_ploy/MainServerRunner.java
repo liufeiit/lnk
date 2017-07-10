@@ -13,9 +13,9 @@ import org.springframework.util.StreamUtils;
 
 import io.lnk.api.RemoteObject;
 import io.lnk.api.annotation.Lnkwired;
+import io.lnk.api.exception.AppBizException;
 import io.lnk.api.protocol.Serializer;
 import io.lnk.api.utils.CorrelationIds;
-import io.lnk.demo.AppBizException;
 import io.lnk.demo.AuthRequest;
 import io.lnk.demo.AuthResponse;
 import io.lnk.demo.BasicMainServerRunner;
@@ -95,6 +95,9 @@ public class MainServerRunner extends BasicMainServerRunner {
             System.err.println("response : " + response);
         } catch (Exception e) {
             e.printStackTrace(System.err);
+            if (e instanceof AppBizException) {
+                System.err.println("code : " + ((AppBizException) e).getCode());
+            }
         }
     }
 

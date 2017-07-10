@@ -1,7 +1,7 @@
 package io.lnk.demo.sync_multi_version_ploy;
 
 import io.lnk.api.annotation.LnkVersion;
-import io.lnk.demo.AppBizException;
+import io.lnk.api.exception.AppBizException;
 import io.lnk.demo.AuthRequest;
 import io.lnk.demo.AuthResponse;
 
