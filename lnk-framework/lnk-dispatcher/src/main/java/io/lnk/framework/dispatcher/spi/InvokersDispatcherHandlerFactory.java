@@ -1,12 +1,11 @@
 package io.lnk.framework.dispatcher.spi;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -14,25 +13,16 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 1.0.0
  * @since 2017年1月2日 下午3:17:02
  */
-public class InvokersDispatcherAgentFactory implements FactoryBean<Object>, InitializingBean {
-
-    protected final static Logger log = LoggerFactory.getLogger(InvokersDispatcherAgentFactory.class.getSimpleName());
-
+public class InvokersDispatcherHandlerFactory implements BeanClassLoaderAware, FactoryBean<Object> {
+    private final static Logger log = LoggerFactory.getLogger(InvokersDispatcherHandlerFactory.class.getSimpleName());
     private Class<?> dispatcherType;
-
-    private InvocationHandler invocationHandler;
-
     private InvokersDispatcher invokersDispatcher;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        invocationHandler = new InvokersDispatcherAgent(invokersDispatcher, dispatcherType);
-        log.info("Build InvokersDispatcherAgent agentType : {}", dispatcherType);
-    }
+    private ClassLoader classLoader;
 
     @Override
     public Object getObject() throws Exception {
-        return Proxy.newProxyInstance(dispatcherType.getClassLoader(), new Class[] {dispatcherType}, invocationHandler);
+        log.info("build dispatcherType : {}", dispatcherType);
+        return Proxy.newProxyInstance(classLoader, new Class[] {dispatcherType}, new InvokersDispatcherHandler(invokersDispatcher, dispatcherType));
     }
 
     @Override
@@ -43,6 +33,11 @@ public class InvokersDispatcherAgentFactory implements FactoryBean<Object>, Init
     @Override
     public boolean isSingleton() {
         return true;
+    }
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
     public void setDispatcherType(Class<?> dispatcherType) {

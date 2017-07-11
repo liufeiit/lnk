@@ -15,9 +15,7 @@ import org.springframework.util.CollectionUtils;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class InvokersDispatcher {
-    
     private static final Logger log = LoggerFactory.getLogger(InvokersDispatcher.class.getSimpleName());
-
     private final ConcurrentHashMap<String, Invoker> invokers = new ConcurrentHashMap<String, Invoker>();
     
     public <R, T, E extends Throwable> T invoke(InvokerTypeCode invokerTypeCode, R request) throws E {

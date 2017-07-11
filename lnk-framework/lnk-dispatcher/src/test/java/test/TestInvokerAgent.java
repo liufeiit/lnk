@@ -1,8 +1,6 @@
 package test;
 
-import io.lnk.framework.dispatcher.spi.InvokerCode;
 import io.lnk.framework.dispatcher.spi.InvokerMethod;
-import io.lnk.framework.dispatcher.spi.InvokerRequest;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -13,5 +11,5 @@ import io.lnk.framework.dispatcher.spi.InvokerRequest;
 public interface TestInvokerAgent {
 
     @InvokerMethod
-    String invoke(@InvokerCode TestInvokerTypeCode code, @InvokerRequest String request);
+    String invoke(TestInvokerTypeCode code, String request);
 }

@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 
 import io.lnk.framework.dispatcher.spi.InvokerTypeCode;
 import io.lnk.framework.dispatcher.spi.InvokersDispatcher;
-import io.lnk.framework.dispatcher.spi.InvokersDispatcherAgentFactory;
+import io.lnk.framework.dispatcher.spi.InvokersDispatcherHandlerFactory;
 import io.lnk.framework.utils.FieldRetriever;
 import io.lnk.framework.utils.LnkComponentUtils;
 import io.lnk.framework.utils.LnkComponentUtils.ComponentCallback;
@@ -50,7 +50,7 @@ public class DispatcherParser implements BeanDefinitionParser {
                             beanDefinition.getPropertyValues().addPropertyValue("invokers", invokersManagedMap);
                         }
                     });
-                    LnkComponentUtils.parse(dispatcherInvokerId, InvokersDispatcherAgentFactory.class, rootElement, parserContext, new ComponentCallback() {
+                    LnkComponentUtils.parse(dispatcherInvokerId, InvokersDispatcherHandlerFactory.class, rootElement, parserContext, new ComponentCallback() {
                         public void onParse(RootBeanDefinition beanDefinition) {
                             beanDefinition.getPropertyValues().addPropertyValue("invokersDispatcher", new RuntimeBeanReference(invokersDispatcherId));
                             beanDefinition.getPropertyValues().addPropertyValue("dispatcherType", dispatcherInvokerType);
