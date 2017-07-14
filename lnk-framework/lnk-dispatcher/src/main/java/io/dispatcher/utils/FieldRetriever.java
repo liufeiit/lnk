@@ -1,4 +1,4 @@
-package io.lnk.framework.utils;
+package io.dispatcher.utils;
 
 import java.lang.reflect.Field;
 

@@ -1,4 +1,4 @@
-package io.lnk.framework.dispatcher.spi;
+package io.dispatcher.spi;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

@@ -4,4 +4,4 @@
  * @version 1.0.0
  * @since 2017年1月1日 下午11:08:29
  */
-package io.lnk.framework.utils;
+package io.dispatcher.utils;

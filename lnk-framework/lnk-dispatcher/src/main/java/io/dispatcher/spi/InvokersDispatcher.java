@@ -1,4 +1,4 @@
-package io.lnk.framework.dispatcher.spi;
+package io.dispatcher.spi;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

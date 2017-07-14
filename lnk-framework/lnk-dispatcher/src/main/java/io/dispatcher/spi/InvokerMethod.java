@@ -1,4 +1,4 @@
-package io.lnk.framework.dispatcher.spi;
+package io.dispatcher.spi;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

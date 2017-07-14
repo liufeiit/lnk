@@ -1,7 +1,7 @@
 package test;
 
-import io.lnk.framework.dispatcher.spi.InvokerTypeCode;
-import io.lnk.framework.utils.FieldRetriever;
+import io.dispatcher.spi.InvokerTypeCode;
+import io.dispatcher.utils.FieldRetriever;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

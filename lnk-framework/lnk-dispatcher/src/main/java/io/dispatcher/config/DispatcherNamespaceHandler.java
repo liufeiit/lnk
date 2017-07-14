@@ -1,4 +1,4 @@
-package io.lnk.framework.dispatcher;
+package io.dispatcher.config;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 

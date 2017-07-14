@@ -1,4 +1,4 @@
-package io.lnk.framework.dispatcher;
+package io.dispatcher.config;
 
 import java.util.List;
 
@@ -15,12 +15,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import io.lnk.framework.dispatcher.spi.InvokerTypeCode;
-import io.lnk.framework.dispatcher.spi.InvokersDispatcher;
-import io.lnk.framework.dispatcher.spi.InvokersDispatcherHandlerFactory;
-import io.lnk.framework.utils.FieldRetriever;
-import io.lnk.framework.utils.LnkComponentUtils;
-import io.lnk.framework.utils.LnkComponentUtils.ComponentCallback;
+import io.dispatcher.spi.InvokerTypeCode;
+import io.dispatcher.spi.InvokersDispatcher;
+import io.dispatcher.spi.InvokersDispatcherHandlerFactory;
+import io.dispatcher.utils.FieldRetriever;
+import io.dispatcher.utils.LnkComponentUtils;
+import io.dispatcher.utils.LnkComponentUtils.ComponentCallback;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

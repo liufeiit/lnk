@@ -160,21 +160,16 @@ public class ZooKeeperRegistry implements Registry {
 
                 public void handleNotify(NotifyEvent notifyEvent, NotifyMessage message) throws Throwable {
                     String path = message.getPath();
-                    log.info("handle notify message path : {}", path);
                     if (StringUtils.contains(path, SERVERS_NODE) == false) {
-                        log.info("can't handle notify message path : {}", path);
                         return;
                     }
                     int serverIndex = StringUtils.indexOf(path, SERVERS_NODE);
                     path = StringUtils.substring(path, 0, serverIndex + SERVERS_NODE.length());
-                    log.info("handleNotify path : {}", path);
                     List<String> serverList = zooKeeperService.getChildren(path);
                     if (serverList == null || serverList.isEmpty()) {
-                        log.info("handleNotify path : {} serverList is empty.", path);
                         registryServices.remove(path);
                         return;
                     }
-                    log.info("handleNotify path : {} serverList : {}.", path, serverList);
                     Set<String> servers = registryServices.get(path);
                     if (servers == null) {
                         servers = new TreeSet<String>();
@@ -183,7 +178,6 @@ public class ZooKeeperRegistry implements Registry {
                     }
                     servers.addAll(serverList);
                     registryServices.put(path, servers);
-                    log.info("handleNotify path : {}.", path);
                 }
             });
         } catch (Throwable e) {

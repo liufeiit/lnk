@@ -1,4 +1,4 @@
-package io.lnk.framework.utils;
+package io.dispatcher.utils;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;

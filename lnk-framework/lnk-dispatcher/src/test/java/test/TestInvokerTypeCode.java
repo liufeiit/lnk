@@ -1,6 +1,6 @@
 package test;
 
-import io.lnk.framework.dispatcher.spi.InvokerTypeCode;
+import io.dispatcher.spi.InvokerTypeCode;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

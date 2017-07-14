@@ -1,6 +1,6 @@
 package test;
 
-import io.lnk.framework.dispatcher.spi.InvokerMethod;
+import io.dispatcher.spi.InvokerMethod;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

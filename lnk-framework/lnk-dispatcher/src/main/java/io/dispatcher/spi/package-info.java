@@ -4,4 +4,4 @@
  * @version 1.0.0
  * @since 2017年1月1日 下午10:55:52
  */
-package io.lnk.framework.dispatcher.spi;
+package io.dispatcher.spi;

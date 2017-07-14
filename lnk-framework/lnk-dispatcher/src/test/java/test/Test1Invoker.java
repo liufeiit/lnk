@@ -2,7 +2,7 @@ package test;
 
 import org.springframework.util.NumberUtils;
 
-import io.lnk.framework.dispatcher.spi.Invoker;
+import io.dispatcher.spi.Invoker;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com

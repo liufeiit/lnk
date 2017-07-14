@@ -58,7 +58,6 @@ public class NotifyWatcher implements Watcher {
                     return;
                 }
             }
-            log.info("listenNode : {}, EventPath : {}", listenNode, path);
             NotifyMessage message = new NotifyMessage();
             message.setPath(path);
             switch (eventType) {
