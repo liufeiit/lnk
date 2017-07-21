@@ -12,7 +12,6 @@
 	<packaging>pom</packaging>
 	<name>lnk-framework</name>
 	<modules>
-		<module>lnk-dispatcher</module>
 		<module>lnk-statemachine</module>
 	</modules>
 </project>
