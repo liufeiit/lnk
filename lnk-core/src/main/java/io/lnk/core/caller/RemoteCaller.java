@@ -2,6 +2,7 @@ package io.lnk.core.caller;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -86,18 +87,25 @@ public class RemoteCaller implements InvocationHandler {
         command.setMethod(method.getName());
         command.setSignature(method.getParameterTypes());
         command.setArgs(this.objectProtocolFactory.encode(args, protocolFactory));
-        switch (type) {
-            case SYNC: {
-                return this.sync(command, timeoutMillis);
+        try {
+            switch (type) {
+                case SYNC: {
+                    return this.sync(command, timeoutMillis);
+                }
+                case ASYNC: {
+                    this.endpoint.async(command);
+                }
+                    break;
+                case MULTICAST: {
+                    this.endpoint.multicast(command);
+                }
+                    break;
             }
-            case ASYNC: {
-                this.endpoint.async(command);
+        } catch (Throwable e) {
+            if (e instanceof InvocationTargetException) {
+                e = ((InvocationTargetException) e).getCause();
             }
-                break;
-            case MULTICAST: {
-                this.endpoint.multicast(command);
-            }
-                break;
+            throw e;
         }
         return null;
     }
