@@ -45,7 +45,7 @@ public class ServerMain {
         System.out.println("LNK Server started.");
     }
 
-    public static void main2(String[] args) {
+    public static void main(String[] args) {
         ComplexRequest request = new ComplexRequest();
         request.setName("哈哈");
         request.setAge(60);
@@ -72,7 +72,7 @@ public class ServerMain {
         // }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main1(String[] args) throws Exception {
         ExecutorService exec = Executors.newCachedThreadPool();
         final Set<Integer> fail = new HashSet<Integer>();
         final Set<Integer> succ = new HashSet<Integer>();

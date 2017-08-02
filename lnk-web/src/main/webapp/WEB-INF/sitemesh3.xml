@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+	<mapping path="/lnk/*" decorator="/WEB-INF/templates/decorators/default.jsp"/>
+	<mapping path="/permission" decorator="/WEB-INF/templates/decorators/default.jsp"/>
+	<mapping path="/assets/*" exclue="true"/>
+	<property name="decorators-file" value="/WEB-INF/decorators.xml" />
+    <excludes file="${decorators-file}" />
+</sitemesh>

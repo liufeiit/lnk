@@ -73,7 +73,7 @@ public class SpringLnkEndpoint extends DefaultLnkEndpoint implements Application
                 if (beanInterface.isInterface()) {
                     if (beanInterface.isAnnotationPresent(LnkService.class)) {
                         LnkService lnkService = beanInterface.getAnnotation(LnkService.class);
-                        super.unregistry(lnkService.group(), beanInterface.getName(), version, lnkService.protocol());
+                        super.unregistry(beanInterface.getName(), version, lnkService.protocol());
                     }
                 } else {
                     this.serviceUnregistry(beanInterface, bean, version);
@@ -90,7 +90,7 @@ public class SpringLnkEndpoint extends DefaultLnkEndpoint implements Application
                     if (beanInterface.isAnnotationPresent(LnkService.class)) {
                         this.exportServices.add(bean);
                         LnkService lnkService = beanInterface.getAnnotation(LnkService.class);
-                        super.registry(lnkService.group(), beanInterface.getName(), version, lnkService.protocol(), bean);
+                        super.registry(beanInterface.getName(), version, lnkService.protocol(), bean);
                     }
                 } else {
                     this.serviceRegistry(beanInterface, bean, version);

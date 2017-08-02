@@ -16,6 +16,7 @@ import java.util.Set;
  * @version 1.0.0
  * @since 2017年7月7日 下午12:16:54
  */
+@SuppressWarnings("unchecked")
 public class ArrayUtil {
     /**
      * 获得数组对象包含的元素数量
@@ -312,7 +313,6 @@ public class ArrayUtil {
      * @param dimension 维度.
      * @return 数组对象. 如果参考对象为null或创建发生异常则返回null.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T newArray(Object reference, int dimension) {
         return (T) newArray(reference, new int[] {dimension});
     }
@@ -324,7 +324,6 @@ public class ArrayUtil {
      * @param dimensions 维度. 例如 new int[]{5}是长度为5的一维数组, new int[]{5, 5}是二维数组
      * @return 数组对象. 如果参考对象为null或创建发生异常则返回null.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T newArray(Object reference, int[] dimensions) {
         Class<?> clazz = null;
         if (reference instanceof Class<?>) {
@@ -462,7 +461,6 @@ public class ArrayUtil {
      * @param objs 二维数组对象. 如果包含的一维数组为空或元素少于2个, 则被会被忽略.
      * @return 键值对
      */
-    @SuppressWarnings("unchecked")
     public static <K, V, T> Map<K, V> asMultiTypeMap(T[][] objs) {
         if (isEmpty(objs)) {
             return Collections.emptyMap();
@@ -495,7 +493,6 @@ public class ArrayUtil {
      * @param objs 包含任意数量对象. 如果为奇数个对象, 则会自动添加一个null作为最后一个对象.
      * @return 键值对
      */
-    @SuppressWarnings("unchecked")
     public static <K, V, T> Map<K, V> asMultiTypeMap(T... objs) {
         if (isEmpty(objs)) {
             return Collections.emptyMap();
@@ -509,7 +506,6 @@ public class ArrayUtil {
         return map;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T[] toArray(Collection<T> c, Class<?> componentType) {
         T[] array = (T[]) Array.newInstance(componentType, c.size());
         return c.toArray(array);

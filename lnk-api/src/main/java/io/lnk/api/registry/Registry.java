@@ -9,7 +9,7 @@ import io.lnk.api.Address;
  * @since 2017年5月24日 上午11:49:43
  */
 public interface Registry {
-    Address[] lookup(String serviceGroup, String serviceId, String version, int protocol);
-    void registry(String serviceGroup, String serviceId, String version, int protocol, Address addr);
-    void unregistry(String serviceGroup, String serviceId, String version, int protocol, Address addr);
+    Address[] lookup(String serviceId, String version, int protocol);
+    void registry(String serviceId, String version, int protocol, Address addr);
+    void unregistry(String serviceId, String version, int protocol, Address addr);
 }

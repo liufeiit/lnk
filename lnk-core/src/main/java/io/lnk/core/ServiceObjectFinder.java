@@ -11,5 +11,5 @@ import io.lnk.api.exception.NotFoundServiceException;
  */
 public interface ServiceObjectFinder {
     Object getServiceObject(InvokerCommand command) throws NotFoundServiceException;
-    void registry(String serviceGroup, String serviceId, String version, int protocol, Object bean);
+    void registry(String serviceId, String version, int protocol, Object bean);
 }

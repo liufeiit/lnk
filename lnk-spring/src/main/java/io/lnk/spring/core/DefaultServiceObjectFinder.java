@@ -30,17 +30,16 @@ public class DefaultServiceObjectFinder implements ServiceObjectFinder, BeanFact
     private ClassLoader classLoader;
 
     @Override
-    public void registry(String serviceGroup, String serviceId, String version, int protocol, Object bean) {
-        this.serviceObjects.put(this.buildServiceObjectKey(serviceGroup, serviceId, version, protocol), bean);
+    public void registry(String serviceId, String version, int protocol, Object bean) {
+        this.serviceObjects.put(this.buildServiceObjectKey(serviceId, version, protocol), bean);
     }
 
     @Override
     public Object getServiceObject(InvokerCommand command) throws NotFoundServiceException {
-        String serviceGroup = command.getServiceGroup();
         String serviceId = command.getServiceId();
         String version = command.getVersion();
         int protocol = command.getProtocol();
-        Object serviceBean = this.serviceObjects.get(this.buildServiceObjectKey(serviceGroup, serviceId, version, protocol));
+        Object serviceBean = this.serviceObjects.get(this.buildServiceObjectKey(serviceId, version, protocol));
         if (serviceBean != null) {
             return serviceBean;
         }
@@ -67,7 +66,7 @@ public class DefaultServiceObjectFinder implements ServiceObjectFinder, BeanFact
             if (serviceBean == null) {
                 throw new NotFoundServiceException(serviceId);
             }
-            this.registry(serviceGroup, serviceId, version, protocol, serviceBean);
+            this.registry(serviceId, version, protocol, serviceBean);
             return serviceBean;
         } catch (NotFoundServiceException e) {
             log.error("bean class " + serviceId + " is not exists.", e);
@@ -78,8 +77,8 @@ public class DefaultServiceObjectFinder implements ServiceObjectFinder, BeanFact
         }
     }
 
-    private String buildServiceObjectKey(String serviceGroup, String serviceId, String version, int protocol) {
-        return new StringBuffer(serviceGroup).append(".").append(serviceId).append(".").append(version).append(".").append(protocol).toString();
+    private String buildServiceObjectKey(String serviceId, String version, int protocol) {
+        return new StringBuffer(serviceId).append(".").append(version).append(".").append(protocol).toString();
     }
 
     @Override

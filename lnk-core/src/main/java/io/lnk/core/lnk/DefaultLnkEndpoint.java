@@ -118,19 +118,19 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
     }
 
     @Override
-    public void registry(String serviceGroup, String serviceId, String version, int protocol, Object bean) throws LnkException {
-        log.info("registry service serviceGroup : {}, serviceId : {}, version : {}, protocol : {}", new Object[] {serviceGroup, serviceId, version, protocol});
-        this.serviceObjectFinder.registry(serviceGroup, serviceId, version, protocol, bean);
-        this.registry.registry(serviceGroup, serviceId, version, protocol, serverAddress);
+    public void registry(String serviceId, String version, int protocol, Object bean) throws LnkException {
+        log.info("registry service serviceId : {}, version : {}, protocol : {}", new Object[] {serviceId, version, protocol});
+        this.serviceObjectFinder.registry(serviceId, version, protocol, bean);
+        this.registry.registry(serviceId, version, protocol, serverAddress);
     }
 
     @Override
-    public void unregistry(String serviceGroup, String serviceId, String version, int protocol) throws LnkException {
-        log.info("unregistry service serviceGroup : {}, serviceId : {}, version : {}, protocol : {}", new Object[] {serviceGroup, serviceId, version, protocol});
+    public void unregistry(String serviceId, String version, int protocol) throws LnkException {
+        log.info("unregistry service serviceId : {}, version : {}, protocol : {}", new Object[] {serviceId, version, protocol});
         try {
-            this.registry.unregistry(serviceGroup, serviceId, version, protocol, serverAddress);
+            this.registry.unregistry(serviceId, version, protocol, serverAddress);
         } catch (Throwable e) {
-            log.warn("unregistry service serviceGroup : {}, serviceId : {}, version : {}, protocol : {} Error.", new Object[] {serviceGroup, serviceId, version, protocol});
+            log.warn("unregistry service serviceId : {}, version : {}, protocol : {} Error.", new Object[] {serviceId, version, protocol});
         }
     }
 
@@ -164,7 +164,7 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
             request.setCode(commandCode);
             request.setProtocol(command.getProtocol());
             request.setBody(protocolFactory.encode(command));
-            Address[] candidates = registry.lookup(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
+            Address[] candidates = registry.lookup(command.getServiceId(), command.getVersion(), command.getProtocol());
             selectedAddr = loadBalance.select(command, candidates);
             RemotingCommand response = remotingClient.invokeSync(selectedAddr.toString(), request, timeoutMillis);
             if (commandCode == response.getCode()) {
@@ -177,7 +177,7 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
             throw new LnkException("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + ">, code<" + response.getCode() + "> Error.");
         } catch (RemotingConnectException e) {
             log.error("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
-            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol(), selectedAddr);
+            registry.unregistry(command.getServiceId(), command.getVersion(), command.getProtocol(), selectedAddr);
             throw new LnkException("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
         } catch (RemotingSendRequestException e) {
             log.error("invoker sync correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
@@ -209,14 +209,14 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
             request.setCode(commandCode);
             request.setProtocol(command.getProtocol());
             request.setBody(protocolFactory.encode(command));
-            Address[] candidates = registry.lookup(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
+            Address[] candidates = registry.lookup(command.getServiceId(), command.getVersion(), command.getProtocol());
             selectedAddr = loadBalance.select(command, candidates);
             remotingClient.invokeOneway(selectedAddr.toString(), request);
             long endMillis = System.currentTimeMillis();
             log.info("invoker async correlationId<{}>, serviceId<{}>, used {}(ms) success.", new Object[] {command.getId(), command.commandSignature(), (endMillis - startMillis)});
         } catch (RemotingConnectException e) {
             log.error("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
-            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol(), selectedAddr);
+            registry.unregistry(command.getServiceId(), command.getVersion(), command.getProtocol(), selectedAddr);
             throw new LnkException("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
         } catch (RemotingSendRequestException e) {
             log.error("invoker async correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
@@ -244,14 +244,14 @@ public class DefaultLnkEndpoint implements LnkEndpoint {
             request.setCode(commandCode);
             request.setProtocol(command.getProtocol());
             request.setBody(protocolFactory.encode(command));
-            Address[] addrList = registry.lookup(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol());
+            Address[] addrList = registry.lookup(command.getServiceId(), command.getVersion(), command.getProtocol());
             if (ArrayUtils.isNotEmpty(addrList)) {
                 for (Address address : addrList) {
                     try {
                         remotingClient.invokeOneway(address.toString(), request);
                     } catch (Throwable e) {
                         if (e instanceof RemotingConnectException) {
-                            registry.unregistry(command.getServiceGroup(), command.getServiceId(), command.getVersion(), command.getProtocol(), address);
+                            registry.unregistry(command.getServiceId(), command.getVersion(), command.getProtocol(), address);
                         }
                         log.error("invoker async multicast correlationId<" + command.getId() + ">, serviceId<" + command.commandSignature() + "> " + e.getLocalizedMessage(), e);
                     }

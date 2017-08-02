@@ -12,8 +12,8 @@ import io.lnk.api.exception.LnkTimeoutException;
  * @since 2017年7月6日 上午10:17:48
  */
 public interface LnkEndpoint {
-    void registry(String serviceGroup, String serviceId, String version, int protocol, Object bean) throws LnkException;
-    void unregistry(String serviceGroup, String serviceId, String version, int protocol) throws LnkException;
+    void registry(String serviceId, String version, int protocol, Object bean) throws LnkException;
+    void unregistry(String serviceId, String version, int protocol) throws LnkException;
     void bind(ServiceGroup... serviceGroups);
     
     InvokerCommand sync(final InvokerCommand command, final long timeoutMillis) throws LnkException, LnkTimeoutException;

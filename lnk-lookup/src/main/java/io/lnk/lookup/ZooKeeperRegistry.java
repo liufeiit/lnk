@@ -28,8 +28,6 @@ import io.lnk.lookup.zookeeper.notify.NotifyMessage.MessageMode;
  */
 public class ZooKeeperRegistry implements Registry {
     private static final Logger log = LoggerFactory.getLogger(ZooKeeperRegistry.class.getSimpleName());
-    private static final String ROOT_NODE = "lnk";
-    private static final String SERVERS_NODE = "servers";
     private final ConcurrentHashMap<String, Set<String>> registryServices;
     private final ReentrantLock lock = new ReentrantLock();
     private ZooKeeperService zooKeeperService;
@@ -39,11 +37,11 @@ public class ZooKeeperRegistry implements Registry {
     }
 
     @Override
-    public Address[] lookup(String serviceGroup, String serviceId, String version, int protocol) {
+    public Address[] lookup(String serviceId, String version, int protocol) {
         SortedSet<Address> addrList = new TreeSet<Address>();
         String path = null;
         try {
-            path = this.createPath(serviceGroup, serviceId, version, protocol);
+            path = Paths.Registry.createPath(serviceId, version, protocol);
             Set<String> serverList = this.getServerList(path);
             if (serverList != null && !serverList.isEmpty()) {
                 for (String server : serverList) {
@@ -57,10 +55,10 @@ public class ZooKeeperRegistry implements Registry {
     }
 
     @Override
-    public void registry(String serviceGroup, String serviceId, String version, int protocol, Address addr) {
+    public void registry(String serviceId, String version, int protocol, Address addr) {
         String path = null;
         try {
-            path = this.createPath(serviceGroup, serviceId, version, protocol);
+            path = Paths.Registry.createPath(serviceId, version, protocol);
             NotifyMessage message = new NotifyMessage();
             message.setPath(path);
             message.setData(StringUtils.EMPTY);
@@ -78,7 +76,7 @@ public class ZooKeeperRegistry implements Registry {
             message.setData(server);
             message.setMessageMode(MessageMode.EPHEMERAL);
             this.zooKeeperService.push(message);
-            this.registerHandler(serviceGroup, serviceId, version, protocol, addr);
+            this.registerHandler(serviceId, version, protocol, addr);
             message = new NotifyMessage();
             message.setPath(path);
             message.setData(new Random().nextInt(10000) + "");
@@ -91,10 +89,10 @@ public class ZooKeeperRegistry implements Registry {
     }
 
     @Override
-    public void unregistry(String serviceGroup, String serviceId, String version, int protocol, Address addr) {
+    public void unregistry(String serviceId, String version, int protocol, Address addr) {
         String path = null;
         try {
-            path = this.createPath(serviceGroup, serviceId, version, protocol);
+            path = Paths.Registry.createPath(serviceId, version, protocol);
             this.zooKeeperService.unregister(path, NotifyHandler.NULL);
             String server = addr.toString();
             Set<String> serverList = this.registryServices.get(path);
@@ -142,10 +140,10 @@ public class ZooKeeperRegistry implements Registry {
         return serverList;
     }
 
-    private void registerHandler(String serviceGroup, String serviceId, String version, int protocol, Address addr) {
+    private void registerHandler(String serviceId, String version, int protocol, Address addr) {
         String path = null;
         try {
-            path = this.createPath(serviceGroup, serviceId, version, protocol);
+            path = Paths.Registry.createPath(serviceId, version, protocol);
             String server = addr.toString();
             Set<String> serverList = this.registryServices.get(path);
             if (serverList == null) {
@@ -160,11 +158,11 @@ public class ZooKeeperRegistry implements Registry {
 
                 public void handleNotify(NotifyEvent notifyEvent, NotifyMessage message) throws Throwable {
                     String path = message.getPath();
-                    if (StringUtils.contains(path, SERVERS_NODE) == false) {
+                    if (StringUtils.contains(path, Paths.Registry.PROVIDERS) == false) {
                         return;
                     }
-                    int serverIndex = StringUtils.indexOf(path, SERVERS_NODE);
-                    path = StringUtils.substring(path, 0, serverIndex + SERVERS_NODE.length());
+                    int serverIndex = StringUtils.indexOf(path, Paths.Registry.PROVIDERS);
+                    path = StringUtils.substring(path, 0, serverIndex + Paths.Registry.PROVIDERS.length());
                     List<String> serverList = zooKeeperService.getChildren(path);
                     if (serverList == null || serverList.isEmpty()) {
                         registryServices.remove(path);
@@ -183,12 +181,6 @@ public class ZooKeeperRegistry implements Registry {
         } catch (Throwable e) {
             log.error("registerHandler path : " + path + " Error.", e);
         }
-    }
-
-    private String createPath(String serviceGroup, String serviceId, String version, int protocol) {
-        StringBuilder sb = new StringBuilder("/").append(ROOT_NODE).append("/");
-        sb.append(serviceGroup).append("/").append(serviceId).append("/").append(version).append("/").append(protocol).append("/").append(SERVERS_NODE);
-        return sb.toString();
     }
 
     public void setZooKeeperService(ZooKeeperService zooKeeperService) {
