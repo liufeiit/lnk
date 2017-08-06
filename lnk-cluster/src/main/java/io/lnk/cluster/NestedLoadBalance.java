@@ -1,5 +1,6 @@
 package io.lnk.cluster;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,9 @@ public class NestedLoadBalance implements LoadBalance {
 
     @Override
     public Address select(InvokerCommand command, Address[] candidates) {
+        if (ArrayUtils.isEmpty(candidates)) {
+            throw new IllegalStateException("command : " + command.commandSignature() + " Address candidates is empty.");
+        }
         return nestedLoadBalance.select(command, candidates);
     }
 }
