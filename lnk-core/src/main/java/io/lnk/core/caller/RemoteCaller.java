@@ -23,6 +23,7 @@ import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
 import io.lnk.api.utils.CorrelationIds;
 import io.lnk.core.LnkEndpoint;
+import io.lnk.core.MdcCaller;
 
 /**
  * @author 刘飞 E-mail:liufei_it@126.com
@@ -78,8 +79,10 @@ public class RemoteCaller implements InvocationHandler {
                 type = InvokeType.ASYNC;
             }
         }
+        String id = CorrelationIds.buildGuid();
+        MdcCaller.setTrackingCode(id);
         InvokerCommand command = new InvokerCommand();
-        command.setId(CorrelationIds.buildGuid());
+        command.setId(id);
         command.setVersion(this.remoteObject.getVersion());
         command.setProtocol(this.remoteObject.getProtocol());
         command.setServiceGroup(this.remoteObject.getServiceGroup());

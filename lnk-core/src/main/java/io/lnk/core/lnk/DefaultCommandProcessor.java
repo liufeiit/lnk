@@ -14,6 +14,7 @@ import io.lnk.api.flow.FlowController;
 import io.lnk.api.protocol.ProtocolFactory;
 import io.lnk.api.protocol.ProtocolFactorySelector;
 import io.lnk.api.protocol.object.ObjectProtocolFactory;
+import io.lnk.core.MdcCaller;
 import io.lnk.core.ServiceObjectFinder;
 import io.lnk.remoting.CommandProcessor;
 import io.lnk.remoting.protocol.RemotingCommand;
@@ -36,6 +37,7 @@ public class DefaultCommandProcessor implements CommandProcessor {
         long startMillis = System.currentTimeMillis();
         ProtocolFactory protocolFactory = protocolFactorySelector.select(request.getProtocol());
         InvokerCommand command = protocolFactory.decode(InvokerCommand.class, request.getBody());
+        MdcCaller.setTrackingCode(command.getId());
         Object serviceObject = serviceObjectFinder.getServiceObject(command);
         try {
             Method serviceMethod = ReflectionUtils.findMethod(serviceObject.getClass(), command.getMethod(), command.getSignature());
