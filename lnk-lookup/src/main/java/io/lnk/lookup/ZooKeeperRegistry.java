@@ -157,7 +157,7 @@ public class ZooKeeperRegistry implements Registry {
                     log.warn("get serverList path : {}", path);
                     List<String> savedServers = this.zooKeeperService.getChildren(path);
                     if (savedServers == null || savedServers.isEmpty()) {
-                        log.info("get serverList path : {} serverList is empty.", path);
+                        log.warn("get serverList path : {} serverList is empty.", path);
                         return serverList;
                     }
                     log.info("get serverList path : {} serverList : {}.", path, savedServers);
