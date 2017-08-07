@@ -104,7 +104,7 @@ public class ZooKeeperClient {
             this.sessionPasswd = sessionPasswd;
         }
     }
-    private static final Logger LOG = LoggerFactory.getLogger(ZooKeeperClient.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(ZooKeeperClient.class.getName());
     private final int sessionTimeoutMillis;
     private final Credentials credentials;
     private final String zooKeeperServers;
@@ -167,7 +167,7 @@ public class ZooKeeperClient {
                     } catch (InterruptedException e) {
                         /** ignore */
                     } catch (Throwable e) {
-                        LOG.error("Watcher process Error.", e);
+                        log.error("Watcher process Error.", e);
                     }
                 }
             }
@@ -191,7 +191,7 @@ public class ZooKeeperClient {
                         case None:
                             switch (event.getState()) {
                                 case Expired:
-                                    LOG.info("Zookeeper session expired Event: {}", event);
+                                    log.info("Zookeeper session expired Event: {}", event);
                                     close();
                                     break;
                                 case SyncConnected:
@@ -223,7 +223,7 @@ public class ZooKeeperClient {
                 try {
                     connected.await();
                 } catch (InterruptedException ex) {
-                    LOG.info("Interrupted while waiting to connect to Zookeeper");
+                    log.info("Interrupted while waiting to connect to Zookeeper");
                     close();
                     throw ex;
                 }
@@ -273,7 +273,7 @@ public class ZooKeeperClient {
                 zooKeeper.close();
             } catch (Throwable e) {
                 Thread.currentThread().interrupt();
-                LOG.warn("Interrupted trying to close Zookeeper", e);
+                log.warn("Interrupted trying to close Zookeeper", e);
             } finally {
                 zooKeeper = null;
                 sessionState = null;
@@ -281,7 +281,7 @@ public class ZooKeeperClient {
             try {
                 closeEventCommand.execute();
             } catch (Throwable e) {
-                LOG.warn("Invoking Zookeeper close Event Command Error.", e);
+                log.warn("Invoking Zookeeper close Event Command Error.", e);
             }
         }
     }

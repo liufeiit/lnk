@@ -8,9 +8,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zookeeper.AsyncCallback.StatCallback;
-import org.apache.zookeeper.AsyncCallback.StringCallback;
-import org.apache.zookeeper.AsyncCallback.VoidCallback;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
@@ -98,11 +95,7 @@ public final class ZooKeeperProvider implements Command {
 
     public void create(String path, CreateMode createMode) {
         try {
-            this.client.get(connectTimeoutMillis).create(path, defaultData, Ids.OPEN_ACL_UNSAFE, createMode, new StringCallback() {
-                public void processResult(int rc, String path, Object ctx, String name) {
-                    log.info("call create path callback rc:{}, path:{}, ctx:{}, name:{}", new Object[] {rc, path, ctx, name});
-                }
-            }, this);
+            this.client.get(connectTimeoutMillis).create(path, defaultData, Ids.OPEN_ACL_UNSAFE, createMode);
         } catch (Throwable e) {
             log.error("create path : " + path + " Error.", e);
         }
@@ -110,11 +103,7 @@ public final class ZooKeeperProvider implements Command {
 
     public void delete(String path) {
         try {
-            this.client.get(connectTimeoutMillis).delete(path, ZooKeeperUtils.ANY_VERSION, new VoidCallback() {
-                public void processResult(int rc, String path, Object ctx) {
-                    log.info("call delete callback rc:{}, path:{}, ctx:{}", new Object[] {rc, path, ctx});
-                }
-            }, this);
+            this.client.get(connectTimeoutMillis).delete(path, ZooKeeperUtils.ANY_VERSION);
         } catch (Throwable e) {
             log.error("remove path : " + path + " Error.", e);
         }
@@ -167,19 +156,11 @@ public final class ZooKeeperProvider implements Command {
                 for (String n : nodes) {
                     nodeTmp += (NODE_PATH_SPL.concat(n));
                     if (zooKeeper.exists(nodeTmp, true) == null) {
-                        zooKeeper.create(nodeTmp, dataBytes, Ids.OPEN_ACL_UNSAFE, createMode, new StringCallback() {
-                            public void processResult(int rc, String path, Object ctx, String name) {
-                                log.info("call create path callback rc:{}, path:{}, ctx:{}, name:{}", new Object[] {rc, path, ctx, name});
-                            }
-                        }, this);
+                        zooKeeper.create(nodeTmp, dataBytes, Ids.OPEN_ACL_UNSAFE, createMode);
                     }
                 }
             }
-            zooKeeper.setData(path, dataBytes, ZooKeeperUtils.ANY_VERSION, new StatCallback() {
-                public void processResult(int rc, String path, Object ctx, Stat stat) {
-                    log.info("call set data callback rc:{}, path:{}, ctx:{}, stat:{}", new Object[] {rc, path, ctx, stat});
-                }
-            }, this);
+            zooKeeper.setData(path, dataBytes, ZooKeeperUtils.ANY_VERSION);
         } catch (Throwable e) {
             log.error("push NotifyMessage Error.", e);
         }
@@ -210,11 +191,7 @@ public final class ZooKeeperProvider implements Command {
             }
             for (String childPath : childPathList) {
                 String childAbsPath = listenNode.concat(NODE_PATH_SPL).concat(childPath);
-                zooKeeper.exists(childAbsPath, watcher, new StatCallback() {
-                    public void processResult(int rc, String path, Object ctx, Stat stat) {
-                        log.info("call exists callback rc:{}, path:{}, ctx:{}, stat:{}", new Object[] {rc, path, ctx, stat});
-                    }
-                }, this);
+                zooKeeper.exists(childAbsPath, watcher);
                 log.info("register Children Watcher Handler : {}", childAbsPath);
                 registerChildrenHandler(childAbsPath, zooKeeper, watcher);
             }

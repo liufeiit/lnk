@@ -1,19 +1,23 @@
 package io.lnk.lookup;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import io.lnk.api.Address;
 import io.lnk.api.registry.Registry;
+import io.lnk.api.utils.LnkThreadFactory;
 import io.lnk.lookup.zookeeper.ZooKeeperService;
 import io.lnk.lookup.zookeeper.notify.NotifyEvent;
 import io.lnk.lookup.zookeeper.notify.NotifyHandler;
@@ -28,12 +32,52 @@ import io.lnk.lookup.zookeeper.notify.NotifyMessage.MessageMode;
  */
 public class ZooKeeperRegistry implements Registry {
     private static final Logger log = LoggerFactory.getLogger(ZooKeeperRegistry.class.getSimpleName());
+    private final Set<NotifyMessage> notifyMessages = new HashSet<NotifyMessage>();
     private final ConcurrentHashMap<String, Set<String>> registryServices;
     private final ReentrantLock lock = new ReentrantLock();
+    private final ScheduledThreadPoolExecutor recoveryExecutor;
     private ZooKeeperService zooKeeperService;
+    
+    public class RegistryNotifyHandler implements NotifyHandler {
+        public boolean receiveChildNotify() {
+            return true;
+        }
+        public void handleNotify(NotifyEvent notifyEvent, NotifyMessage message) throws Throwable {
+            String path = message.getPath();
+            if (StringUtils.contains(path, Paths.Registry.PROVIDERS) == false) {
+                return;
+            }
+            int serverIndex = StringUtils.indexOf(path, Paths.Registry.PROVIDERS);
+            path = StringUtils.substring(path, 0, serverIndex + Paths.Registry.PROVIDERS.length());
+            List<String> serverList = zooKeeperService.getChildren(path);
+            if (serverList == null || serverList.isEmpty()) {
+                registryServices.remove(path);
+                return;
+            }
+            Set<String> servers = registryServices.get(path);
+            if (servers == null) {
+                servers = new TreeSet<String>();
+            } else {
+                servers.clear();
+            }
+            servers.addAll(serverList);
+            registryServices.put(path, servers);
+        }
+    }
 
     public ZooKeeperRegistry() {
         this.registryServices = new ConcurrentHashMap<String, Set<String>>();
+        this.recoveryExecutor = new ScheduledThreadPoolExecutor(2, LnkThreadFactory.newThreadFactory("ZooKeeperRegistry.Recovery-%d", false));
+        this.recoveryExecutor.scheduleWithFixedDelay(new Runnable() {
+            public void run() {
+                if (CollectionUtils.isEmpty(notifyMessages)) {
+                    return;
+                }
+                for (NotifyMessage notifyMessage : notifyMessages) {
+                    zooKeeperService.push(notifyMessage);
+                }
+            }
+        }, 10L, 10L, TimeUnit.SECONDS);
     }
 
     @Override
@@ -75,13 +119,9 @@ public class ZooKeeperRegistry implements Registry {
             message.setPath(path);
             message.setData(server);
             message.setMessageMode(MessageMode.EPHEMERAL);
+            this.notifyMessages.add(message);
             this.zooKeeperService.push(message);
             this.registerHandler(serviceId, version, protocol, addr);
-            message = new NotifyMessage();
-            message.setPath(path);
-            message.setData(new Random().nextInt(10000) + "");
-            message.setMessageMode(MessageMode.PERSISTENT);
-            this.zooKeeperService.push(message);
             log.info("registry path : {} success.", path);
         } catch (Throwable e) {
             log.error("registry path : " + path + " Error.", e);
@@ -151,33 +191,7 @@ public class ZooKeeperRegistry implements Registry {
             }
             serverList.add(server);
             this.registryServices.put(path, serverList);
-            this.zooKeeperService.registerHandler(path, new NotifyHandler() {
-                public boolean receiveChildNotify() {
-                    return true;
-                }
-
-                public void handleNotify(NotifyEvent notifyEvent, NotifyMessage message) throws Throwable {
-                    String path = message.getPath();
-                    if (StringUtils.contains(path, Paths.Registry.PROVIDERS) == false) {
-                        return;
-                    }
-                    int serverIndex = StringUtils.indexOf(path, Paths.Registry.PROVIDERS);
-                    path = StringUtils.substring(path, 0, serverIndex + Paths.Registry.PROVIDERS.length());
-                    List<String> serverList = zooKeeperService.getChildren(path);
-                    if (serverList == null || serverList.isEmpty()) {
-                        registryServices.remove(path);
-                        return;
-                    }
-                    Set<String> servers = registryServices.get(path);
-                    if (servers == null) {
-                        servers = new TreeSet<String>();
-                    } else {
-                        servers.clear();
-                    }
-                    servers.addAll(serverList);
-                    registryServices.put(path, servers);
-                }
-            });
+            this.zooKeeperService.registerHandler(path, new RegistryNotifyHandler());
         } catch (Throwable e) {
             log.error("registerHandler path : " + path + " Error.", e);
         }

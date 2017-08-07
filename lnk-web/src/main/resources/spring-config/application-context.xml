@@ -9,6 +9,7 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
 	<context:annotation-config />
 	<aop:aspectj-autoproxy />
+	<!-- 
 	<lnk:lnk id="lnk-web.server" worker-threads="5" selector-threads="5" connect-timeout-millis="3000" 
 		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
 		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="10" default-executor-threads="8" 
@@ -19,6 +20,19 @@
 		<lnk:flow-control permits="10000"/>
 		<lnk:bind>
 			<lnk:service-group service-group="lnk.web" worker-threads="5"/>
+		</lnk:bind>
+	</lnk:lnk>
+	 -->
+	<lnk:lnk id="lnk-web.server" worker-threads="2" selector-threads="2" connect-timeout-millis="3000" 
+		channel-maxidletime-seconds="120" socket-sndbuf-size="65535" socket-rcvbuf-size="65535" 
+		pooled-bytebuf-allocator-enable="true" default-worker-processor-threads="2" default-executor-threads="2" 
+		use-epoll-native-selector="false">
+		<lnk:application app="lnk-web" ns-home="${nsHome}" type="war"/>
+		<lnk:registry address="${registry}"/>
+		<lnk:load-balance type="hash"/>
+		<lnk:flow-control permits="10000"/>
+		<lnk:bind>
+			<lnk:service-group service-group="lnk.web" worker-threads="2"/>
 		</lnk:bind>
 	</lnk:lnk>
 	<context:component-scan base-package="io.lnk.web.service" />

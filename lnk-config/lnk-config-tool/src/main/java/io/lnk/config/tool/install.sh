@@ -11,4 +11,4 @@ cd /bin
 chmod +x lnk-config
 ln -s /usr/local/lnk-config-tool/bin/lnk-config /usr/local/bin/lnk-config
 ##
-config-tool dev
+lnk-config dev

@@ -1,0 +1,4 @@
+nsHome=${user.home}/.ns_config
+#registry=zk://123.57.55.59:2181
+#registry=zk://10.100.156.26:2181
+registry=zk://127.0.0.1:2181

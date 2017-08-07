@@ -1,6 +1,6 @@
 #!/bin/bash
 
-defEnv=prod
+defEnv=dev
 pgkDir=$HOME/install
 appDir=$HOME/app
 backupDir=$HOME/backup
@@ -9,10 +9,10 @@ autoKill=1
 maxLogTraceTime=20
 
 # jars with correct deploy order
-allJars=(bgw-common-srv bgw-payment-srv bgw-payment-wxpay-srv)
+allJars=(bgw-common-srv bgw-payment-srv bgw-payment-wxpay-srv lnk-s3-srv)
 
 # wars with correct deploy order, entity=(projectName|webContainerName|webAppName)
-allWars=('bgw-payment-api-web|bgw-payment-api-web-jetty|ROOT' 'bgw-payment-notify-web|bgw-payment-notify-web-jetty|ROOT' 'bgw-payment-web|bgw-payment-web-jetty|ROOT') 
+allWars=('bgw-payment-api-web|bgw-payment-api-web|ROOT' 'bgw-payment-notify-web|bgw-payment-notify-web|ROOT' 'bgw-payment-web|bgw-payment-web|ROOT') 
 
 deployJar() {
 	curDir=`pwd`
@@ -39,7 +39,7 @@ deployJar() {
 
 	#init and start
 	mkdir -p $pd && echo ">copy $fp to $pd" && cp $fp $pd 
-	cd $pd && echo ">extract files and config env" && jar xf $fn && rm -rf $fn && config-tool $env
+	cd $pd && echo ">extract files and config env" && jar xf $fn && rm -rf $fn && lnk-config $env
 	cd bin && chmod u+x $pc* && echo ">starting $pn ..." && nohup ./$pc* < /dev/null 1>nohup.out 2>&1 &
 	
 	#trace log
@@ -74,7 +74,7 @@ rollbackJar() {
 
 	#init and start
 	mkdir -p $pd && echo ">copy $rp to $pd" && cp -r $rp/* $pd
-	cd $pd && echo ">config env" && config-tool $env
+	cd $pd && echo ">config env" && lnk-config $env
 	cd bin && chmod u+x $pc* && echo ">starting $pn ..." && nohup ./$pc* < /dev/null 1>nohup.out 2>&1 &
 	
 	#trace log
@@ -122,7 +122,7 @@ deployWar() {
 
 	#init and start
 	mkdir -p $wad && echo ">copy $fp to $wad" && cp $fp $wad 
-	cd $wad && echo ">extract files and config env" && jar xf $fn && rm -rf $fn && cd WEB-INF && config-tool $env
+	cd $wad && echo ">extract files and config env" && jar xf $fn && rm -rf $fn && cd WEB-INF && lnk-config $env
 	cd $wcd && chmod u+x $pc* && echo ">starting $pn ..." && nohup ./$pc* < /dev/null 1>nohup.out 2>&1 &
 	
 	#trace log
@@ -170,7 +170,7 @@ rollbackWar() {
 
 	#init and start
 	mkdir -p $wad && echo ">copy $rp to $wad" && cp -r $rp/* $wad
-	cd $wad && echo ">config env" && cd WEB-INF && config-tool $env
+	cd $wad && echo ">config env" && cd WEB-INF && lnk-config $env
 	cd $wcd && chmod u+x $pc* && echo ">starting $pn ..." && nohup ./$pc* < /dev/null 1>nohup.out 2>&1 &
 
 	#trace log
