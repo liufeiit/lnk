@@ -54,14 +54,7 @@ public class ZooKeeperRegistry implements Registry {
                 registryServices.remove(path);
                 return;
             }
-            Set<String> servers = registryServices.get(path);
-            if (servers == null) {
-                servers = new TreeSet<String>();
-            } else {
-                servers.clear();
-            }
-            servers.addAll(serverList);
-            registryServices.put(path, servers);
+            registryServices.put(path, new TreeSet<String>(serverList));
         }
     }
 
@@ -139,6 +132,7 @@ public class ZooKeeperRegistry implements Registry {
             if (serverList != null) {
                 serverList.remove(server);
             }
+            this.registryServices.put(path, serverList);
             path += ("/" + server);
             this.zooKeeperService.delete(path);
             log.warn("unregistry path : {} success.", path);
@@ -155,19 +149,17 @@ public class ZooKeeperRegistry implements Registry {
                 serverList = this.registryServices.get(path);
                 if (serverList == null) {
                     log.warn("get serverList path : {}", path);
-                    List<String> savedServers = this.zooKeeperService.getChildren(path);
-                    if (savedServers == null || savedServers.isEmpty()) {
+                    List<String> onlineServers = this.zooKeeperService.getChildren(path);
+                    if (onlineServers == null || onlineServers.isEmpty()) {
                         log.warn("get serverList path : {} serverList is empty.", path);
                         return serverList;
                     }
-                    log.info("get serverList path : {} serverList : {}.", path, savedServers);
+                    log.info("get serverList path : {} serverList : {}.", path, onlineServers);
                     serverList = this.registryServices.get(path);
                     if (serverList == null) {
                         serverList = new TreeSet<String>();
-                    } else {
-                        serverList.clear();
                     }
-                    serverList.addAll(savedServers);
+                    serverList.addAll(onlineServers);
                     this.registryServices.put(path, serverList);
                     log.info("get serverList path : {}.", path);
                 }
