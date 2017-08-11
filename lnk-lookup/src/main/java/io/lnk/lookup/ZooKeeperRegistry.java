@@ -51,7 +51,6 @@ public class ZooKeeperRegistry implements Registry {
             path = StringUtils.substring(path, 0, serverIndex + Paths.Registry.PROVIDERS.length());
             List<String> serverList = zooKeeperService.getChildren(path);
             if (serverList == null || serverList.isEmpty()) {
-                registryServices.remove(path);
                 return;
             }
             registryServices.put(path, new TreeSet<String>(serverList));
@@ -126,13 +125,13 @@ public class ZooKeeperRegistry implements Registry {
         String path = null;
         try {
             path = Paths.Registry.createPath(serviceId, version, protocol);
-            this.zooKeeperService.unregister(path, NotifyHandler.NULL);
             String server = addr.toString();
             Set<String> serverList = this.registryServices.get(path);
-            if (serverList != null) {
+            if (CollectionUtils.isEmpty(serverList) == false) {
                 serverList.remove(server);
             }
             this.registryServices.put(path, serverList);
+            this.zooKeeperService.unregister(path, NotifyHandler.NULL);
             path += ("/" + server);
             this.zooKeeperService.delete(path);
             log.warn("unregistry path : {} success.", path);
@@ -148,20 +147,17 @@ public class ZooKeeperRegistry implements Registry {
             try {
                 serverList = this.registryServices.get(path);
                 if (serverList == null) {
-                    log.warn("get serverList path : {}", path);
                     List<String> onlineServers = this.zooKeeperService.getChildren(path);
                     if (onlineServers == null || onlineServers.isEmpty()) {
                         log.warn("get serverList path : {} serverList is empty.", path);
                         return serverList;
                     }
-                    log.info("get serverList path : {} serverList : {}.", path, onlineServers);
                     serverList = this.registryServices.get(path);
                     if (serverList == null) {
                         serverList = new TreeSet<String>();
                     }
                     serverList.addAll(onlineServers);
                     this.registryServices.put(path, serverList);
-                    log.info("get serverList path : {}.", path);
                 }
             } catch (Exception e) {
                 log.error("get serverList path : " + path + " Error.", e);
