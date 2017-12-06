@@ -15,12 +15,11 @@ import io.lnk.api.protocol.Serializer;
  * @author 刘飞 E-mail:liufei_it@126.com
  *
  * @version 1.0.0
- * @since 2017年5月18日 下午3:56:00
+ * @since 2017年12月6日 下午5:04:35
  */
 public class JacksonSerializer implements Serializer {
-
     private final ObjectMapper objectMapper;
-    
+
     public JacksonSerializer() {
         this(false, false);
     }

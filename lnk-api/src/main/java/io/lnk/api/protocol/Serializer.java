@@ -7,12 +7,8 @@ package io.lnk.api.protocol;
  * @since 2017年5月18日 下午3:49:33
  */
 public interface Serializer {
-
     String serializeAsString(Object bean);
-    
     byte[] serializeAsBytes(Object bean);
-
     <T> T deserialize(Class<T> clazz, String serializeString);
-
     <T> T deserialize(Class<T> clazz, byte[] serializeBytes);
 }
